@@ -2,7 +2,7 @@ package com.tinqinacademy.hotel.models.input;
 
 import lombok.*;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,14 +11,5 @@ import java.time.LocalDate;
 @ToString
 @Builder
 public class RegisterVisitorInput {
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String firstName;
-    private String lastName;
-    private String phoneNo;
-    private String idCardNo;
-    private LocalDate idCardValidity;
-    private String idCardIssueAuthority;
-    private LocalDate idCardIssueDate;
-    private String roomNo;
+    List<VisitorInput> visitors;
 }

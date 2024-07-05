@@ -32,9 +32,8 @@ public class SystemController {
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @PostMapping("register")
-    public ResponseEntity<Void> register(@RequestBody RegisterVisitorInput input) {
-        systemService.registerVisitor(input);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<RegisterVisitorOutput> register(@RequestBody RegisterVisitorInput input) {
+        return new ResponseEntity<>(  systemService.registerVisitor(input), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -114,8 +113,6 @@ public class SystemController {
                         .price(input.getPrice())
                 .build()));
     }
-
-
 
     @Operation(
             summary = "Partial Update Room Rest API",

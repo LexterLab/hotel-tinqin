@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.models.RoomInput;
 import com.tinqinacademy.hotel.models.RoomOutput;
 import com.tinqinacademy.hotel.models.Test;
@@ -8,6 +7,7 @@ import com.tinqinacademy.hotel.models.input.BookRoomInput;
 import com.tinqinacademy.hotel.models.input.GetRoomInput;
 import com.tinqinacademy.hotel.models.input.SearchRoomInput;
 import com.tinqinacademy.hotel.models.input.UnbookRoomInput;
+import com.tinqinacademy.hotel.models.output.BookRoomOutput;
 import com.tinqinacademy.hotel.models.output.GetRoomOutput;
 import com.tinqinacademy.hotel.models.output.UnbookRoomOutput;
 import com.tinqinacademy.hotel.services.HotelService;
@@ -31,7 +31,6 @@ import java.util.List;
 public class HotelController {
 
     private final HotelService hotelService;
-    private final ObjectMapper objectMapper;
 
     @PostMapping("{roomNumber}/book")
     @Operation(
@@ -155,17 +154,16 @@ public class HotelController {
     }
     )
     @PostMapping("{roomId}")
-    public ResponseEntity<Void> bookRoom(@PathVariable String roomId, @RequestBody BookRoomInput input) {
-        hotelService.bookRoom(BookRoomInput.builder()
-                        .roomId(roomId)
-                        .startDate(input.getStartDate())
-                        .endDate(input.getEndDate())
-                        .firstName(input.getFirstName())
-                        .lastName(input.getLastName())
-                        .phoneNo(input.getPhoneNo())
-                .build());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable String roomId, @RequestBody BookRoomInput input) {
 
+        return new ResponseEntity<>(hotelService.bookRoom(BookRoomInput.builder()
+                .roomId(roomId)
+                .startDate(input.getStartDate())
+                .endDate(input.getEndDate())
+                .firstName(input.getFirstName())
+                .lastName(input.getLastName())
+                .phoneNo(input.getPhoneNo())
+                .build()), HttpStatus.CREATED);
     }
 
     @Operation(

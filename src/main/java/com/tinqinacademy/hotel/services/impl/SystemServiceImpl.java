@@ -13,9 +13,11 @@ import java.util.List;
 @Slf4j
 public class SystemServiceImpl implements SystemService {
     @Override
-    public void registerVisitor(RegisterVisitorInput input) {
+    public RegisterVisitorOutput registerVisitor(RegisterVisitorInput input) {
         log.info("Start registerVisitor {}", input);
-        log.info("End registerVisitor");
+        RegisterVisitorOutput output = new RegisterVisitorOutput();
+        log.info("End registerVisitor {}", output);
+        return output;
     }
 
     @Override

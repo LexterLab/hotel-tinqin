@@ -10,6 +10,7 @@ import com.tinqinacademy.hotel.models.input.BookRoomInput;
 import com.tinqinacademy.hotel.models.input.GetRoomInput;
 import com.tinqinacademy.hotel.models.input.SearchRoomInput;
 import com.tinqinacademy.hotel.models.input.UnbookRoomInput;
+import com.tinqinacademy.hotel.models.output.BookRoomOutput;
 import com.tinqinacademy.hotel.models.output.GetRoomOutput;
 import com.tinqinacademy.hotel.models.output.UnbookRoomOutput;
 import com.tinqinacademy.hotel.services.HotelService;
@@ -103,9 +104,11 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public void bookRoom(BookRoomInput input) {
+    public BookRoomOutput bookRoom(BookRoomInput input) {
         log.info("Start bookRoom {}", input);
-        log.info("End bookRoom");
+        BookRoomOutput output = new BookRoomOutput();
+        log.info("End bookRoom {}", output);
+        return output;
     }
 
     @Override
