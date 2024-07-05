@@ -1,12 +1,8 @@
 package com.tinqinacademy.hotel.services.impl;
 
-import com.tinqinacademy.hotel.models.input.CreateRoomInput;
-import com.tinqinacademy.hotel.models.input.GetVisitorsReportInput;
-import com.tinqinacademy.hotel.models.input.RegisterVisitorInput;
+import com.tinqinacademy.hotel.models.input.*;
 import com.tinqinacademy.hotel.models.mappers.VisitorReportMapper;
-import com.tinqinacademy.hotel.models.output.CreateRoomOutput;
-import com.tinqinacademy.hotel.models.output.GetVisitorsReportOutput;
-import com.tinqinacademy.hotel.models.output.VisitorOutput;
+import com.tinqinacademy.hotel.models.output.*;
 import com.tinqinacademy.hotel.services.SystemService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,4 +40,30 @@ public class SystemServiceImpl implements SystemService {
         log.info("End createRoom {}", output);
         return output;
     }
+
+    @Override
+    public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
+        log.info("Start updateRoom {}", input);
+        UpdateRoomOutput output = new UpdateRoomOutput(input.getRoomId());
+        log.info("End updateRoom {}", output);
+        return output;
+    }
+
+    @Override
+    public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) {
+        log.info("Start partialUpdateRoom {}", input);
+        PartialUpdateRoomOutput output = new PartialUpdateRoomOutput(input.getRoomId());
+        log.info("End partialUpdateRoom {}", output);
+        return output;
+    }
+
+    @Override
+    public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
+        log.info("Start deleteRoom {}", input);
+        DeleteRoomOutput output = new DeleteRoomOutput();
+        log.info("End deleteRoom {}", output);
+        return output;
+    }
+
+
 }

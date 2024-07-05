@@ -1,8 +1,7 @@
 package com.tinqinacademy.hotel.controllers;
 
-import com.tinqinacademy.hotel.models.input.GetVisitorsReportInput;
-import com.tinqinacademy.hotel.models.input.RegisterVisitorInput;
-import com.tinqinacademy.hotel.models.output.GetVisitorsReportOutput;
+import com.tinqinacademy.hotel.models.input.*;
+import com.tinqinacademy.hotel.models.output.*;
 import com.tinqinacademy.hotel.services.SystemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -74,5 +73,87 @@ public class SystemController {
                         .phoneNo(phoneNo)
                         .startDate(startDate)
                 .build()));
+    }
+
+
+    @Operation(
+            summary = "Create Room Rest API",
+            description = "Create Room Rest API is for searching visitor registrations"
+    )
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "201", description = "HTTP STATUS 201 CREATED"),
+            @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
+            @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
+            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+    })
+    @PostMapping("room")
+    public ResponseEntity<CreateRoomOutput> createRoom(@RequestBody CreateRoomInput input) {
+        return new ResponseEntity<>(systemService.createRoom(input), HttpStatus.CREATED);
+    }
+
+
+    @Operation(
+            summary = "Update Room Rest API",
+            description = "Update Room Rest API is for updating rooms"
+    )
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
+            @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
+            @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
+            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+    })
+    @PutMapping("room/{roomId}")
+    public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable String roomId, @RequestBody UpdateRoomInput input) {
+        return ResponseEntity.ok(systemService.updateRoom(UpdateRoomInput.builder()
+                        .roomId(roomId)
+                        .bedCount(input.getBedCount())
+                        .bathroomType(input.getBathroomType())
+                        .floor(input.getFloor())
+                        .roomNo(input.getRoomNo())
+                        .price(input.getPrice())
+                .build()));
+    }
+
+
+
+    @Operation(
+            summary = "Partial Update Room Rest API",
+            description = "Partial Update Room Rest API is for partially updating rooms"
+    )
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
+            @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
+            @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
+            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+    })
+    @PatchMapping("room/{roomId}")
+    public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable String roomId,
+                                                                     @RequestBody PartialUpdateRoomInput input) {
+        return new ResponseEntity<>(systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
+                .roomId(roomId)
+                .bedCount(input.getBedCount())
+                .bathroomType(input.getBathroomType())
+                .floor(input.getFloor())
+                .roomNo(input.getRoomNo())
+                .price(input.getPrice())
+                .build()), HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Delete Room Rest API",
+            description = "Delete Room Rest API is for deleting rooms"
+    )
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
+            @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
+            @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
+            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+    })
+    @DeleteMapping("room/{roomId}")
+    public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable String roomId) {
+        return new ResponseEntity<>(systemService.deleteRoom(new DeleteRoomInput(roomId)), HttpStatus.OK);
     }
 }

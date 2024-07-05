@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.models.RoomInput;
 import com.tinqinacademy.hotel.models.RoomOutput;
 import com.tinqinacademy.hotel.models.Test;
@@ -8,6 +9,7 @@ import com.tinqinacademy.hotel.models.input.GetRoomInput;
 import com.tinqinacademy.hotel.models.input.SearchRoomInput;
 import com.tinqinacademy.hotel.models.input.UnbookRoomInput;
 import com.tinqinacademy.hotel.models.output.GetRoomOutput;
+import com.tinqinacademy.hotel.models.output.UnbookRoomOutput;
 import com.tinqinacademy.hotel.services.HotelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,6 +31,7 @@ import java.util.List;
 public class HotelController {
 
     private final HotelService hotelService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping("{roomNumber}/book")
     @Operation(
@@ -75,20 +78,7 @@ public class HotelController {
         return new ResponseEntity<>(hotelService.addRoom(input), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("{id}")
-    @ApiResponses( value = {
-            @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
-            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
-    }
-    )
-    @Operation(
-            summary = "Delete Room Rest API",
-            description = "Delete Room Rest API is used to delete rooms by id"
-    )
-    public ResponseEntity<String> deleteRoom(@PathVariable Integer id) {
-        return ResponseEntity.ok(hotelService.deleteRoom(id));
-    }
+
 
     @PutMapping("{roomNumber}")
     @Operation(
@@ -105,14 +95,6 @@ public class HotelController {
     public ResponseEntity<Test> updateRoom(@PathVariable Integer roomNumber, @RequestBody Test test) {
         return ResponseEntity.ok(hotelService.updateRoom(roomNumber, test));
     }
-
-//    @GetMapping("{id}")
-//    public ResponseEntity<RoomOutput> getRoom(@PathVariable String id,
-//                                              @RequestParam(required = false, defaultValue = "single") String bedSize,
-//                                              @RequestParam(required = false, defaultValue = "1") Integer floor)
-//    {
-//        return ResponseEntity.ok(hotelService.getRoom(new ReserveRoom(floor, bedSize, id)));
-//    }
 
 
     @Operation(
@@ -199,8 +181,7 @@ public class HotelController {
     }
     )
     @DeleteMapping("{roomId}")
-    public ResponseEntity<Void> unbookRoom(@PathVariable String roomId) {
-        hotelService.unbookRoom(new UnbookRoomInput(roomId));
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable String roomId) {
+        return ResponseEntity.ok( hotelService.unbookRoom(new UnbookRoomInput(roomId)));
     }
 }

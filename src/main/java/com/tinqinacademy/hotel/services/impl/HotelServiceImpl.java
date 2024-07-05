@@ -11,6 +11,7 @@ import com.tinqinacademy.hotel.models.input.GetRoomInput;
 import com.tinqinacademy.hotel.models.input.SearchRoomInput;
 import com.tinqinacademy.hotel.models.input.UnbookRoomInput;
 import com.tinqinacademy.hotel.models.output.GetRoomOutput;
+import com.tinqinacademy.hotel.models.output.UnbookRoomOutput;
 import com.tinqinacademy.hotel.services.HotelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -108,9 +109,11 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public void unbookRoom(UnbookRoomInput input) {
+    public UnbookRoomOutput unbookRoom(UnbookRoomInput input) {
         log.info("Start unbookRoom {}", input);
-        log.info("End unbookRoom");
+        UnbookRoomOutput output = new UnbookRoomOutput();
+        log.info("End unbookRoom {}", output);
+        return output;
     }
 
 

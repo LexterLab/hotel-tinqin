@@ -9,6 +9,7 @@ import com.tinqinacademy.hotel.models.input.GetRoomInput;
 import com.tinqinacademy.hotel.models.input.SearchRoomInput;
 import com.tinqinacademy.hotel.models.input.UnbookRoomInput;
 import com.tinqinacademy.hotel.models.output.GetRoomOutput;
+import com.tinqinacademy.hotel.models.output.UnbookRoomOutput;
 
 import java.util.List;
 
@@ -22,5 +23,5 @@ public interface HotelService {
     List<String> searchRoom(SearchRoomInput input);
     GetRoomOutput getRoom(GetRoomInput input);
     void bookRoom(BookRoomInput input);
-    void unbookRoom(UnbookRoomInput input);
+    UnbookRoomOutput unbookRoom(UnbookRoomInput input);
 }
