@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.models.input;
+package com.tinqinacademy.hotel.operations.createroom;
 
 import com.tinqinacademy.hotel.models.constants.BathroomType;
 import com.tinqinacademy.hotel.models.constants.BedSize;
@@ -14,8 +14,10 @@ public record CreateRoomInput(
         BedSize bedSize,
         @Schema(example = "private")
         BathroomType bathroomType,
-        @Schema(example = "")
+        @Schema(example = "4")
         Integer floor,
+        @Schema(example = "201A")
         String roomNo,
+        @Schema(example = "20000")
         BigDecimal price
 ) {}

@@ -1,5 +1,6 @@
-package com.tinqinacademy.hotel.models.input;
+package com.tinqinacademy.hotel.operations.registervisitor;
 
+import com.tinqinacademy.hotel.operations.visitor.VisitorInput;
 import lombok.*;
 
 import java.util.List;

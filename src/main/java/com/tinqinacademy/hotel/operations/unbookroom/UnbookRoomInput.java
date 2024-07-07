@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.models.input;
+package com.tinqinacademy.hotel.operations.unbookroom;
 
 import lombok.*;
 
@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class DeleteRoomInput {
+@Builder
+public class UnbookRoomInput {
     private String roomId;
 }

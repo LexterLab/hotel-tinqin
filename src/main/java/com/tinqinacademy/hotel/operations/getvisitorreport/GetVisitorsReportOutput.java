@@ -1,5 +1,6 @@
-package com.tinqinacademy.hotel.models.output;
+package com.tinqinacademy.hotel.operations.getvisitorreport;
 
+import com.tinqinacademy.hotel.operations.visitor.VisitorOutput;
 import lombok.*;
 
 import java.util.List;

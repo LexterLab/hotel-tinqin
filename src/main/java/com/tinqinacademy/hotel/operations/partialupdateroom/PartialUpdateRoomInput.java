@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.models.input;
+package com.tinqinacademy.hotel.operations.partialupdateroom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tinqinacademy.hotel.models.constants.BathroomType;

@@ -1,7 +1,17 @@
 package com.tinqinacademy.hotel.controllers;
 
-import com.tinqinacademy.hotel.models.input.*;
-import com.tinqinacademy.hotel.models.output.*;
+import com.tinqinacademy.hotel.operations.createroom.CreateRoomInput;
+import com.tinqinacademy.hotel.operations.createroom.CreateRoomOutput;
+import com.tinqinacademy.hotel.operations.deleteroom.DeleteRoomInput;
+import com.tinqinacademy.hotel.operations.deleteroom.DeleteRoomOutput;
+import com.tinqinacademy.hotel.operations.getvisitorreport.GetVisitorsReportInput;
+import com.tinqinacademy.hotel.operations.getvisitorreport.GetVisitorsReportOutput;
+import com.tinqinacademy.hotel.operations.partialupdateroom.PartialUpdateRoomInput;
+import com.tinqinacademy.hotel.operations.partialupdateroom.PartialUpdateRoomOutput;
+import com.tinqinacademy.hotel.operations.registervisitor.RegisterVisitorInput;
+import com.tinqinacademy.hotel.operations.registervisitor.RegisterVisitorOutput;
+import com.tinqinacademy.hotel.operations.updateroom.UpdateRoomInput;
+import com.tinqinacademy.hotel.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.services.SystemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +43,8 @@ public class SystemController {
     })
     @PostMapping("register")
     public ResponseEntity<RegisterVisitorOutput> register(@RequestBody RegisterVisitorInput input) {
-        return new ResponseEntity<>(  systemService.registerVisitor(input), HttpStatus.CREATED);
+        RegisterVisitorOutput output = systemService.registerVisitor(input);
+        return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -60,18 +71,19 @@ public class SystemController {
             @RequestParam(required = false) String roomNo
 
             ) {
-        return ResponseEntity.ok(systemService.getVisitorsReport(GetVisitorsReportInput.builder()
-                        .idCardIssueAuthority(idCardAuthority)
-                        .idCardIssueDate(idCardIssueDate)
-                        .idCardNo(idCardNo)
-                        .idCardValidity(idCardValidity)
-                        .roomNo(roomNo)
-                        .endDate(endDate)
-                        .firstName(firstName)
-                        .lastName(lastName)
-                        .phoneNo(phoneNo)
-                        .startDate(startDate)
-                .build()));
+        GetVisitorsReportOutput output = systemService.getVisitorsReport(GetVisitorsReportInput.builder()
+                .idCardIssueAuthority(idCardAuthority)
+                .idCardIssueDate(idCardIssueDate)
+                .idCardNo(idCardNo)
+                .idCardValidity(idCardValidity)
+                .roomNo(roomNo)
+                .endDate(endDate)
+                .firstName(firstName)
+                .lastName(lastName)
+                .phoneNo(phoneNo)
+                .startDate(startDate)
+                .build());
+        return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
 
@@ -87,7 +99,8 @@ public class SystemController {
     })
     @PostMapping("room")
     public ResponseEntity<CreateRoomOutput> createRoom(@RequestBody CreateRoomInput input) {
-        return new ResponseEntity<>(systemService.createRoom(input), HttpStatus.CREATED);
+        CreateRoomOutput output = systemService.createRoom(input);
+        return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
 
@@ -104,14 +117,15 @@ public class SystemController {
     })
     @PutMapping("room/{roomId}")
     public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable String roomId, @RequestBody UpdateRoomInput input) {
-        return ResponseEntity.ok(systemService.updateRoom(UpdateRoomInput.builder()
-                        .roomId(roomId)
-                        .bedCount(input.getBedCount())
-                        .bathroomType(input.getBathroomType())
-                        .floor(input.getFloor())
-                        .roomNo(input.getRoomNo())
-                        .price(input.getPrice())
-                .build()));
+        UpdateRoomOutput output = systemService.updateRoom(UpdateRoomInput.builder()
+                .roomId(roomId)
+                .bedCount(input.getBedCount())
+                .bathroomType(input.getBathroomType())
+                .floor(input.getFloor())
+                .roomNo(input.getRoomNo())
+                .price(input.getPrice())
+                .build());
+        return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -128,14 +142,15 @@ public class SystemController {
     @PatchMapping("room/{roomId}")
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable String roomId,
                                                                      @RequestBody PartialUpdateRoomInput input) {
-        return new ResponseEntity<>(systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
+        PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .bedCount(input.getBedCount())
                 .bathroomType(input.getBathroomType())
                 .floor(input.getFloor())
                 .roomNo(input.getRoomNo())
                 .price(input.getPrice())
-                .build()), HttpStatus.OK);
+                .build());
+        return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -151,6 +166,7 @@ public class SystemController {
     })
     @DeleteMapping("room/{roomId}")
     public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable String roomId) {
-        return new ResponseEntity<>(systemService.deleteRoom(new DeleteRoomInput(roomId)), HttpStatus.OK);
+        DeleteRoomOutput output = systemService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
+        return new ResponseEntity<>(output, HttpStatus.OK);
     }
 }

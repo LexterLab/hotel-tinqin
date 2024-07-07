@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.models.mappers;
 
-import com.tinqinacademy.hotel.models.input.GetVisitorsReportInput;
-import com.tinqinacademy.hotel.models.output.VisitorOutput;
+import com.tinqinacademy.hotel.operations.getvisitorreport.GetVisitorsReportInput;
+import com.tinqinacademy.hotel.operations.visitor.VisitorOutput;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
