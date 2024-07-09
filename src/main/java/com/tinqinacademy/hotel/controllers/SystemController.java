@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class SystemController {
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @PostMapping("register")
-    public ResponseEntity<RegisterVisitorOutput> register(@RequestBody RegisterVisitorInput input) {
+    public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input) {
         RegisterVisitorOutput output = systemService.registerVisitor(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
@@ -98,7 +99,7 @@ public class SystemController {
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @PostMapping("room")
-    public ResponseEntity<CreateRoomOutput> createRoom(@RequestBody CreateRoomInput input) {
+    public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
         CreateRoomOutput output = systemService.createRoom(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
@@ -116,7 +117,7 @@ public class SystemController {
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @PutMapping("room/{roomId}")
-    public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable String roomId, @RequestBody UpdateRoomInput input) {
+    public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable String roomId, @Valid @RequestBody UpdateRoomInput input) {
         UpdateRoomOutput output = systemService.updateRoom(UpdateRoomInput.builder()
                 .roomId(roomId)
                 .bedCount(input.getBedCount())
@@ -141,7 +142,7 @@ public class SystemController {
     })
     @PatchMapping("room/{roomId}")
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable String roomId,
-                                                                     @RequestBody PartialUpdateRoomInput input) {
+                                                                     @Valid @RequestBody PartialUpdateRoomInput input) {
         PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .bedCount(input.getBedCount())
