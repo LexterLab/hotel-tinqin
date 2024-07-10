@@ -1,15 +1,14 @@
-package com.tinqinacademy.hotel.controllers;
+package com.tinqinacademy.rest.controllers;
 
-
-import com.tinqinacademy.hotel.operations.bookroom.BookRoomInput;
-import com.tinqinacademy.hotel.operations.getroom.GetRoomInput;
-import com.tinqinacademy.hotel.operations.searchroom.SearchRoomInput;
-import com.tinqinacademy.hotel.operations.unbookroom.UnbookRoomInput;
-import com.tinqinacademy.hotel.operations.bookroom.BookRoomOutput;
-import com.tinqinacademy.hotel.operations.getroom.GetRoomOutput;
-import com.tinqinacademy.hotel.operations.searchroom.SearchRoomOutput;
-import com.tinqinacademy.hotel.operations.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.hotel.services.HotelService;
+import com.tinqinacademy.api.operations.bookroom.BookRoomInput;
+import com.tinqinacademy.api.operations.bookroom.BookRoomOutput;
+import com.tinqinacademy.api.operations.getroom.GetRoomInput;
+import com.tinqinacademy.api.operations.getroom.GetRoomOutput;
+import com.tinqinacademy.api.operations.searchroom.SearchRoomInput;
+import com.tinqinacademy.api.operations.searchroom.SearchRoomOutput;
+import com.tinqinacademy.api.operations.unbookroom.UnbookRoomInput;
+import com.tinqinacademy.api.operations.unbookroom.UnbookRoomOutput;
+import com.tinqinacademy.core.services.HotelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

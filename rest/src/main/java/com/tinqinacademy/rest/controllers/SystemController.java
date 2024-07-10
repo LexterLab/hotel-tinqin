@@ -1,18 +1,19 @@
-package com.tinqinacademy.hotel.controllers;
+package com.tinqinacademy.rest.controllers;
 
-import com.tinqinacademy.hotel.operations.createroom.CreateRoomInput;
-import com.tinqinacademy.hotel.operations.createroom.CreateRoomOutput;
-import com.tinqinacademy.hotel.operations.deleteroom.DeleteRoomInput;
-import com.tinqinacademy.hotel.operations.deleteroom.DeleteRoomOutput;
-import com.tinqinacademy.hotel.operations.getvisitorreport.GetVisitorsReportInput;
-import com.tinqinacademy.hotel.operations.getvisitorreport.GetVisitorsReportOutput;
-import com.tinqinacademy.hotel.operations.partialupdateroom.PartialUpdateRoomInput;
-import com.tinqinacademy.hotel.operations.partialupdateroom.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.operations.registervisitor.RegisterVisitorInput;
-import com.tinqinacademy.hotel.operations.registervisitor.RegisterVisitorOutput;
-import com.tinqinacademy.hotel.operations.updateroom.UpdateRoomInput;
-import com.tinqinacademy.hotel.operations.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.hotel.services.SystemService;
+
+import com.tinqinacademy.api.operations.createroom.CreateRoomInput;
+import com.tinqinacademy.api.operations.createroom.CreateRoomOutput;
+import com.tinqinacademy.api.operations.deleteroom.DeleteRoomInput;
+import com.tinqinacademy.api.operations.deleteroom.DeleteRoomOutput;
+import com.tinqinacademy.api.operations.getvisitorreport.GetVisitorsReportInput;
+import com.tinqinacademy.api.operations.getvisitorreport.GetVisitorsReportOutput;
+import com.tinqinacademy.api.operations.partialupdateroom.PartialUpdateRoomInput;
+import com.tinqinacademy.api.operations.partialupdateroom.PartialUpdateRoomOutput;
+import com.tinqinacademy.api.operations.registervisitor.RegisterVisitorInput;
+import com.tinqinacademy.api.operations.registervisitor.RegisterVisitorOutput;
+import com.tinqinacademy.api.operations.updateroom.UpdateRoomInput;
+import com.tinqinacademy.api.operations.updateroom.UpdateRoomOutput;
+import com.tinqinacademy.core.services.SystemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
