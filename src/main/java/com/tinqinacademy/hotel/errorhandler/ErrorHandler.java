@@ -3,5 +3,5 @@ package com.tinqinacademy.hotel.errorhandler;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public interface ErrorHandler {
-    ErrorOutput handle(MethodArgumentNotValidException exception);
+    ErrorOutput handle(Exception exception);
 }

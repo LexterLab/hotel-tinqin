@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice(basePackageClasses = {HotelController.class, SystemController.class})
 @Slf4j
 @RequiredArgsConstructor
-public class GlobalControllerExceptionHandler {
+public class GlobalExceptionHandler {
     private final ErrorHandler errorHandler;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -26,4 +26,6 @@ public class GlobalControllerExceptionHandler {
 
         return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.BAD_REQUEST);
     }
+
+
 }

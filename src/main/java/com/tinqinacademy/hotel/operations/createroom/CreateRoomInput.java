@@ -4,10 +4,11 @@ import com.tinqinacademy.hotel.models.constants.BathroomType;
 import com.tinqinacademy.hotel.models.constants.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 
-
+@Builder
 public record CreateRoomInput(
         @Schema(example = "2")
         @Min(value = 1, message = "Field bedCount must be minimum 1")
