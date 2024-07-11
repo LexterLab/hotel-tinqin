@@ -8,7 +8,7 @@ import com.tinqinacademy.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.api.operations.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.core.services.HotelService;
+import com.tinqinacademy.api.contracts.HotelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

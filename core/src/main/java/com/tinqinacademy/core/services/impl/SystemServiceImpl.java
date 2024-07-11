@@ -14,7 +14,7 @@ import com.tinqinacademy.api.operations.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.api.operations.visitor.VisitorOutput;
-import com.tinqinacademy.core.services.SystemService;
+import com.tinqinacademy.api.contracts.SystemService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

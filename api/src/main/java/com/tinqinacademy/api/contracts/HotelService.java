@@ -1,4 +1,4 @@
-package com.tinqinacademy.core.services;
+package com.tinqinacademy.api.contracts;
 
 
 import com.tinqinacademy.api.operations.bookroom.BookRoomInput;

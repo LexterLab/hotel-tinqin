@@ -16,6 +16,14 @@
     <name>hotel-api</name>
     <description>hotel-api</description>
 
+    <modules>
+        <module>rest</module>
+        <module>api</module>
+        <module>core</module>
+        <module>persistence</module>
+        <module>domain</module>
+    </modules>
+
     <properties>
         <java.version>21</java.version>
         <revision>0.0.1-SNAPSHOT</revision>
@@ -63,19 +71,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>com.tinqinacademy.rest.RestApplication</mainClass>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
 <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-compiler-plugin</artifactId>-->

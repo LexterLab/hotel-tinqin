@@ -13,7 +13,7 @@ import com.tinqinacademy.api.operations.registervisitor.RegisterVisitorInput;
 import com.tinqinacademy.api.operations.registervisitor.RegisterVisitorOutput;
 import com.tinqinacademy.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.api.operations.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.core.services.SystemService;
+import com.tinqinacademy.api.contracts.SystemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

@@ -11,7 +11,7 @@ import com.tinqinacademy.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.api.operations.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.core.services.HotelService;
+import com.tinqinacademy.api.contracts.HotelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
