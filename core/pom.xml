@@ -15,12 +15,6 @@
     <dependencies>
         <dependency>
             <groupId>${group.id}</groupId>
-            <artifactId>api</artifactId>
-            <version>${module.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${group.id}</groupId>
             <artifactId>persistence</artifactId>
             <version>${module.version}</version>
         </dependency>
