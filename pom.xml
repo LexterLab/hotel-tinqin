@@ -31,7 +31,6 @@
         <swagger.version>2.6.0</swagger.version>
         <lombok.version>1.18.30</lombok.version>
         <group.id>com.tinqinacademy</group.id>
-        <module.version>0.0.1-SNAPSHOT</module.version>
         <jackson.version>2.17.1</jackson.version>
     </properties>
     <dependencies>

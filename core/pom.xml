@@ -10,13 +10,13 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+<!--    <version>0.0.1-SNAPSHOT</version>-->
 
     <dependencies>
         <dependency>
             <groupId>${group.id}</groupId>
             <artifactId>persistence</artifactId>
-            <version>${module.version}</version>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 
