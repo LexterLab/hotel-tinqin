@@ -1,7 +1,9 @@
-package com.tinqinacademy.hotel.rest.controllers;
+package com.tinqinacademy.hotel.rest.exceptionhandlers;
 
 import com.tinqinacademy.hotel.api.contracts.ErrorHandler;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.rest.controllers.HotelController;
+import com.tinqinacademy.hotel.rest.controllers.SystemController;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -14,6 +14,7 @@ import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorOut
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
+import com.tinqinacademy.hotel.rest.utils.PathConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -28,7 +29,6 @@ import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/system")
 @Tag(name = "System REST APIs")
 public class SystemController {
     private final SystemService systemService;
@@ -43,7 +43,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
-    @PostMapping("register")
+    @PostMapping(PathConstants.REGISTER_VISITOR)
     public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input) {
         RegisterVisitorOutput output = systemService.registerVisitor(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
@@ -59,7 +59,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
-    @GetMapping("register")
+    @GetMapping(PathConstants.GET_VISITORS_REPORT)
     public ResponseEntity<GetVisitorsReportOutput> getVisitorsReport(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
@@ -99,7 +99,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
-    @PostMapping("room")
+    @PostMapping(PathConstants.CREATE_ROOM)
     public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
         CreateRoomOutput output = systemService.createRoom(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
@@ -117,7 +117,7 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
-    @PutMapping("room/{roomId}")
+    @PutMapping(PathConstants.UPDATE_ROOM)
     public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable String roomId, @Valid @RequestBody UpdateRoomInput input) {
         UpdateRoomOutput output = systemService.updateRoom(UpdateRoomInput.builder()
                 .roomId(roomId)
@@ -141,7 +141,7 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
-    @PatchMapping("room/{roomId}")
+    @PatchMapping(PathConstants.PARTIAL_UPDATE_ROOM)
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable String roomId,
                                                                      @Valid @RequestBody PartialUpdateRoomInput input) {
         PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
@@ -166,7 +166,7 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
-    @DeleteMapping("room/{roomId}")
+    @DeleteMapping(PathConstants.DELETE_ROOM)
     public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable String roomId) {
         DeleteRoomOutput output = systemService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);

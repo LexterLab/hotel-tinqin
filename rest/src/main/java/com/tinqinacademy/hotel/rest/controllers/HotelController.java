@@ -9,6 +9,7 @@ import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.HotelService;
+import com.tinqinacademy.hotel.rest.utils.PathConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("api/v1/hotel")
 @RequiredArgsConstructor
 @Tag(name = "Hotel REST APIs")
 public class HotelController {
@@ -40,7 +40,7 @@ public class HotelController {
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     }
     )
-    @GetMapping("rooms")
+    @GetMapping(PathConstants.SEARCH_ROOMS)
     public ResponseEntity<SearchRoomOutput> searchRooms(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
@@ -70,7 +70,7 @@ public class HotelController {
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     }
     )
-    @GetMapping("{roomId}")
+    @GetMapping(PathConstants.GET_ROOM_DETAILS)
     public ResponseEntity<GetRoomOutput> getRoomById(@PathVariable String roomId) {
         GetRoomOutput output = hotelService.getRoom(GetRoomInput.builder()
                 .roomId(roomId).build());
@@ -89,7 +89,7 @@ public class HotelController {
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     }
     )
-    @PostMapping("{roomId}")
+    @PostMapping(PathConstants.BOOK_ROOM)
     public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable String roomId , @Valid @RequestBody BookRoomInput input) {
         BookRoomOutput output = hotelService.bookRoom(BookRoomInput.builder()
                 .roomId(roomId)
@@ -115,7 +115,7 @@ public class HotelController {
             @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     }
     )
-    @DeleteMapping("{roomId}")
+    @DeleteMapping(PathConstants.UNBOOK_ROOM)
     public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable String roomId) {
         UnbookRoomOutput output = hotelService.unbookRoom(UnbookRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
