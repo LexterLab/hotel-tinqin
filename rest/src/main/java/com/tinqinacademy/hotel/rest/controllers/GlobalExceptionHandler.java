@@ -27,5 +27,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorOutput> handlesServerErrors(Exception ex, HttpServletRequest request) {
+        log.error("Request {} raised ServerErrors {}", request.getRequestURL(), ex.getMessage());
+        return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 }
