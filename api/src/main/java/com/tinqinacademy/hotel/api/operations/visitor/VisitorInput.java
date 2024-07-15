@@ -38,10 +38,11 @@ public class VisitorInput {
     private String idCardNo;
     @Schema(example = "2024-01-01")
     @Future(message = "Field idCardValidity must be valid")
+    @NotNull(message = "Field idCardValidity should not be null")
     private LocalDate idCardValidity;
     @Schema(example = "Authority")
     @NotBlank(message = "Field idCardIssueAuthority must not be empty")
-    @Size(min = 2, max = 100, message = "Field idCardIssueAuthority must be between 2-100 characters")
+    @Size(min = 2, max = 50, message = "Field idCardIssueAuthority must be between 2-100 characters")
     private String idCardIssueAuthority;
     @Schema(example = "2024-01-01")
     @NotNull(message = "Field idCardIssueDate must not be null")
@@ -49,6 +50,6 @@ public class VisitorInput {
     private LocalDate idCardIssueDate;
     @Schema(example = "201A")
     @NotBlank(message = "Field roomNo must not be empty")
-    @Size(min = 3, max = 5, message = "Field roomNo must be between 3-5 characters")
+    @Size(min = 4, max = 4, message = "Field roomNo must be 4 characters")
     private String roomNo;
 }
