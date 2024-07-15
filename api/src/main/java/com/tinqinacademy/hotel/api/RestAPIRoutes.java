@@ -1,6 +1,6 @@
-package com.tinqinacademy.hotel.rest.utils;
+package com.tinqinacademy.hotel.api;
 
-public class PathConstants {
+public class RestAPIRoutes {
     public static final String ROOT = "/api/v1";
     public static final String HOTEL = ROOT + "/hotel";
     public static final String SYSTEM = ROOT + "/system";

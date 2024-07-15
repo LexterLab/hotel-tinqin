@@ -9,7 +9,7 @@ import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.HotelService;
-import com.tinqinacademy.hotel.rest.utils.PathConstants;
+import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -39,7 +39,7 @@ public class HotelController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST")
     }
     )
-    @GetMapping(PathConstants.SEARCH_ROOMS)
+    @GetMapping(RestAPIRoutes.SEARCH_ROOMS)
     public ResponseEntity<SearchRoomOutput> searchRooms(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
@@ -68,7 +68,7 @@ public class HotelController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
-    @GetMapping(PathConstants.GET_ROOM_DETAILS)
+    @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
     public ResponseEntity<GetRoomOutput> getRoomById(@PathVariable String roomId) {
         GetRoomOutput output = hotelService.getRoom(GetRoomInput.builder()
                 .roomId(roomId).build());
@@ -86,7 +86,7 @@ public class HotelController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
-    @PostMapping(PathConstants.BOOK_ROOM)
+    @PostMapping(RestAPIRoutes.BOOK_ROOM)
     public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable String roomId , @Valid @RequestBody BookRoomInput input) {
         BookRoomOutput output = hotelService.bookRoom(BookRoomInput.builder()
                 .roomId(roomId)
@@ -111,7 +111,7 @@ public class HotelController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
-    @DeleteMapping(PathConstants.UNBOOK_ROOM)
+    @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
     public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable String roomId) {
         UnbookRoomOutput output = hotelService.unbookRoom(UnbookRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);

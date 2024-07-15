@@ -14,7 +14,7 @@ import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorOut
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
-import com.tinqinacademy.hotel.rest.utils.PathConstants;
+import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -42,7 +42,7 @@ public class SystemController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
-    @PostMapping(PathConstants.REGISTER_VISITOR)
+    @PostMapping(RestAPIRoutes.REGISTER_VISITOR)
     public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input) {
         RegisterVisitorOutput output = systemService.registerVisitor(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
@@ -57,7 +57,7 @@ public class SystemController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
-    @GetMapping(PathConstants.GET_VISITORS_REPORT)
+    @GetMapping(RestAPIRoutes.GET_VISITORS_REPORT)
     public ResponseEntity<GetVisitorsReportOutput> getVisitorsReport(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
@@ -96,7 +96,7 @@ public class SystemController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
-    @PostMapping(PathConstants.CREATE_ROOM)
+    @PostMapping(RestAPIRoutes.CREATE_ROOM)
     public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
         CreateRoomOutput output = systemService.createRoom(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
@@ -113,7 +113,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
-    @PutMapping(PathConstants.UPDATE_ROOM)
+    @PutMapping(RestAPIRoutes.UPDATE_ROOM)
     public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable String roomId, @Valid @RequestBody UpdateRoomInput input) {
         UpdateRoomOutput output = systemService.updateRoom(UpdateRoomInput.builder()
                 .roomId(roomId)
@@ -136,7 +136,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
-    @PatchMapping(PathConstants.PARTIAL_UPDATE_ROOM)
+    @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable String roomId,
                                                                      @Valid @RequestBody PartialUpdateRoomInput input) {
         PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
@@ -160,7 +160,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
-    @DeleteMapping(PathConstants.DELETE_ROOM)
+    @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
     public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable String roomId) {
         DeleteRoomOutput output = systemService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
