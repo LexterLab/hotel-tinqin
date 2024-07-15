@@ -14,6 +14,7 @@ public record CreateRoomInput(
         @Schema(example = "2")
         @Min(value = 1, message = "Field bedCount must be minimum 1")
         @Max(value = 10, message = "Field bedCount must be maximum 10")
+        @NotNull(message = "Field bedCount cannot be null")
         Integer bedCount,
         @Schema(example = "single")
         @NotNull(message = "Field bedSize must not be null")
@@ -24,12 +25,14 @@ public record CreateRoomInput(
         @Schema(example = "4")
         @Min(value = 1, message = "Field floor must be minimum 1")
         @Max(value = 10, message = "Field floor must be maximum 12")
+        @NotNull(message = "Field floor cannot be null")
         Integer floor,
         @Schema(example = "201A")
         @NotBlank(message = "Field roomNo must not be empty")
-        @Size(min = 3, max = 5, message = "Field roomNo must be between 3-5 characters")
+        @Size(min = 4, max = 4, message = "Field roomNo must be between 4 characters")
         String roomNo,
         @Schema(example = "20000")
         @PositiveOrZero(message = "Field price must be min 0")
+        @NotNull(message = "Field price cannot be null")
         BigDecimal price
 ) {}
