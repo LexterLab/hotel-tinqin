@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.registervisitor;
 
 import com.tinqinacademy.hotel.api.operations.visitor.VisitorInput;
+import jakarta.validation.Valid;
 import lombok.*;
 
 import java.util.List;
@@ -12,5 +13,6 @@ import java.util.List;
 @ToString
 @Builder
 public class RegisterVisitorInput {
-    List<VisitorInput> visitors;
+   @Valid
+   List<VisitorInput> visitors;
 }
