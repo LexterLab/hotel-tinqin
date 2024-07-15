@@ -36,8 +36,7 @@ public class HotelController {
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
-            @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+            @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST")
     }
     )
     @GetMapping(PathConstants.SEARCH_ROOMS)
@@ -66,8 +65,7 @@ public class HotelController {
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
     @GetMapping(PathConstants.GET_ROOM_DETAILS)
@@ -85,8 +83,7 @@ public class HotelController {
             @ApiResponse(responseCode = "201", description = "HTTP STATUS 201 CREATED"),
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
-            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
     @PostMapping(PathConstants.BOOK_ROOM)
@@ -111,8 +108,7 @@ public class HotelController {
             @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
-            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
     @DeleteMapping(PathConstants.UNBOOK_ROOM)

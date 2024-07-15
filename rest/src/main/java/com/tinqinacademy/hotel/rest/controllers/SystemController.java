@@ -41,7 +41,6 @@ public class SystemController {
             @ApiResponse(responseCode = "201", description = "HTTP STATUS 201 CREATED"),
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @PostMapping(PathConstants.REGISTER_VISITOR)
     public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input) {
@@ -57,7 +56,6 @@ public class SystemController {
             @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @GetMapping(PathConstants.GET_VISITORS_REPORT)
     public ResponseEntity<GetVisitorsReportOutput> getVisitorsReport(
@@ -97,7 +95,6 @@ public class SystemController {
             @ApiResponse(responseCode = "201", description = "HTTP STATUS 201 CREATED"),
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @PostMapping(PathConstants.CREATE_ROOM)
     public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
@@ -115,7 +112,6 @@ public class SystemController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @PutMapping(PathConstants.UPDATE_ROOM)
     public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable String roomId, @Valid @RequestBody UpdateRoomInput input) {
@@ -139,7 +135,6 @@ public class SystemController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
     })
     @PatchMapping(PathConstants.PARTIAL_UPDATE_ROOM)
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable String roomId,
@@ -163,8 +158,7 @@ public class SystemController {
             @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
-            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "HTTP STATUS 500 INTERNAL SERVER ERROR")
+            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
     @DeleteMapping(PathConstants.DELETE_ROOM)
     public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable String roomId) {
