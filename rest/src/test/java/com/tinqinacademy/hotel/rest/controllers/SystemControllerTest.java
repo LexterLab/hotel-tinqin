@@ -1908,4 +1908,12 @@ class SystemControllerTest {
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void shouldRespondWithEmptyObjectAndOKWhenDeletingRoom() throws Exception {
+        mockMvc.perform(delete(RestAPIRoutes.DELETE_ROOM, 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+
+    }
 }
