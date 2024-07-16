@@ -6,6 +6,7 @@ import com.tinqinacademy.hotel.api.models.constants.BathroomType;
 import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorInput;
+import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.visitor.VisitorInput;
 import com.tinqinacademy.hotel.api.operations.visitor.VisitorOutput;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -1328,9 +1328,293 @@ class SystemControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void shouldRespondWithOKAndRoomIdWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(10)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.roomId").isString());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingAboveMaxBedCountWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(11)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingBelowMinBedCountWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(0)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullBedCountWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(null)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullBedSizeWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(null)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullBathroomTypeWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(null)
+                .floor(10)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingAboveMaxFloorWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(11)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingBelowMinFloorWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(0)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullFloorWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(null)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullRoomNoWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(2)
+                .roomNo(null)
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
 
 
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingEmptyRoomNoWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(2)
+                .roomNo("")
+                .price(BigDecimal.valueOf(1))
+                .build();
 
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
 
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingBlankRoomNoWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(2)
+                .roomNo(" ")
+                .price(BigDecimal.valueOf(1))
+                .build();
 
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingAboveMaxRoomNoWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(2)
+                .roomNo("201AA")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingBelowMinRoomNoWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(2)
+                .roomNo("201")
+                .price(BigDecimal.valueOf(1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNegativePriceWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(2)
+                .roomNo("201A")
+                .price(BigDecimal.valueOf(-1))
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNULLPriceWhenUpdatingRoom() throws Exception {
+        UpdateRoomInput input = UpdateRoomInput.builder()
+                .bedCount(1)
+                .bedSize(BedSize.KING_SIZE)
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(2)
+                .roomNo("201A")
+                .price(null)
+                .build();
+
+        mockMvc.perform(put(RestAPIRoutes.UPDATE_ROOM, 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
 }
