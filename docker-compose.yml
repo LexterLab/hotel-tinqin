@@ -1,0 +1,37 @@
+services:
+
+  db:
+    container_name: db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydb
+    networks:
+      hotel:
+
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin_not_used@user.com
+      PGADMIN_DEFAULT_PASSWORD: admin_not_used
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "5050:80"
+    networks:
+      hotel:
+    restart: always
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  hotel:
+
+
+volumes:
+  pgadmin_data:
+  postgres_data:
