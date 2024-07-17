@@ -9,6 +9,8 @@ services:
       POSTGRES_DB: mydb
     networks:
       hotel:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 
   pgadmin:
@@ -26,7 +28,6 @@ services:
     restart: always
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-      - postgres_data:/var/lib/postgresql/data
 
 networks:
   hotel:
