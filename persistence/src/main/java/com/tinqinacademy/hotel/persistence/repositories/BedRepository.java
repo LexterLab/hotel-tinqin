@@ -27,6 +27,11 @@ public class BedRepository implements AliExpressJPARepository<Bed> {
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, bedRowMapper, id));
     }
 
+    @Override
+    public void deleteById(UUID id) {
+
+    }
+
     public Optional<Bed> findByBedSize(BedSize bedSize) {
         String sql = "select * from beds where bed_size = CAST(? AS BED);";
         List<Bed> beds = jdbcTemplate.query(sql, bedRowMapper, bedSize.toString());
