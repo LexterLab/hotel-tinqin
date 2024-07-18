@@ -4,7 +4,6 @@ import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.persistence.mappers.BedRowMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,17 +13,18 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class BedRepository {
+public class BedRepository implements AliExpressJPARepository<Bed> {
     private final JdbcTemplate jdbcTemplate;
     private final BedRowMapper bedRowMapper;
 
+    @Override
     public List<Bed> findAll() {
-        return jdbcTemplate.query("select * from beds", new BeanPropertyRowMapper<>(Bed.class));
+        return jdbcTemplate.query("select * from beds", bedRowMapper);
     }
 
-    public Bed findById(UUID id) {
+    public Optional<Bed> findById(UUID id) {
         String sql = "select * from beds where id = ?";
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Bed.class), id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, bedRowMapper, id));
     }
 
     public Optional<Bed> findByBedSize(BedSize bedSize) {
@@ -33,9 +33,11 @@ public class BedRepository {
         if (beds.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(beds.get(0));
+            return Optional.of(beds.getFirst());
         }
     }
+
+    @Override
     public void save(Bed bed) {
         String sql = "insert into beds (id, bed_size, bed_capacity) values (?, CAST(? AS BED), ?)";
             jdbcTemplate.update(sql, bed.getId(), bed.getBedSize().toString(), bed.getBedCapacity());
