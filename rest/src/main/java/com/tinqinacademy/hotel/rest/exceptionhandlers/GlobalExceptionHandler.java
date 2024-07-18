@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.rest.exceptionhandlers;
 
 import com.tinqinacademy.hotel.api.contracts.ErrorHandler;
+import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.rest.controllers.HotelController;
 import com.tinqinacademy.hotel.rest.controllers.SystemController;
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorOutput> handlesServerErrors(Exception ex, HttpServletRequest request) {
         log.error("Request {} raised ServerErrors {}", request.getRequestURL(), ex.getMessage());
         return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorOutput> handleResourceNotFound(Exception ex, HttpServletRequest request) {
+        log.error("Request {} raised ResourceNotFoundException {}", request.getRequestURL(), ex.getMessage());
+        return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.NOT_FOUND);
     }
 
 
