@@ -40,6 +40,16 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, roomRowMapper, id));
     }
 
+    @Override
+    public void deleteById(UUID id) {
+        String deleteBookingRoomSql = "DELETE FROM bookings WHERE room_id = ?";
+        String deleteRoomBedsSql = "DELETE FROM room_beds WHERE room_id = ?";
+        String deleteRoomSql = "DELETE FROM rooms WHERE id = ?";
+
+        jdbcTemplate.update(deleteBookingRoomSql, id);
+        jdbcTemplate.update(deleteRoomBedsSql, id);
+        jdbcTemplate.update(deleteRoomSql, id);
+    }
 
 
     public void saveRoomBeds(List<Bed> beds, Room room) {
