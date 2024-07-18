@@ -8,17 +8,10 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Builder
-public record CreateRoomInput(
-        @Schema(example = "2")
-        @Min(value = 1, message = "Field bedCount must be minimum 1")
-        @Max(value = 10, message = "Field bedCount must be maximum 10")
-        @NotNull(message = "Field bedCount cannot be null")
-        Integer bedCount,
-        @Schema(example = "single")
-        @NotNull(message = "Field bedSize must not be null")
-        BedSize bedSize,
+public record CreateRoomInput (
         @Schema(example = "private")
         @NotNull(message = "Field bathroomType must not be null")
         BathroomType bathroomType,
@@ -34,5 +27,6 @@ public record CreateRoomInput(
         @Schema(example = "20000")
         @PositiveOrZero(message = "Field price must be min 0")
         @NotNull(message = "Field price cannot be null")
-        BigDecimal price
+        BigDecimal price,
+        List<BedSize> beds
 ) {}
