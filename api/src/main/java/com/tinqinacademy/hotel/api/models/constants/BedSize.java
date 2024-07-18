@@ -3,23 +3,27 @@ package com.tinqinacademy.hotel.api.models.constants;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
+
+@RequiredArgsConstructor
 public enum BedSize {
-    SINGLE("single"),
-    DOUBLE("double"),
-    SMALL_SINGLE("smallSingle"),
-    SMALL_DOUBLE("smallDouble"),
-    KING_SIZE("kingSize"),
-    UNKNOWN("");
+    SINGLE("single", 2),
+    DOUBLE("double", 4),
+    SMALL_SINGLE("smallSingle", 1),
+    SMALL_DOUBLE("smallDouble", 2),
+    KING_SIZE("kingSize", 15),
+    UNKNOWN("", 0);
 
 
     private final String code;
+    @Getter
+    private final Integer capacity;
 
-    BedSize(String code) {
-        this.code = code;
-    }
+
 
     @JsonCreator
     public static BedSize getByCode(String code) {
