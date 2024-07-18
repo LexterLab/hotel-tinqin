@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -161,7 +162,7 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
-    public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable String roomId) {
+    public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable UUID roomId) {
         DeleteRoomOutput output = systemService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }

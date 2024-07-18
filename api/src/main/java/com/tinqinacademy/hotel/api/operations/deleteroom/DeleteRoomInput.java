@@ -1,7 +1,8 @@
 package com.tinqinacademy.hotel.api.operations.deleteroom;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -10,6 +11,5 @@ import lombok.*;
 @Builder
 @ToString
 public class DeleteRoomInput {
-    @Schema(example = "UUID")
-    private String roomId;
+    private UUID roomId;
 }
