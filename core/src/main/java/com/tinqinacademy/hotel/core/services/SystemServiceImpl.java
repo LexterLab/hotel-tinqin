@@ -1,6 +1,8 @@
 package com.tinqinacademy.hotel.core.services;
 
 
+import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
+import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
@@ -15,14 +17,27 @@ import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.visitor.VisitorOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
+import com.tinqinacademy.hotel.persistence.models.bed.Bed;
+import com.tinqinacademy.hotel.persistence.models.room.Room;
+
+import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
+import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SystemServiceImpl implements SystemService {
+    private final RoomRepository roomRepository;
+    private final BedRepository bedRepository;
+
     @Override
     public RegisterVisitorOutput registerVisitor(RegisterVisitorInput input) {
         log.info("Start registerVisitor {}", input);
@@ -59,12 +74,36 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Transactional
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
-        CreateRoomOutput output = CreateRoomOutput.builder().
-                roomId(input.roomNo())
+        List<Bed> roomBeds = new ArrayList<>();
+
+        for (BedSize size : input.beds()) {
+            Bed bed = bedRepository.findByBedSize(size)
+                    .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
+            roomBeds.add(bed);
+        }
+
+        Room room = Room.builder()
+                .id(UUID.randomUUID())
+                .roomNo(input.roomNo())
+                .floor(input.floor())
+                .price(input.price())
+                .bathroomType(input.bathroomType())
+                .beds(roomBeds)
                 .build();
+
+
+
+        roomRepository.save(room);
+        roomRepository.saveRoomBeds(roomBeds, room);
+
+        CreateRoomOutput output = CreateRoomOutput.builder()
+                .roomId(room.getId().toString())
+                .build();
+
         log.info("End createRoom {}", output);
         return output;
     }
