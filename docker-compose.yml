@@ -1,5 +1,6 @@
-services:
+version: '3.8'
 
+services:
   db:
     container_name: db
     image: postgres
@@ -7,11 +8,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: mydb
+    ports:
+      - "5433:5432"
     networks:
-      hotel:
+      - hotel
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
 
   pgadmin:
     container_name: pgadmin
@@ -24,14 +26,13 @@ services:
     ports:
       - "5050:80"
     networks:
-      hotel:
+      - hotel
     restart: always
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 
 networks:
   hotel:
-
 
 volumes:
   pgadmin_data:
