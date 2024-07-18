@@ -131,6 +131,7 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
         log.info("Start deleteRoom {}", input);
+        roomRepository.deleteById(input.getRoomId());
         DeleteRoomOutput output = DeleteRoomOutput.builder().build();
         log.info("End deleteRoom {}", output);
         return output;
