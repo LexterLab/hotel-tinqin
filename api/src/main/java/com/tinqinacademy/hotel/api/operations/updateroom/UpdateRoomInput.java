@@ -8,6 +8,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,27 +19,23 @@ import java.math.BigDecimal;
 @ToString
 public class UpdateRoomInput {
     @JsonIgnore
-    private String roomId;
-    @Schema(example = "2")
-    @Min(value = 1, message = "Field bedCount must be minimum 1")
-    @Max(value = 10, message = "Field bedCount must be maximum 10")
-    @NotNull(message = "Field bedCount cannot be null")
-    private Integer bedCount;
-    @Schema(example = "single")
-    @NotNull(message = "Field bedSize must not be null")
-    private BedSize bedSize;
+    private UUID roomId;
+    private List<BedSize> beds;
     @Schema(example = "private")
     @NotNull(message = "Field bathroomType must not be null")
     private BathroomType bathroomType;
+
     @Schema(example = "4")
     @Min(value = 1, message = "Field floor must be minimum 1")
     @Max(value = 10, message = "Field floor must be maximum 12")
     @NotNull(message = "Field floor cannot be null")
     private Integer floor;
+
     @Schema(example = "201A")
     @NotBlank(message = "Field roomNo must not be empty")
     @Size(min = 4, max = 4, message = "Field roomNo must be 4 characters")
     private String roomNo;
+
     @Schema(example = "20000")
     @PositiveOrZero(message = "Field price must be min 0")
     @NotNull(message = "Field price cannot be null")
