@@ -15,7 +15,7 @@ public class RoomRowMapper implements RowMapper<Room> {
     public Room mapRow(ResultSet rs, int rowNum) throws SQLException {
         Room room = Room.builder()
                 .id(UUID.fromString(rs.getString("id")))
-                .roomNo(rs.getString("roomNo"))
+                .roomNo(rs.getString("room_no"))
                 .bathroomType(BathroomType.getByCode(rs.getString("room_bathroom_type")))
                 .floor(rs.getInt("floor"))
                 .price(rs.getBigDecimal("price"))
