@@ -12,10 +12,9 @@ import java.util.UUID;
 @ToString
 public class User {
     private UUID id;
-    private String username;
     private String password;
     private String email;
-    private String phone;
+    private String phoneNo;
     private String firstName;
     private String lastName;
 }
