@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.rest.exceptionhandlers;
 
 import com.tinqinacademy.hotel.api.contracts.ErrorHandler;
+import com.tinqinacademy.hotel.api.exceptions.EmailAlreadyExistsException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.rest.controllers.HotelController;
@@ -41,6 +42,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorOutput> handleResourceNotFound(Exception ex, HttpServletRequest request) {
         log.error("Request {} raised ResourceNotFoundException {}", request.getRequestURL(), ex.getMessage());
         return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorOutput> handleEmailAlreadyExists(Exception ex, HttpServletRequest request) {
+        log.error("Request {} raised EmailAlreadyExists {}", request.getRequestURL(), ex.getMessage());
+        return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.BAD_REQUEST);
     }
 
 
