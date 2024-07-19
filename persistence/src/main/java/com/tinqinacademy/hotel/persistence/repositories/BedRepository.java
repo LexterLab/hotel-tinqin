@@ -32,6 +32,16 @@ public class BedRepository implements AliExpressJPARepository<Bed> {
 
     }
 
+    @Override
+    public void updateById(UUID id, Bed bed) {
+
+    }
+
+    @Override
+    public void saveAll(List<Bed> beds) {
+
+    }
+
     public Optional<Bed> findByBedSize(BedSize bedSize) {
         String sql = "select * from beds where bed_size = CAST(? AS BED);";
         List<Bed> beds = jdbcTemplate.query(sql, bedRowMapper, bedSize.toString());

@@ -4,7 +4,9 @@ import com.tinqinacademy.hotel.persistence.mappers.RoomRowMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,14 +33,15 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
 
     @Override
     public Optional<Room> findById(UUID id) {
-        String sql = "SELECT * FROM rooms WHERE id = ?";
-//        List<Room> rooms = jdbcTemplate.query(sql, roomRowMapper, id);
-//
-//        if (!rooms.isEmpty()) {
-//            return Optional.of(rooms.getFirst());
-//        }
-        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, roomRowMapper, id));
-    }
+            String sql = "SELECT * FROM rooms WHERE id = ?";
+            try {
+                Room room = jdbcTemplate.queryForObject(sql, new Object[]{id}, roomRowMapper);
+                return Optional.ofNullable(room);
+            } catch (EmptyResultDataAccessException e) {
+                return Optional.empty();
+            }
+        }
+
 
     @Override
     public void deleteById(UUID id) {
@@ -51,6 +54,19 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
         jdbcTemplate.update(deleteRoomSql, id);
     }
 
+    @Override
+    public void updateById(UUID id, Room room) {
+        String sql = "UPDATE rooms SET room_no = ?, room_bathroom_type = CAST(? AS BATHROOM_TYPE), floor = ?, price = ? WHERE id = ?";
+        jdbcTemplate.update(sql, room.getRoomNo(), room.getBathroomType().toString(), room.getFloor(),
+                room.getPrice(), id);
+    }
+
+    @Override
+    public void saveAll(List<Room> rooms) {
+
+
+    }
+
 
     public void saveRoomBeds(List<Bed> beds, Room room) {
         for (Bed bed : beds) {
@@ -58,6 +74,20 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
                     "VALUES (?, ?)";
             jdbcTemplate.update(sql, bed.getId(), room.getId());
         }
+    }
+
+    public void updateRoomBeds(List<Bed> beds, Room room) {
+        for (Bed bed : beds) {
+            String sql = "UPDATE room_beds SET bed_id = ? WHERE room_id = ? ";
+            jdbcTemplate.update(sql, bed.getId(), room.getId());
+        }
+    }
+
+    private final RowMapper<UUID> uuidRowMapper = (rs, rowNum) -> UUID.fromString(rs.getString("bed_id"));
+
+    public List<UUID> findRoomBeds(Room room) {
+        String sql = "SELECT bed_id FROM room_beds WHERE room_id = ?";
+        return jdbcTemplate.query(sql, new Object[]{room.getId()}, uuidRowMapper);
     }
 
 }

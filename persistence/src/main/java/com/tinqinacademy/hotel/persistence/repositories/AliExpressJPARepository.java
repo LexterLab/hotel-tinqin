@@ -9,4 +9,6 @@ public interface AliExpressJPARepository<T> {
     List<T> findAll();
     Optional<T> findById(UUID id);
     void deleteById(UUID id);
+    void updateById(UUID id, T t);
+    void saveAll(List<T> ts);
 }
