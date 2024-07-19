@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Builder
 @Setter
 @ToString
-public class VisitorInput {
+public class GuestInput {
     @Schema(example = "2025-01-01")
     @FutureOrPresent(message = "Field startDate must be future or present")
     @NotNull(message = "Field startDate should not be null")
@@ -36,7 +36,7 @@ public class VisitorInput {
     @Schema(example = "3232 3232 3232 3232")
     @NotBlank(message = "field idCardNo must not be empty")
     private String idCardNo;
-    @Schema(example = "2024-01-01")
+    @Schema(example = "2025-01-01")
     @Future(message = "Field idCardValidity must be valid")
     @NotNull(message = "Field idCardValidity should not be null")
     private LocalDate idCardValidity;
@@ -44,7 +44,7 @@ public class VisitorInput {
     @NotBlank(message = "Field idCardIssueAuthority must not be empty")
     @Size(min = 2, max = 50, message = "Field idCardIssueAuthority must be between 2-100 characters")
     private String idCardIssueAuthority;
-    @Schema(example = "2024-01-01")
+    @Schema(example = "2025-01-01")
     @NotNull(message = "Field idCardIssueDate must not be null")
     @PastOrPresent(message = "Field idCardIssueDate must be past or present")
     private LocalDate idCardIssueDate;

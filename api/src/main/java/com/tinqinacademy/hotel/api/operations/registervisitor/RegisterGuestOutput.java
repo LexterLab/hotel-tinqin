@@ -9,5 +9,5 @@ import lombok.ToString;
 @Builder
 @Getter
 @Setter
-public class RegisterVisitorOutput {
+public class RegisterGuestOutput {
 }

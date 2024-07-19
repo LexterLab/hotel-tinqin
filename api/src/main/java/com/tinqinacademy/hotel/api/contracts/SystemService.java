@@ -9,13 +9,13 @@ import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReport
 import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReportOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorInput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorOutput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 
 public interface SystemService {
-    RegisterVisitorOutput registerVisitor(RegisterVisitorInput input);
+    RegisterGuestOutput registerVisitor(RegisterGuestInput input);
     GetVisitorsReportOutput getVisitorsReport(GetVisitorsReportInput input);
     CreateRoomOutput createRoom(CreateRoomInput input);
     UpdateRoomOutput updateRoom(UpdateRoomInput input);

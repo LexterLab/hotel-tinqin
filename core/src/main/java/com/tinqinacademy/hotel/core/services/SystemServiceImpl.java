@@ -11,18 +11,20 @@ import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReport
 import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReportOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorInput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorOutput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.visitor.VisitorOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
+import com.tinqinacademy.hotel.core.mappers.GuestMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
+import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
+import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,12 +38,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SystemServiceImpl implements SystemService {
     private final RoomRepository roomRepository;
+    private final GuestRepository guestRepository;
     private final BedRepository bedRepository;
 
     @Override
-    public RegisterVisitorOutput registerVisitor(RegisterVisitorInput input) {
+    public RegisterGuestOutput registerVisitor(RegisterGuestInput input) {
         log.info("Start registerVisitor {}", input);
-        RegisterVisitorOutput output = RegisterVisitorOutput.builder().build();
+
+        List<Guest> guests = GuestMapper.INSTANCE.guestInputToGuestList(input.getGuests());
+        guestRepository.saveAll(guests);
+
+        RegisterGuestOutput output = RegisterGuestOutput.builder().build();
         log.info("End registerVisitor {}", output);
         return output;
     }
@@ -74,7 +81,6 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    @Transactional
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
@@ -111,6 +117,39 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
         log.info("Start updateRoom {}", input);
+
+        Room room = roomRepository.findById(input.getRoomId())
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
+//
+//        List<UUID> bedUUIDS = roomRepository.findRoomBeds(room);
+//
+//        List<Bed> updatedBeds = new ArrayList<>();
+//        List<Bed> roomBeds = new ArrayList<>();
+//
+//        for (BedSize size : input.getBeds()) {
+//            Bed bed = bedRepository.findByBedSize(size)
+//                    .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
+//
+//            if (!bedUUIDS.contains(bed.getId())) {
+//                roomBeds.add(bed);
+//                roomRepository.saveRoomBeds(roomBeds, room);
+//            } else {
+//            updatedBeds.add(bed);
+//            }
+//        }
+
+        Room updatedRoom = Room
+                .builder()
+                .roomNo(input.getRoomNo())
+                .floor(input.getFloor())
+                .price(input.getPrice())
+                .bathroomType(input.getBathroomType())
+                .build();
+
+        roomRepository.updateById(room.getId(), updatedRoom);
+//        roomRepository.updateRoomBeds(updatedBeds, room);
+
+
         UpdateRoomOutput output = UpdateRoomOutput.builder()
                 .roomId(input.getRoomId())
                 .build();
@@ -121,6 +160,20 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) {
         log.info("Start partialUpdateRoom {}", input);
+
+        Room room = roomRepository.findById(input.getRoomId())
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
+
+        Room updatedRoom = Room
+                .builder()
+                .roomNo(input.getRoomNo())
+                .floor(input.getFloor())
+                .price(input.getPrice())
+                .bathroomType(input.getBathroomType())
+                .build();
+
+        roomRepository.updateById(room.getId(), updatedRoom);
+
         PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
                 .roomId(input.getRoomId())
                 .build();
@@ -136,6 +189,4 @@ public class SystemServiceImpl implements SystemService {
         log.info("End deleteRoom {}", output);
         return output;
     }
-
-
 }
