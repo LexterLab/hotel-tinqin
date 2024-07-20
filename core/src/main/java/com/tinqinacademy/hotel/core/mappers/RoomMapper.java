@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.core.mappers;
 
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
+import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -13,4 +14,7 @@ public interface RoomMapper {
 
     @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())")
     Room createRoomInputToRoom(CreateRoomInput room);
+
+    @Mapping(target = "id", source = "roomId")
+    Room updateRoomInputToRoom(UpdateRoomInput room);
 }

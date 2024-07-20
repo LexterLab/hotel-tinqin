@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -117,34 +116,23 @@ public class SystemServiceImpl implements SystemService {
 
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
-//
-//        List<UUID> bedUUIDS = roomRepository.findRoomBeds(room);
-//
-//        List<Bed> updatedBeds = new ArrayList<>();
-//        List<Bed> roomBeds = new ArrayList<>();
-//
-//        for (BedSize size : input.getBeds()) {
-//            Bed bed = bedRepository.findByBedSize(size)
-//                    .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
-//
-//            if (!bedUUIDS.contains(bed.getId())) {
-//                roomBeds.add(bed);
-//                roomRepository.saveRoomBeds(roomBeds, room);
-//            } else {
-//            updatedBeds.add(bed);
-//            }
-//        }
 
-        Room updatedRoom = Room
-                .builder()
-                .roomNo(input.getRoomNo())
-                .floor(input.getFloor())
-                .price(input.getPrice())
-                .bathroomType(input.getBathroomType())
-                .build();
+        if (roomRepository.existsRoomNo(input.getRoomNo()) && !room.getRoomNo().equals(input.getRoomNo())) {
+            throw new RoomNoAlreadyExistsException(input.getRoomNo());
+        }
+
+        List<Bed> roomBeds = new ArrayList<>();
+
+        for (BedSize size : input.getBeds()) {
+            Bed bed = bedRepository.findByBedSize(size)
+                    .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
+            roomBeds.add(bed);
+        }
+
+        Room updatedRoom = RoomMapper.INSTANCE.updateRoomInputToRoom(input);
 
         roomRepository.updateById(room.getId(), updatedRoom);
-//        roomRepository.updateRoomBeds(updatedBeds, room);
+        roomRepository.updateRoomBeds(roomBeds, room);
 
 
         UpdateRoomOutput output = UpdateRoomOutput.builder()

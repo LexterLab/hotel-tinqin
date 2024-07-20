@@ -9,8 +9,8 @@ import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReport
 import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReportOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorInput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterVisitorOutput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
@@ -44,8 +44,8 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.REGISTER_VISITOR)
-    public ResponseEntity<RegisterVisitorOutput> register(@Valid @RequestBody RegisterVisitorInput input) {
-        RegisterVisitorOutput output = systemService.registerVisitor(input);
+    public ResponseEntity<RegisterGuestOutput> register(@Valid @RequestBody RegisterGuestInput input) {
+        RegisterGuestOutput output = systemService.registerVisitor(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
@@ -115,12 +115,12 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PutMapping(RestAPIRoutes.UPDATE_ROOM)
-    public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable String roomId, @Valid @RequestBody UpdateRoomInput input) {
+    public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable UUID roomId, @Valid @RequestBody UpdateRoomInput input) {
         UpdateRoomOutput output = systemService.updateRoom(UpdateRoomInput.builder()
                 .roomId(roomId)
-                .bedCount(input.getBedCount())
                 .bathroomType(input.getBathroomType())
                 .floor(input.getFloor())
+                .beds(input.getBeds())
                 .roomNo(input.getRoomNo())
                 .price(input.getPrice())
                 .build());
@@ -138,7 +138,7 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
-    public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable String roomId,
+    public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable UUID roomId,
                                                                      @Valid @RequestBody PartialUpdateRoomInput input) {
         PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
                 .roomId(roomId)

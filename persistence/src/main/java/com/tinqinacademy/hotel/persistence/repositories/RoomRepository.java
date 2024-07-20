@@ -74,8 +74,10 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
     }
 
     public void updateRoomBeds(List<Bed> beds, Room room) {
+        String deleteSql = "DELETE FROM room_beds WHERE room_id = ?";
+        jdbcTemplate.update(deleteSql, room.getId());
         for (Bed bed : beds) {
-            String sql = "UPDATE room_beds SET bed_id = ? WHERE room_id = ? ";
+            String sql = "INSERT INTO room_beds (bed_id, room_id) VALUES (?, ?)";
             jdbcTemplate.update(sql, bed.getId(), room.getId());
         }
     }
