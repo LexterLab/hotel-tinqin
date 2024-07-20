@@ -48,6 +48,11 @@ public class UserRepository implements AliExpressJPARepository<User> {
 
     }
 
+    @Override
+    public void patchById(UUID id, User user) {
+
+    }
+
     public boolean existByEmail(String email) {
         String sql = "select count(*) from users where email = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, email);

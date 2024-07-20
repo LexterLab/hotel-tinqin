@@ -55,6 +55,11 @@ public class BookingRepository implements AliExpressJPARepository<Booking> {
 
     }
 
+    @Override
+    public void patchById(UUID id, Booking booking) {
+
+    }
+
     public boolean existByDates(LocalDateTime startDate, LocalDateTime endDate, UUID roomId) {
         String sql = "SELECT COUNT(*) FROM bookings WHERE room_id = ? AND ((start_date = ? AND end_date = ?)" +
                 " OR (start_date BETWEEN ? AND ?)"

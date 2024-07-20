@@ -11,4 +11,5 @@ public interface AliExpressJPARepository<T> {
     void deleteById(UUID id);
     void updateById(UUID id, T t);
     void saveAll(List<T> ts);
+    void patchById(UUID id, T t);
 }

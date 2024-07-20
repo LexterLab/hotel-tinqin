@@ -64,6 +64,11 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
     @Override
     public void saveAll(List<Room> rooms) {}
 
+    @Override
+    public void patchById(UUID id, Room room) {
+
+    }
+
 
     public void saveRoomBeds(List<Bed> beds, Room room) {
         for (Bed bed : beds) {
