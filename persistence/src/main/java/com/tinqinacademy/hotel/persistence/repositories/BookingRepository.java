@@ -36,12 +36,13 @@ public class BookingRepository implements AliExpressJPARepository<Booking> {
 
     @Override
     public Optional<Booking> findById(UUID id) {
-        return Optional.empty();
+        String sql = "SELECT * FROM bookings WHERE id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, bookingRowMapper, id));
     }
 
     @Override
     public void deleteById(UUID id) {
-
+        jdbcTemplate.update("DELETE FROM bookings WHERE id = ?", id);
     }
 
     @Override
@@ -111,6 +112,17 @@ public class BookingRepository implements AliExpressJPARepository<Booking> {
         List<List<LocalDateTime>> result = jdbcTemplate.query(sql.toString(), new Object[]{roomId}, bookingDatesRowMapper);
 
         return result.stream().flatMap(List::stream).collect(Collectors.toSet());
+    }
+
+    public Optional<Booking> findLatestByRoomId(UUID roomId, UUID userId) {
+        String sql = "SELECT b.id, b.start_date, b.end_date, b.room_id, b.user_id " +
+                "FROM bookings b " +
+                "WHERE b.room_id = ? " +
+                "AND b.user_id = ? " +
+                "ORDER BY b.start_date DESC " +
+                "LIMIT 1";
+
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new Object[]{roomId, userId}, bookingRowMapper));
     }
 
 }
