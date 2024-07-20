@@ -15,19 +15,25 @@ import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.HotelService;
 
+import com.tinqinacademy.hotel.core.mappers.BedMapper;
 import com.tinqinacademy.hotel.core.mappers.BookingMapper;
+import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 
+import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +44,7 @@ public class HotelServiceImpl implements HotelService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final BedRepository bedRepository;
 
     @Override
     public SearchRoomOutput searchRoom(SearchRoomInput input) {
@@ -53,16 +60,35 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
+    @Transactional
     public GetRoomOutput getRoom(GetRoomInput input) {
         log.info("Start getRoom {}", input);
+        Room room = roomRepository.findById(input.getRoomId())
+                        .orElseThrow(() -> new ResourceNotFoundException("room", "id", input.getRoomId().toString()));
+
+        List<UUID> roomBedsIds = roomRepository.findRoomBedIds(room);
+
+        List<Bed> beds = new ArrayList<>();
+
+        for (UUID id : roomBedsIds) {
+            Bed bed = bedRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("bed", "id", id.toString()));
+            beds.add(bed);
+        }
+
+        List<LocalDateTime> datesOccupied = bookingRepository.findAllDatesOccupiedByRoomId(room.getId())
+                .stream().toList();
+
+
         GetRoomOutput output = GetRoomOutput.builder()
-                .id(input.getRoomId())
-                .price(BigDecimal.valueOf(23232))
-                .floor(4)
-                .bedSize(BedSize.KING_SIZE)
-                .bathroomType(BathroomType.PRIVATE)
-                .datesOccupied(List.of(LocalDate.now()))
+                .id(room.getId())
+                .price(room.getPrice())
+                .floor(room.getFloor())
+                .beds(BedMapper.INSTANCE.bedsToBedOutputs(beds))
+                .bathroomType(room.getBathroomType())
+                .datesOccupied(datesOccupied)
                 .build();
+
         log.info("End getRoom {}", output);
         return output;
     }
