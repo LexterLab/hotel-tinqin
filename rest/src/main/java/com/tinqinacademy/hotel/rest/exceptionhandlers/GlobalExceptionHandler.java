@@ -1,9 +1,7 @@
 package com.tinqinacademy.hotel.rest.exceptionhandlers;
 
 import com.tinqinacademy.hotel.api.contracts.ErrorHandler;
-import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
-import com.tinqinacademy.hotel.api.exceptions.EmailAlreadyExistsException;
-import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
+import com.tinqinacademy.hotel.api.exceptions.*;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.rest.controllers.HotelController;
 import com.tinqinacademy.hotel.rest.controllers.SystemController;
@@ -58,4 +56,19 @@ public class GlobalExceptionHandler {
         log.error("Request {} raised BookingDateNotAvailableException {}", request.getRequestURL(), ex.getMessage());
         return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AlreadyFinishedVisitException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorOutput> handleAlreadyFinishedVisitException(Exception e, HttpServletRequest request) {
+        log.error("Request {} raised AlreadyFinishedVisitException {}", request.getRequestURL(), e.getMessage());
+        return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AlreadyStartedVisitException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorOutput> handleAlreadyStartedVisitException(Exception e, HttpServletRequest request) {
+        log.error("Request {} raised AlreadyStartedVisitException {}", request.getRequestURL(), e.getMessage());
+        return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.BAD_REQUEST);
+    }
+
 }
