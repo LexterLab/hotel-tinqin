@@ -1,10 +1,10 @@
 package com.tinqinacademy.hotel.core.services;
 
 
+import com.tinqinacademy.hotel.api.exceptions.AlreadyFinishedVisitException;
+import com.tinqinacademy.hotel.api.exceptions.AlreadyStartedVisitException;
 import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
@@ -24,14 +24,11 @@ import com.tinqinacademy.hotel.persistence.models.room.Room;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
-import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +39,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final BedRepository bedRepository;
 
@@ -116,6 +112,19 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public UnbookRoomOutput unbookRoom(UnbookRoomInput input) {
         log.info("Start unbookRoom {}", input);
+
+        Booking booking = bookingRepository.findLatestByRoomId(input.getRoomId(), input.getUserId())
+                        .orElseThrow(() -> new ResourceNotFoundException("booking", "roomId & userId",
+                                input.getRoomId().toString()));
+
+        if (LocalDateTime.now().isAfter(booking.getEndDate())) {
+            throw new AlreadyFinishedVisitException();
+        } else if (LocalDateTime.now().isAfter(booking.getStartDate())) {
+            throw new AlreadyStartedVisitException();
+        }
+
+        bookingRepository.deleteById(booking.getId());
+
         UnbookRoomOutput output = UnbookRoomOutput.builder().build();
         log.info("End unbookRoom {}", output);
         return output;
