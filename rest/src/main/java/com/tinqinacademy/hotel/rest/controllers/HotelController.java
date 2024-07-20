@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -117,8 +116,13 @@ public class HotelController {
     }
     )
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
-    public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable String roomId) {
-        UnbookRoomOutput output = hotelService.unbookRoom(UnbookRoomInput.builder().roomId(roomId).build());
+    public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable UUID roomId,
+                                                       @Valid @RequestBody UnbookRoomInput input) {
+        UnbookRoomOutput output = hotelService.unbookRoom(UnbookRoomInput
+                .builder()
+                .roomId(roomId)
+                .userId(input.getUserId())
+                .build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 }
