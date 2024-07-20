@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.rest.exceptionhandlers;
 
 import com.tinqinacademy.hotel.api.contracts.ErrorHandler;
+import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.EmailAlreadyExistsException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
@@ -51,5 +52,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.BAD_REQUEST);
     }
 
-
+    @ExceptionHandler(BookingDateNotAvailableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorOutput> handleBookingDateNotAvailable(Exception ex, HttpServletRequest request) {
+        log.error("Request {} raised BookingDateNotAvailableException {}", request.getRequestURL(), ex.getMessage());
+        return new ResponseEntity<>(errorHandler.handle(ex), HttpStatus.BAD_REQUEST);
+    }
 }
