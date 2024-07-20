@@ -1,5 +1,7 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
+import com.tinqinacademy.hotel.api.models.constants.BathroomType;
+import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -42,16 +45,16 @@ public class HotelController {
     )
     @GetMapping(RestAPIRoutes.SEARCH_ROOMS)
     public ResponseEntity<SearchRoomOutput> searchRooms(
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
-            @RequestParam(required = false, defaultValue = "4") Integer bedCount,
-            @RequestParam(required = false, defaultValue = "single") String bedSize,
-            @RequestParam(required = false, defaultValue = "shared") String bathroomType
+            @RequestParam()  LocalDateTime startDate,
+            @RequestParam() LocalDateTime endDate,
+            @RequestParam(required = false, defaultValue = "2") Integer bedCount,
+            @RequestParam(required = false) String bedSize,
+            @RequestParam(required = false) String bathroomType
             ) {
         SearchRoomOutput output = hotelService.searchRoom(
                 SearchRoomInput.builder()
-                        .bathroomType(bathroomType)
-                        .bedSize(bedSize)
+                        .bathroomType(BathroomType.getByCode(bathroomType))
+                        .bedSize(BedSize.getByCode(bedSize))
                         .endDate(endDate)
                         .startDate(startDate)
                         .bedCount(bedCount)

@@ -42,12 +42,12 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public SearchRoomOutput searchRoom(SearchRoomInput input) {
         log.info("Start searchRoom {}", input);
-        List<String> roomIds = List.of("2", "3", "4", "5", "6", "7", "8", "9");
 
+        List<UUID> availableRoomIds = bookingRepository.searchForAvailableRooms(input);
 
 
         SearchRoomOutput searchRoomOutput = SearchRoomOutput.builder()
-                .roomIds(roomIds).build();
+                .roomIds(availableRoomIds).build();
         log.info("End searchRoom {}", searchRoomOutput);
         return searchRoomOutput;
     }
