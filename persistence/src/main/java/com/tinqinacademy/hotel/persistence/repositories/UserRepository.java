@@ -48,12 +48,6 @@ public class UserRepository implements AliExpressJPARepository<User> {
 
     }
 
-    public boolean existByUsername(String username) {
-        String sql = "select count(*) from users where username = ?";
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, username);
-        return count > 0;
-    }
-
     public boolean existByEmail(String email) {
         String sql = "select count(*) from users where email = ?";
         Long count = jdbcTemplate.queryForObject(sql, Long.class, email);
