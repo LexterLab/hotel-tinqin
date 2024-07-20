@@ -2,6 +2,7 @@ package com.tinqinacademy.hotel.core.services;
 
 
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
+import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
@@ -18,6 +19,7 @@ import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.visitor.VisitorOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
 import com.tinqinacademy.hotel.core.mappers.GuestMapper;
+import com.tinqinacademy.hotel.core.mappers.RoomMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
@@ -84,6 +86,10 @@ public class SystemServiceImpl implements SystemService {
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
+        if (roomRepository.existsRoomNo(input.roomNo())) {
+            throw new RoomNoAlreadyExistsException(input.roomNo());
+        }
+
         List<Bed> roomBeds = new ArrayList<>();
 
         for (BedSize size : input.beds()) {
@@ -92,16 +98,7 @@ public class SystemServiceImpl implements SystemService {
             roomBeds.add(bed);
         }
 
-        Room room = Room.builder()
-                .id(UUID.randomUUID())
-                .roomNo(input.roomNo())
-                .floor(input.floor())
-                .price(input.price())
-                .bathroomType(input.bathroomType())
-                .beds(roomBeds)
-                .build();
-
-
+        Room room = RoomMapper.INSTANCE.createRoomInputToRoom(input);
 
         roomRepository.save(room);
         roomRepository.saveRoomBeds(roomBeds, room);

@@ -5,4 +5,5 @@ public class Messages {
     public static final String DATE_NOT_AVAILABLE = "Date not available";
     public static final String VISIT_ALREADY_FINISHED = "Visit already finished";
     public static final String VISIT_ALREADY_STARTED = "Visit already started";
+    public static final String ROOM_NO_ALREADY_EXISTS = "Room number %s already exists";
 }
