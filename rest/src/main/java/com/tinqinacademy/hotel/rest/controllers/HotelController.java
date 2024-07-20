@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -87,7 +88,7 @@ public class HotelController {
     }
     )
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
-    public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable String roomId , @Valid @RequestBody BookRoomInput input) {
+    public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable UUID roomId , @Valid @RequestBody BookRoomInput input) {
         BookRoomOutput output = hotelService.bookRoom(BookRoomInput.builder()
                 .roomId(roomId)
                 .startDate(input.getStartDate())
@@ -95,6 +96,7 @@ public class HotelController {
                 .firstName(input.getFirstName())
                 .lastName(input.getLastName())
                 .phoneNo(input.getPhoneNo())
+                .userId(input.getUserId())
                 .build());
 
         return new ResponseEntity<>(output, HttpStatus.CREATED);
