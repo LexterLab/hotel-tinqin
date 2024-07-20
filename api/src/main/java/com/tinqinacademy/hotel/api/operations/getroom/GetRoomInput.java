@@ -2,6 +2,8 @@ package com.tinqinacademy.hotel.api.operations.getroom;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -9,5 +11,5 @@ import lombok.*;
 @Getter
 @ToString
 public class GetRoomInput {
-    private String roomId;
+    private UUID roomId;
 }
