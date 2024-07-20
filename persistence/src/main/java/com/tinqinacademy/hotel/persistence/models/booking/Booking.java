@@ -1,7 +1,5 @@
 package com.tinqinacademy.hotel.persistence.models.booking;
 
-import com.tinqinacademy.hotel.persistence.models.room.Room;
-import com.tinqinacademy.hotel.persistence.models.user.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +15,7 @@ public class Booking {
     private UUID id;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private Room room;
-    private User user;
+    private UUID roomId;
+    private UUID userId;
 
 }
