@@ -62,10 +62,7 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
     }
 
     @Override
-    public void saveAll(List<Room> rooms) {
-
-
-    }
+    public void saveAll(List<Room> rooms) {}
 
 
     public void saveRoomBeds(List<Bed> beds, Room room) {
@@ -85,9 +82,10 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
 
     private final RowMapper<UUID> uuidRowMapper = (rs, rowNum) -> UUID.fromString(rs.getString("bed_id"));
 
-    public List<UUID> findRoomBeds(Room room) {
+    public List<UUID> findRoomBedIds(Room room) {
         String sql = "SELECT bed_id FROM room_beds WHERE room_id = ?";
         return jdbcTemplate.query(sql, new Object[]{room.getId()}, uuidRowMapper);
     }
+
 
 }
