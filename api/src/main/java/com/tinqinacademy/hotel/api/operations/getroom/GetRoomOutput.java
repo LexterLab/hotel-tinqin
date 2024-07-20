@@ -2,13 +2,13 @@ package com.tinqinacademy.hotel.api.operations.getroom;
 
 
 import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,15 +17,12 @@ import java.util.List;
 @Getter
 @ToString
 public class GetRoomOutput {
-    @Schema(example = "UUID")
-    private String id;
+    private UUID id;
     @Schema(example = "3232")
     private BigDecimal price;
     @Schema(example = "4")
     private Integer floor;
-    @Schema(example = "single")
-    private BedSize bedSize;
-    @Schema(example = "shared")
+    private List<BedOutput> beds;
     private BathroomType bathroomType;
-    private List<LocalDate> datesOccupied;
+    private List<LocalDateTime> datesOccupied;
 }
