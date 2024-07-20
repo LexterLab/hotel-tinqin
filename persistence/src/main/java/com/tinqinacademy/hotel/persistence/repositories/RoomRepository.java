@@ -87,5 +87,9 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
         return jdbcTemplate.query(sql, new Object[]{room.getId()}, uuidRowMapper);
     }
 
+    public boolean existsRoomNo(String roomNo) {
+        String sql = "SELECT COUNT(*) FROM rooms WHERE room_no = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{roomNo}, Integer.class) > 0;
+    }
 
 }

@@ -71,4 +71,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(RoomNoAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorOutput> handleRoomNoAlreadyExists(Exception e, HttpServletRequest request) {
+        log.error("Request {} raised RoomNoAlreadyExists {}", request.getRequestURL(), e.getMessage());
+        return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.BAD_REQUEST);
+    }
 }
