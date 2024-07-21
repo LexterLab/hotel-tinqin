@@ -8,6 +8,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,13 +19,8 @@ import java.math.BigDecimal;
 @ToString
 public class PartialUpdateRoomInput {
     @JsonIgnore
-    private String roomId;@Schema(example = "2")
-    @Min(value = 1, message = "Field bedCount must be minimum 1")
-    @Max(value = 10, message = "Field bedCount must be maximum 10")
-    private Integer bedCount;
-    @Schema(example = "single")
-    @NotNull(message = "Field bedSize must not be null")
-    private BedSize bedSize;
+    private UUID roomId;
+    private List<BedSize> beds;
     @Schema(example = "private")
     @NotNull(message = "Field bathroomType must not be null")
     private BathroomType bathroomType;
