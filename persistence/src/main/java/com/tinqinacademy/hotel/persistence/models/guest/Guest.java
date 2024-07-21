@@ -17,7 +17,7 @@ public class Guest {
     private String lastName;
     private LocalDate birthday;
     private String idCardNo;
-    private String idCardValidity;
+    private LocalDate idCardValidity;
     private String idCardIssueAuthority;
-    private String idCardIssueDate;
+    private LocalDate idCardIssueDate;
 }

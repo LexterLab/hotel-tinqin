@@ -13,14 +13,6 @@ import java.time.LocalDate;
 @Setter
 @ToString
 public class GuestInput {
-    @Schema(example = "2025-01-01")
-    @FutureOrPresent(message = "Field startDate must be future or present")
-    @NotNull(message = "Field startDate should not be null")
-    private LocalDate startDate;
-    @Schema(example = "2025-01-01")
-    @FutureOrPresent(message = "Field endDate must be future or present")
-    @NotNull(message = "Field endDate should not be null")
-    private LocalDate endDate;
     @Schema(example = "Michael")
     @NotBlank(message = "Field firstName must not be empty")
     @Size(min = 2, max = 20, message = "Field firstName must be between 2-20 characters")
@@ -29,10 +21,9 @@ public class GuestInput {
     @NotBlank(message = "Field lastName must not be empty")
     @Size(min = 2, max = 20, message = "Field lastName must be between 2-20 characters")
     private String lastName;
-    @Schema(example = "+35984238424")
-    @NotBlank(message = "Field phoneNo must not be empty")
-    @Pattern(regexp = "^\\+[1-9]{1}[0-9]{3,14}$")
-    private String phoneNo;
+    @Past(message = "Field birthDay must be a past date")
+    @NotNull(message = "Field birthDay cannot be null")
+    private LocalDate birthday;
     @Schema(example = "3232 3232 3232 3232")
     @NotBlank(message = "field idCardNo must not be empty")
     private String idCardNo;
@@ -48,8 +39,4 @@ public class GuestInput {
     @NotNull(message = "Field idCardIssueDate must not be null")
     @PastOrPresent(message = "Field idCardIssueDate must be past or present")
     private LocalDate idCardIssueDate;
-    @Schema(example = "201A")
-    @NotBlank(message = "Field roomNo must not be empty")
-    @Size(min = 4, max = 4, message = "Field roomNo must be 4 characters")
-    private String roomNo;
 }
