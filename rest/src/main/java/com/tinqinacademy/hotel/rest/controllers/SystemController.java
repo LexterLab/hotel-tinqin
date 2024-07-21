@@ -44,8 +44,15 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.REGISTER_VISITOR)
-    public ResponseEntity<RegisterGuestOutput> register(@Valid @RequestBody RegisterGuestInput input) {
-        RegisterGuestOutput output = systemService.registerVisitor(input);
+    public ResponseEntity<RegisterGuestOutput> register(
+            @Valid @RequestBody RegisterGuestInput input,
+            @PathVariable UUID bookingId
+    ) {
+        RegisterGuestOutput output = systemService.registerVisitor(RegisterGuestInput
+                .builder()
+                .bookingId(bookingId)
+                .guests(input.getGuests())
+                .build());
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
