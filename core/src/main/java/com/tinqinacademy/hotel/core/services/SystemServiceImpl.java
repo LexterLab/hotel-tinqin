@@ -75,23 +75,10 @@ public class SystemServiceImpl implements SystemService {
     public GetGuestReportOutput getVisitorsReport(GetGuestReportInput input) {
         log.info("Start getVisitorsReport {}", input);
 
-        GuestOutput matchingVisitor = GuestOutput.builder()
-                .endDate(input.getEndDate())
-                .startDate(input.getStartDate())
-                .firstName(input.getFirstName())
-                .lastName(input.getLastName())
-                .idCardIssueAuthority(input.getIdCardIssueAuthority())
-                .idCardIssueDate(input.getIdCardIssueDate())
-                .idCardNo(input.getIdCardNo())
-                .idCardValidity(input.getIdCardValidity())
-                .phoneNo(input.getPhoneNo())
-                .roomNo(input.getRoomNo())
-                .build();
-
-        List<GuestOutput> matchingVisitors = List.of(matchingVisitor);
+        List<GuestOutput> guests = guestRepository.searchGuests(input);
 
         GetGuestReportOutput output = GetGuestReportOutput.builder()
-                .visitorReports(matchingVisitors)
+                .guestsReports(guests)
                 .build();
 
         log.info("End getVisitorsReport {}", output);

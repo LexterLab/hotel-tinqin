@@ -12,5 +12,5 @@ import java.util.List;
 @Setter
 @Builder
 public class GetGuestReportOutput {
-    List<GuestOutput> visitorReports;
+    List<GuestOutput> guestsReports;
 }
