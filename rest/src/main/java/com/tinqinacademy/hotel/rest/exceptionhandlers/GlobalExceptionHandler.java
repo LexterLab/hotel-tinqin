@@ -77,4 +77,11 @@ public class GlobalExceptionHandler {
         log.error("Request {} raised RoomNoAlreadyExists {}", request.getRequestURL(), e.getMessage());
         return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(GuestAlreadyRegisteredException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorOutput> handleGuestAlreadyRegistered(Exception e, HttpServletRequest request) {
+        log.error("Request {} raised GuestAlreadyRegisteredException {}", request.getRequestURL(), e.getMessage());
+        return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.CONFLICT);
+    }
 }
