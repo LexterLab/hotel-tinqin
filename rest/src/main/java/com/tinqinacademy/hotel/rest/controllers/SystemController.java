@@ -142,7 +142,7 @@ public class SystemController {
                                                                      @Valid @RequestBody PartialUpdateRoomInput input) {
         PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
-                .bedCount(input.getBedCount())
+                .beds(input.getBeds())
                 .bathroomType(input.getBathroomType())
                 .floor(input.getFloor())
                 .roomNo(input.getRoomNo())
