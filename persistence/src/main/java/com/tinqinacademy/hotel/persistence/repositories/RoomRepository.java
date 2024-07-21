@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,7 +67,39 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
 
     @Override
     public void patchById(UUID id, Room room) {
+        StringBuilder sql = new StringBuilder("UPDATE rooms SET ");
+        List<Object> params = new ArrayList<>();
 
+        boolean firstField = true;
+
+        if (room.getRoomNo() != null) {
+            sql.append(firstField ? "" : ", ").append("room_no = ?");
+            params.add(room.getRoomNo());
+            firstField = false;
+        }
+
+        if (room.getBathroomType() != null) {
+            sql.append(firstField ? "" : ", ").append("room_bathroom_type = CAST(? AS BATHROOM_TYPE)");
+            params.add(room.getBathroomType().toString());
+            firstField = false;
+        }
+
+        if (room.getFloor() != null) {
+            sql.append(firstField ? "" : ", ").append("floor = ?");
+            params.add(room.getFloor());
+            firstField = false;
+        }
+
+        if (room.getPrice() != null) {
+            sql.append(firstField ? "" : ", ").append("price = ?");
+            params.add(room.getPrice());
+            firstField = false;
+        }
+
+        sql.append(" WHERE id = ?");
+        params.add(id);
+
+        jdbcTemplate.update(sql.toString(), params.toArray());
     }
 
 
@@ -87,6 +120,7 @@ public class RoomRepository implements AliExpressJPARepository<Room>{
         }
     }
 
+    //refactor
     private final RowMapper<UUID> uuidRowMapper = (rs, rowNum) -> UUID.fromString(rs.getString("bed_id"));
 
     public List<UUID> findRoomBedIds(Room room) {
