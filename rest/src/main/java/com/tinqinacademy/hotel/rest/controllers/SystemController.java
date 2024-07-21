@@ -5,8 +5,8 @@ import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
-import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReportInput;
-import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReportOutput;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -66,9 +67,9 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @GetMapping(RestAPIRoutes.GET_VISITORS_REPORT)
-    public ResponseEntity<GetVisitorsReportOutput> getVisitorsReport(
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
+    public ResponseEntity<GetGuestReportOutput> getVisitorsReport(
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String phoneNo,
@@ -79,7 +80,7 @@ public class SystemController {
             @RequestParam(required = false) String roomNo
 
             ) {
-        GetVisitorsReportOutput output = systemService.getVisitorsReport(GetVisitorsReportInput.builder()
+        GetGuestReportOutput output = systemService.getVisitorsReport(GetGuestReportInput.builder()
                 .idCardIssueAuthority(idCardAuthority)
                 .idCardIssueDate(idCardIssueDate)
                 .idCardNo(idCardNo)

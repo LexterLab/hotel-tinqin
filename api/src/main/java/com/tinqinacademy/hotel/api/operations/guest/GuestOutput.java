@@ -1,9 +1,10 @@
-package com.tinqinacademy.hotel.api.operations.visitor;
+package com.tinqinacademy.hotel.api.operations.guest;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,11 +12,9 @@ import java.time.LocalDate;
 @Builder
 @Setter
 @ToString
-public class VisitorOutput {
-    @Schema(example = "2024-01-01")
-    private LocalDate startDate;
-    @Schema(example = "2024-01-01")
-    private LocalDate endDate;
+public class GuestOutput {
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     @Schema(example = "Michael")
     private String firstName;
     @Schema(example = "Jordan")

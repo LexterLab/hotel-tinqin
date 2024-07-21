@@ -9,15 +9,15 @@ import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
-import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReportInput;
-import com.tinqinacademy.hotel.api.operations.getvisitorreport.GetVisitorsReportOutput;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.visitor.VisitorOutput;
+import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
 import com.tinqinacademy.hotel.core.mappers.GuestMapper;
 import com.tinqinacademy.hotel.core.mappers.RoomMapper;
@@ -72,10 +72,10 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public GetVisitorsReportOutput getVisitorsReport(GetVisitorsReportInput input) {
+    public GetGuestReportOutput getVisitorsReport(GetGuestReportInput input) {
         log.info("Start getVisitorsReport {}", input);
 
-        VisitorOutput matchingVisitor = VisitorOutput.builder()
+        GuestOutput matchingVisitor = GuestOutput.builder()
                 .endDate(input.getEndDate())
                 .startDate(input.getStartDate())
                 .firstName(input.getFirstName())
@@ -88,9 +88,9 @@ public class SystemServiceImpl implements SystemService {
                 .roomNo(input.getRoomNo())
                 .build();
 
-        List<VisitorOutput> matchingVisitors = List.of(matchingVisitor);
+        List<GuestOutput> matchingVisitors = List.of(matchingVisitor);
 
-        GetVisitorsReportOutput output = GetVisitorsReportOutput.builder()
+        GetGuestReportOutput output = GetGuestReportOutput.builder()
                 .visitorReports(matchingVisitors)
                 .build();
 

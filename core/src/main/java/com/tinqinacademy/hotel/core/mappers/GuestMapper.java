@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.mappers;
 
-import com.tinqinacademy.hotel.api.operations.visitor.GuestInput;
+import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;

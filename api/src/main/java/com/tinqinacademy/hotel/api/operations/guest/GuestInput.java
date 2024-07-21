@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.api.operations.visitor;
+package com.tinqinacademy.hotel.api.operations.guest;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
