@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.core.services;
 
 
+import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.models.constants.BedSize;
@@ -33,6 +34,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -47,7 +50,21 @@ public class SystemServiceImpl implements SystemService {
         log.info("Start registerVisitor {}", input);
 
         List<Guest> guests = GuestMapper.INSTANCE.guestInputToGuestList(input.getGuests());
-        guestRepository.saveAll(guests);
+
+        for (Guest guest : guests) {
+            Optional<Guest> existingGuest = guestRepository.findByCardNo(guest.getIdCardNo());
+            if (existingGuest.isEmpty()) {
+                guest.setId(UUID.randomUUID());
+            } else {
+                UUID guestId = existingGuest.get().getId();
+                if (guestRepository.existsGuestBooking(guestId, input.getBookingId())) {
+                    throw new GuestAlreadyRegisteredException(guestId, input.getBookingId());
+                }
+                guest.setId(guestId);
+            }
+            guestRepository.save(guest);
+            guestRepository.addGuestToBooking(guest, input.getBookingId());
+        }
 
         RegisterGuestOutput output = RegisterGuestOutput.builder().build();
         log.info("End registerVisitor {}", output);
@@ -179,8 +196,6 @@ public class SystemServiceImpl implements SystemService {
             }
             roomRepository.updateRoomBeds(roomBeds, room);
         }
-
-
 
         if(input.getBathroomType() != null) {
             updatedRoom.setBathroomType(input.getBathroomType());
