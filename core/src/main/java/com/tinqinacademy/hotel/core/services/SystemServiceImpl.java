@@ -149,19 +149,50 @@ public class SystemServiceImpl implements SystemService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
-        Room updatedRoom = Room
-                .builder()
-                .roomNo(input.getRoomNo())
-                .floor(input.getFloor())
-                .price(input.getPrice())
-                .bathroomType(input.getBathroomType())
+        Room updatedRoom = Room.builder()
+                .id(input.getRoomId())
                 .build();
 
-        roomRepository.updateById(room.getId(), updatedRoom);
+        if (input.getRoomNo() != null) {
+            if (roomRepository.existsRoomNo(input.getRoomNo()) && !room.getRoomNo().equals(input.getRoomNo())) {
+                throw new RoomNoAlreadyExistsException(input.getRoomNo());
+            } else {
+                updatedRoom.setRoomNo(input.getRoomNo());
+            }
+        }
+
+        if (input.getPrice() != null) {
+            updatedRoom.setPrice(input.getPrice());
+        }
+
+
+        if (input.getFloor() != null) {
+            updatedRoom.setFloor(input.getFloor());
+        }
+
+        if (input.getBeds() != null) {
+            List<Bed> roomBeds = new ArrayList<>();
+            for (BedSize size : input.getBeds()) {
+                Bed bed = bedRepository.findByBedSize(size)
+                        .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
+                roomBeds.add(bed);
+            }
+            roomRepository.updateRoomBeds(roomBeds, room);
+        }
+
+
+
+        if(input.getBathroomType() != null) {
+            updatedRoom.setBathroomType(input.getBathroomType());
+        }
+
+        roomRepository.patchById(room.getId(), updatedRoom);
+
 
         PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
                 .roomId(input.getRoomId())
                 .build();
+
         log.info("End partialUpdateRoom {}", output);
         return output;
     }
