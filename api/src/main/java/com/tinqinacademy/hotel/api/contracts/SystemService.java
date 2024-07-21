@@ -15,8 +15,8 @@ import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 
 public interface SystemService {
-    RegisterGuestOutput registerVisitor(RegisterGuestInput input);
-    GetGuestReportOutput getVisitorsReport(GetGuestReportInput input);
+    RegisterGuestOutput registerGuest(RegisterGuestInput input);
+    GetGuestReportOutput getGuestReport(GetGuestReportInput input);
     CreateRoomOutput createRoom(CreateRoomInput input);
     UpdateRoomOutput updateRoom(UpdateRoomInput input);
     PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input);

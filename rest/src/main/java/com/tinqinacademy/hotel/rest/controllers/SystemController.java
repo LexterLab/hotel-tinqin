@@ -36,8 +36,8 @@ public class SystemController {
     private final SystemService systemService;
 
     @Operation(
-            summary = "Register Room Visitor Rest API",
-            description = "Register Room Visitor Rest API is registering visitor to a room"
+            summary = "Register Room Guest Rest API",
+            description = "Register Room Guest Rest API is registering guest to a room"
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "201", description = "HTTP STATUS 201 CREATED"),
@@ -49,7 +49,7 @@ public class SystemController {
             @Valid @RequestBody RegisterGuestInput input,
             @PathVariable UUID bookingId
     ) {
-        RegisterGuestOutput output = systemService.registerVisitor(RegisterGuestInput
+        RegisterGuestOutput output = systemService.registerGuest(RegisterGuestInput
                 .builder()
                 .bookingId(bookingId)
                 .guests(input.getGuests())
@@ -58,8 +58,8 @@ public class SystemController {
     }
 
     @Operation(
-            summary = "Get Visitors register report Rest API",
-            description = "UGet Visitors register report Rest API is for searching visitor registrations"
+            summary = "Get Guest  report Rest API",
+            description = "Get Guest report Rest API is for searching guest registrations"
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
@@ -67,7 +67,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @GetMapping(RestAPIRoutes.GET_VISITORS_REPORT)
-    public ResponseEntity<GetGuestReportOutput> getVisitorsReport(
+    public ResponseEntity<GetGuestReportOutput> getGuestReport(
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String firstName,
@@ -80,7 +80,7 @@ public class SystemController {
             @RequestParam(required = false) String roomNo
 
             ) {
-        GetGuestReportOutput output = systemService.getVisitorsReport(GetGuestReportInput.builder()
+        GetGuestReportOutput output = systemService.getGuestReport(GetGuestReportInput.builder()
                 .idCardIssueAuthority(idCardAuthority)
                 .idCardIssueDate(idCardIssueDate)
                 .idCardNo(idCardNo)

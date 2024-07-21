@@ -46,7 +46,7 @@ public class SystemServiceImpl implements SystemService {
     private final BedRepository bedRepository;
 
     @Override
-    public RegisterGuestOutput registerVisitor(RegisterGuestInput input) {
+    public RegisterGuestOutput registerGuest(RegisterGuestInput input) {
         log.info("Start registerVisitor {}", input);
 
         List<Guest> guests = GuestMapper.INSTANCE.guestInputToGuestList(input.getGuests());
@@ -72,7 +72,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public GetGuestReportOutput getVisitorsReport(GetGuestReportInput input) {
+    public GetGuestReportOutput getGuestReport(GetGuestReportInput input) {
         log.info("Start getVisitorsReport {}", input);
 
         List<GuestOutput> guests = guestRepository.searchGuests(input);
