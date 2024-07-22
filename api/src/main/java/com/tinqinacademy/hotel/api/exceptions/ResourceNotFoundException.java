@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.exceptions;
 
+import com.tinqinacademy.hotel.api.Messages;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ public class ResourceNotFoundException extends RuntimeException {
 
 
     public ResourceNotFoundException(String resourceName, String fieldName, String fieldValueString) {
-        super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValueString));
+        super(String.format(Messages.RESOURCE_NOT_FOUND, resourceName, fieldName, fieldValueString));
         this.resourceName = resourceName;
         this.fieldName = fieldName;
         this.fieldValueString = fieldValueString;
