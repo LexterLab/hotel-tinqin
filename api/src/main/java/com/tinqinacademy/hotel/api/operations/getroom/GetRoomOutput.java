@@ -2,6 +2,7 @@ package com.tinqinacademy.hotel.api.operations.getroom;
 
 
 import com.tinqinacademy.hotel.api.models.constants.BathroomType;
+import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -22,7 +23,8 @@ public class GetRoomOutput {
     private BigDecimal price;
     @Schema(example = "4")
     private Integer floor;
-    private List<BedOutput> beds;
+    private List<BedSize> bedSizes;
     private BathroomType bathroomType;
     private List<LocalDateTime> datesOccupied;
+    private Integer bedCount;
 }
