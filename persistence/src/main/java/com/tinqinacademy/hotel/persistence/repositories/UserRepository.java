@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.persistence.repositories;
 
+import com.tinqinacademy.hotel.persistence.mappers.UserRowMapper;
 import com.tinqinacademy.hotel.persistence.models.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserRepository implements AliExpressJPARepository<User> {
     private final JdbcTemplate jdbcTemplate;
-
+    private final UserRowMapper userRowMapper;
 
     @Override
     public void save(User user) {
@@ -30,7 +31,8 @@ public class UserRepository implements AliExpressJPARepository<User> {
 
     @Override
     public Optional<User> findById(UUID id) {
-        return Optional.empty();
+        String sql = "select * from users where id = ?";
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new Object[]{id}, userRowMapper));
     }
 
     @Override

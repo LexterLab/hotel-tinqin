@@ -5,6 +5,7 @@ import com.tinqinacademy.hotel.api.exceptions.AlreadyFinishedVisitException;
 import com.tinqinacademy.hotel.api.exceptions.AlreadyStartedVisitException;
 import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
+import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
@@ -15,15 +16,16 @@ import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.HotelService;
 
-import com.tinqinacademy.hotel.core.mappers.BedMapper;
 import com.tinqinacademy.hotel.core.mappers.BookingMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 
+import com.tinqinacademy.hotel.persistence.models.user.User;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,7 @@ public class HotelServiceImpl implements HotelService {
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
     private final BedRepository bedRepository;
+    private final UserRepository userRepository;
 
     @Override
     public SearchRoomOutput searchRoom(SearchRoomInput input) {
@@ -72,6 +75,10 @@ public class HotelServiceImpl implements HotelService {
             beds.add(bed);
         }
 
+        List<BedSize> bedSizes = beds.stream()
+                .map(Bed::getBedSize)
+                .toList();
+
         List<LocalDateTime> datesOccupied = bookingRepository.findAllDatesOccupiedByRoomId(room.getId())
                 .stream().toList();
 
@@ -80,9 +87,10 @@ public class HotelServiceImpl implements HotelService {
                 .id(room.getId())
                 .price(room.getPrice())
                 .floor(room.getFloor())
-                .beds(BedMapper.INSTANCE.bedsToBedOutputs(beds))
+                .bedSizes(bedSizes)
                 .bathroomType(room.getBathroomType())
                 .datesOccupied(datesOccupied)
+                .bedCount(beds.size())
                 .build();
 
         log.info("End getRoom {}", output);
@@ -93,6 +101,9 @@ public class HotelServiceImpl implements HotelService {
     public BookRoomOutput bookRoom(BookRoomInput input) {
         log.info("Start bookRoom {}", input);
 
+        User user = userRepository.findById(input.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("user", "id", input.getUserId().toString()));
+
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", String.valueOf(input.getRoomId())));
 
@@ -101,6 +112,7 @@ public class HotelServiceImpl implements HotelService {
         }
 
         Booking booking = BookingMapper.INSTANCE.bookRoomInputToBooking(input);
+        booking.setId(user.getId());
 
         bookingRepository.save(booking);
 
