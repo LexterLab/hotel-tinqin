@@ -22,7 +22,6 @@ public class PartialUpdateRoomInput {
     private UUID roomId;
     private List<BedSize> beds;
     @Schema(example = "private")
-    @NotNull(message = "Field bathroomType must not be null")
     private BathroomType bathroomType;
     @Schema(example = "4")
     @Min(value = 1, message = "Field floor must be minimum 1")

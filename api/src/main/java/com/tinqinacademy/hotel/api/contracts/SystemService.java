@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.api.contracts;
 
-
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
@@ -23,3 +22,4 @@ public interface SystemService {
     DeleteRoomOutput deleteRoom(DeleteRoomInput input);
 
 }
+

@@ -147,7 +147,7 @@ public class SystemController {
     })
     @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable UUID roomId,
-                                                                     @Valid @RequestBody PartialUpdateRoomInput input) {
+                                                                     @RequestBody @Valid PartialUpdateRoomInput input)  {
         PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .beds(input.getBeds())
@@ -155,7 +155,7 @@ public class SystemController {
                 .floor(input.getFloor())
                 .roomNo(input.getRoomNo())
                 .price(input.getPrice())
-                .build());
+                .build()); ;
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 

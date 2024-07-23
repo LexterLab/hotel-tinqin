@@ -153,25 +153,12 @@ public class SystemServiceImpl implements SystemService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
-        Room updatedRoom = Room.builder()
-                .id(input.getRoomId())
-                .build();
+
 
         if (input.getRoomNo() != null) {
             if (roomRepository.existsRoomNo(input.getRoomNo()) && !room.getRoomNo().equals(input.getRoomNo())) {
                 throw new RoomNoAlreadyExistsException(input.getRoomNo());
-            } else {
-                updatedRoom.setRoomNo(input.getRoomNo());
             }
-        }
-
-        if (input.getPrice() != null) {
-            updatedRoom.setPrice(input.getPrice());
-        }
-
-
-        if (input.getFloor() != null) {
-            updatedRoom.setFloor(input.getFloor());
         }
 
         if (input.getBeds() != null) {
@@ -184,11 +171,16 @@ public class SystemServiceImpl implements SystemService {
             roomRepository.updateRoomBeds(roomBeds, room);
         }
 
-        if(input.getBathroomType() != null) {
-            updatedRoom.setBathroomType(input.getBathroomType());
-        }
+//        W.I.P
+//        Room patchedRoom = roomPatchOperation.apply(patch, room) ;
 
-        roomRepository.patchById(room.getId(), updatedRoom);
+
+        RoomMapper.INSTANCE.partialUpdateRoom(room, input);
+
+        log.info("End partialUpdateRoom222 {}", room);
+        roomRepository.patchById(room.getId(), room);
+
+
 
 
         PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
