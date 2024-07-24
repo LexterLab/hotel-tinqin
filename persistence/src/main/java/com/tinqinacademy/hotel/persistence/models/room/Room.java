@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class Room {
     private BigDecimal price;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "room", orphanRemoval = true)
-    List<Booking> bookings;
+    List<Booking> bookings = new ArrayList<>();;
 
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)

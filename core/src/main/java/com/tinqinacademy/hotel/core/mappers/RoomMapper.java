@@ -17,6 +17,11 @@ public interface RoomMapper {
 
     Room createRoomInputToRoom(CreateRoomInput input);
 
+    @Mapping(target = "roomId", source = "id")
+    @Mapping(target = "beds", ignore = true)
+    PartialUpdateRoomInput roomToPartialUpdateRoomInput(Room room);
+
+
 
     void partialUpdateRoom(@MappingTarget Room room, PartialUpdateRoomInput input);
     void updateRoom(@MappingTarget Room room, UpdateRoomInput input);
