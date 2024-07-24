@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.core.mappers;
 
 import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
+import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -14,5 +15,7 @@ public interface GuestMapper {
 
     Guest guestInputToGuest(GuestInput guestInput);
     List<Guest> guestInputToGuestList(List<GuestInput> guestInputList);
+    GuestOutput guestToGuestOutput(Guest guest);
+    List<GuestOutput> guestToGuestOutput(List<Guest> guest);
 
 }
