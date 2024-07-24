@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +22,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public SignUpOutput signUp(SignUpInput input) {
         log.info("Start signUp: {}", input);
         User user = UserMapper.INSTANCE.SignUpInputToUser(input);
-        user.setId(UUID.randomUUID());
 
-        if (userRepository.existByEmail(user.getEmail())) {
+
+        if (userRepository.countByEmail(user.getEmail()) > 0) {
             throw new EmailAlreadyExistsException();
         }
-
 
         userRepository.save(user);
 

@@ -17,15 +17,16 @@ import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
 import com.tinqinacademy.hotel.core.mappers.GuestMapper;
 import com.tinqinacademy.hotel.core.mappers.RoomMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
+import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
+import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -44,6 +44,7 @@ public class SystemServiceImpl implements SystemService {
     private final RoomRepository roomRepository;
     private final GuestRepository guestRepository;
     private final BedRepository bedRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     public RegisterGuestOutput registerGuest(RegisterGuestInput input) {
@@ -51,19 +52,23 @@ public class SystemServiceImpl implements SystemService {
 
         List<Guest> guests = GuestMapper.INSTANCE.guestInputToGuestList(input.getGuests());
 
+        Booking booking = bookingRepository.findById(input.getBookingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", input.getBookingId().toString()));
+
         for (Guest guest : guests) {
-            Optional<Guest> existingGuest = guestRepository.findByCardNo(guest.getIdCardNo());
-            if (existingGuest.isEmpty()) {
-                guest.setId(UUID.randomUUID());
-            } else {
-                UUID guestId = existingGuest.get().getId();
-                if (guestRepository.existsGuestBooking(guestId, input.getBookingId())) {
-                    throw new GuestAlreadyRegisteredException(guestId, input.getBookingId());
+            Optional<Guest> existingGuest = guestRepository.findByIdCardNo(guest.getIdCardNo());
+            if (existingGuest.isPresent()) {
+                if (booking.getGuests().contains(existingGuest.get())) {
+                    throw new GuestAlreadyRegisteredException(guest.getId(), input.getBookingId());
                 }
-                guest.setId(guestId);
+                booking.getGuests().add(existingGuest.get());
+                bookingRepository.save(booking);
+            } else {
+                booking.setGuests(List.of(guest));
+                guestRepository.save(guest);
             }
-            guestRepository.save(guest);
-            guestRepository.addGuestToBooking(guest, input.getBookingId());
+
+
         }
 
         RegisterGuestOutput output = RegisterGuestOutput.builder().build();
@@ -75,10 +80,13 @@ public class SystemServiceImpl implements SystemService {
     public GetGuestReportOutput getGuestReport(GetGuestReportInput input) {
         log.info("Start getVisitorsReport {}", input);
 
-        List<GuestOutput> guests = guestRepository.searchGuests(input);
+        List<Guest> guests = guestRepository.searchGuest(input.getStartDate(), input.getEndDate(),
+                input.getFirstName(), input.getLastName(), input.getPhoneNo(), input.getIdCardNo(),
+                input.getIdCardValidity(), input.getIdCardIssueAuthority(), input.getIdCardIssueDate(),
+                input.getRoomNo());
 
         GetGuestReportOutput output = GetGuestReportOutput.builder()
-                .guestsReports(guests)
+                .guestsReports(GuestMapper.INSTANCE.guestToGuestOutput(guests))
                 .build();
 
         log.info("End getVisitorsReport {}", output);
@@ -89,7 +97,7 @@ public class SystemServiceImpl implements SystemService {
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
-        if (roomRepository.existsRoomNo(input.roomNo())) {
+        if (roomRepository.countAllByRoomNo(input.roomNo()) > 0) {
             throw new RoomNoAlreadyExistsException(input.roomNo());
         }
 
@@ -102,9 +110,9 @@ public class SystemServiceImpl implements SystemService {
         }
 
         Room room = RoomMapper.INSTANCE.createRoomInputToRoom(input);
+        room.setBeds(roomBeds);
 
         roomRepository.save(room);
-        roomRepository.saveRoomBeds(roomBeds, room);
 
         CreateRoomOutput output = CreateRoomOutput.builder()
                 .roomId(room.getId().toString())
@@ -121,7 +129,7 @@ public class SystemServiceImpl implements SystemService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
-        if (roomRepository.existsRoomNo(input.getRoomNo()) && !room.getRoomNo().equals(input.getRoomNo())) {
+        if (roomRepository.countAllByRoomNo(input.getRoomNo()) > 0 && !room.getRoomNo().equals(input.getRoomNo())) {
             throw new RoomNoAlreadyExistsException(input.getRoomNo());
         }
 
@@ -133,11 +141,10 @@ public class SystemServiceImpl implements SystemService {
             roomBeds.add(bed);
         }
 
-        Room updatedRoom = RoomMapper.INSTANCE.updateRoomInputToRoom(input);
+        RoomMapper.INSTANCE.updateRoom(room, input);
+        room.setBeds(roomBeds);
 
-        roomRepository.updateById(room.getId(), updatedRoom);
-        roomRepository.updateRoomBeds(roomBeds, room);
-
+        roomRepository.save(room);
 
         UpdateRoomOutput output = UpdateRoomOutput.builder()
                 .roomId(input.getRoomId())
@@ -153,13 +160,13 @@ public class SystemServiceImpl implements SystemService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
-
-
         if (input.getRoomNo() != null) {
-            if (roomRepository.existsRoomNo(input.getRoomNo()) && !room.getRoomNo().equals(input.getRoomNo())) {
+            if (roomRepository.countAllByRoomNo(input.getRoomNo()) > 0 && !room.getRoomNo().equals(input.getRoomNo())) {
                 throw new RoomNoAlreadyExistsException(input.getRoomNo());
             }
         }
+
+        RoomMapper.INSTANCE.partialUpdateRoom(room, input);
 
         if (input.getBeds() != null) {
             List<Bed> roomBeds = new ArrayList<>();
@@ -168,20 +175,14 @@ public class SystemServiceImpl implements SystemService {
                         .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
                 roomBeds.add(bed);
             }
-            roomRepository.updateRoomBeds(roomBeds, room);
+            room.setBeds(roomBeds);
         }
 
 //        W.I.P
 //        Room patchedRoom = roomPatchOperation.apply(patch, room) ;
 
 
-        RoomMapper.INSTANCE.partialUpdateRoom(room, input);
-
-        log.info("End partialUpdateRoom222 {}", room);
-        roomRepository.patchById(room.getId(), room);
-
-
-
+        roomRepository.save(room);
 
         PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
                 .roomId(input.getRoomId())
@@ -194,7 +195,12 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
         log.info("Start deleteRoom {}", input);
-        roomRepository.deleteById(input.getRoomId());
+        Room room = roomRepository.findById(input.getRoomId())
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
+
+        bookingRepository.deleteAll(room.getBookings());
+
+        roomRepository.delete(room);
         DeleteRoomOutput output = DeleteRoomOutput.builder().build();
         log.info("End deleteRoom {}", output);
         return output;
