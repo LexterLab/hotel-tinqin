@@ -15,13 +15,10 @@ import org.mapstruct.factory.Mappers;
 public interface RoomMapper {
     RoomMapper INSTANCE = Mappers.getMapper(RoomMapper.class);
 
-    @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())")
     Room createRoomInputToRoom(CreateRoomInput input);
 
-    @Mapping(target = "id", source = "roomId")
-    Room updateRoomInputToRoom(UpdateRoomInput input);
 
     void partialUpdateRoom(@MappingTarget Room room, PartialUpdateRoomInput input);
+    void updateRoom(@MappingTarget Room room, UpdateRoomInput input);
 
-    PartialUpdateRoomInput roomToPartialUpdateRoom(Room room);
 }

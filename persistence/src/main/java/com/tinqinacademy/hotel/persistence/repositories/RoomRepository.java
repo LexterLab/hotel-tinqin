@@ -1,136 +1,31 @@
 package com.tinqinacademy.hotel.persistence.repositories;
 
-import com.tinqinacademy.hotel.persistence.mappers.RoomRowMapper;
-import com.tinqinacademy.hotel.persistence.models.bed.Bed;
+import com.tinqinacademy.hotel.api.models.constants.BathroomType;
+import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
-import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-@Repository
-@RequiredArgsConstructor
-public class RoomRepository implements AliExpressJPARepository<Room>{
-    private final JdbcTemplate jdbcTemplate;
-    private final RoomRowMapper roomRowMapper;
 
-    public void save(Room room) {
-        String sql = "INSERT INTO rooms (id, room_no, room_bathroom_type, floor, price) " +
-                "VALUES (?, ?, CAST(? AS BATHROOM_TYPE), ?, ?)";
-        jdbcTemplate.update(sql, room.getId(), room.getRoomNo(), room.getBathroomType().toString(), room.getFloor(),
-                room.getPrice());
-    }
+public interface RoomRepository extends JpaRepository<Room, UUID> {
+    long countAllByRoomNo(String roomNo);
 
-    @Override
-    public List<Room> findAll() {
-        return List.of();
-    }
-
-    @Override
-    public Optional<Room> findById(UUID id) {
-            String sql = "SELECT * FROM rooms WHERE id = ?";
-            try {
-                Room room = jdbcTemplate.queryForObject(sql, new Object[]{id}, roomRowMapper);
-                return Optional.ofNullable(room);
-            } catch (EmptyResultDataAccessException e) {
-                return Optional.empty();
-            }
-        }
-
-
-    @Override
-    public void deleteById(UUID id) {
-        String deleteBookingRoomSql = "DELETE FROM bookings WHERE room_id = ?";
-        String deleteRoomBedsSql = "DELETE FROM room_beds WHERE room_id = ?";
-        String deleteRoomSql = "DELETE FROM rooms WHERE id = ?";
-
-        jdbcTemplate.update(deleteBookingRoomSql, id);
-        jdbcTemplate.update(deleteRoomBedsSql, id);
-        jdbcTemplate.update(deleteRoomSql, id);
-    }
-
-    @Override
-    public void updateById(UUID id, Room room) {
-        String sql = "UPDATE rooms SET room_no = ?, room_bathroom_type = CAST(? AS BATHROOM_TYPE), floor = ?, price = ? WHERE id = ?";
-        jdbcTemplate.update(sql, room.getRoomNo(), room.getBathroomType().toString(), room.getFloor(),
-                room.getPrice(), id);
-    }
-
-    @Override
-    public void saveAll(List<Room> rooms) {}
-
-    @Override
-    public void patchById(UUID id, Room room) {
-        StringBuilder sql = new StringBuilder("UPDATE rooms SET ");
-        List<Object> params = new ArrayList<>();
-
-        boolean firstField = true;
-
-        if (room.getRoomNo() != null) {
-            sql.append(firstField ? "" : ", ").append("room_no = ?");
-            params.add(room.getRoomNo());
-            firstField = false;
-        }
-
-        if (room.getBathroomType() != null) {
-            sql.append(firstField ? "" : ", ").append("room_bathroom_type = CAST(? AS BATHROOM_TYPE)");
-            params.add(room.getBathroomType().toString());
-            firstField = false;
-        }
-
-        if (room.getFloor() != null) {
-            sql.append(firstField ? "" : ", ").append("floor = ?");
-            params.add(room.getFloor());
-            firstField = false;
-        }
-
-        if (room.getPrice() != null) {
-            sql.append(firstField ? "" : ", ").append("price = ?");
-            params.add(room.getPrice());
-            firstField = false;
-        }
-
-        sql.append(" WHERE id = ?");
-        params.add(id);
-
-        jdbcTemplate.update(sql.toString(), params.toArray());
-    }
-
-
-    public void saveRoomBeds(List<Bed> beds, Room room) {
-        for (Bed bed : beds) {
-            String sql = "INSERT INTO room_beds (bed_id, room_id) " +
-                    "VALUES (?, ?)";
-            jdbcTemplate.update(sql, bed.getId(), room.getId());
-        }
-    }
-
-    public void updateRoomBeds(List<Bed> beds, Room room) {
-        String deleteSql = "DELETE FROM room_beds WHERE room_id = ?";
-        jdbcTemplate.update(deleteSql, room.getId());
-        for (Bed bed : beds) {
-            String sql = "INSERT INTO room_beds (bed_id, room_id) VALUES (?, ?)";
-            jdbcTemplate.update(sql, bed.getId(), room.getId());
-        }
-    }
-
-    //refactor
-    private final RowMapper<UUID> uuidRowMapper = (rs, rowNum) -> UUID.fromString(rs.getString("bed_id"));
-
-    public List<UUID> findRoomBedIds(Room room) {
-        String sql = "SELECT bed_id FROM room_beds WHERE room_id = ?";
-        return jdbcTemplate.query(sql, new Object[]{room.getId()}, uuidRowMapper);
-    }
-
-    public boolean existsRoomNo(String roomNo) {
-        String sql = "SELECT COUNT(*) FROM rooms WHERE room_no = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{roomNo}, Integer.class) > 0;
-    }
-
+    @Query(value = """
+            SELECT r FROM Room r
+            JOIN r.bookings b
+            JOIN r.beds bed
+            WHERE (r.id NOT IN (
+                SELECT r.id FROM Booking b
+                WHERE (b.startDate <= :endDate AND b.endDate >= :startDate)
+            ))
+            AND (:bedCount IS NULL OR (SELECT COUNT(bed) FROM r.beds bed) = :bedCount)
+            AND (:bedSize IS NULL  OR bed.bedSize = :bedSize)
+            AND (:bathroomType IS NULL OR b.room.bathroomType = :bathroomType)
+            """)
+    List<Room> searchForAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, Integer bedCount,
+                                       BedSize bedSize, BathroomType bathroomType);
 }
