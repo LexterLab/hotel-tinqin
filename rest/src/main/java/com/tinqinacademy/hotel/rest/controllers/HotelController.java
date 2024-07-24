@@ -46,7 +46,7 @@ public class HotelController {
     public ResponseEntity<SearchRoomOutput> searchRooms(
             @RequestParam()  LocalDateTime startDate,
             @RequestParam() LocalDateTime endDate,
-            @RequestParam(required = false, defaultValue = "2") Integer bedCount,
+            @RequestParam(required = false) Integer bedCount,
             @RequestParam(required = false) String bedSize,
             @RequestParam(required = false) String bathroomType
             ) {
