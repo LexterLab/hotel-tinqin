@@ -22,7 +22,7 @@ public enum BathroomType {
         return Arrays.stream(BathroomType.values())
                 .filter(bathroomType -> bathroomType.code.equals(code))
                 .findFirst()
-                .orElse(UNKNOWN);
+                .orElse(null);
     }
 
     @Override

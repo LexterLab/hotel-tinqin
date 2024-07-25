@@ -47,13 +47,6 @@ public class HotelServiceImpl implements HotelService {
     public SearchRoomOutput searchRoom(SearchRoomInput input) {
         log.info("Start searchRoom {}", input);
 
-        if (Objects.equals(input.getBathroomType().toString(), "")) {
-            input.setBathroomType(null);
-        }
-
-        if (Objects.equals(input.getBedSize().toString(), "")) {
-            input.setBedSize(null);
-        }
 
         List<UUID> availableRoomIds = roomRepository.searchForAvailableRooms(input.getStartDate(),
                 input.getEndDate(), input.getBedCount(), input.getBedSize(), input.getBathroomType())

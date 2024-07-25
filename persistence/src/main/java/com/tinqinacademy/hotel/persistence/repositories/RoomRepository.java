@@ -15,17 +15,20 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
     long countAllByRoomNo(String roomNo);
 
     @Query(value = """
-            SELECT r FROM Room r
-            JOIN r.bookings b
-            JOIN r.beds bed
-            WHERE (r.id NOT IN (
-                SELECT r.id FROM Booking b
-                WHERE (b.startDate <= :endDate AND b.endDate >= :startDate)
-            ))
-            AND (:bedCount IS NULL OR (SELECT COUNT(bed) FROM r.beds bed) = :bedCount)
-            AND (:bedSize IS NULL  OR bed.bedSize = :bedSize)
-            AND (:bathroomType IS NULL OR b.room.bathroomType = :bathroomType)
-            """)
+    SELECT r FROM Room r
+    LEFT JOIN r.bookings b
+    LEFT JOIN r.beds bed
+    WHERE r.id NOT IN (
+        SELECT r.id FROM Booking b
+        WHERE b.startDate <= :endDate AND b.endDate >= :startDate
+    )
+    AND (:bedCount IS NULL OR (SELECT COUNT(bed) FROM r.beds bed) = :bedCount)
+    AND (:bedSize IS NULL OR EXISTS (
+        SELECT 1 FROM r.beds bed WHERE bed.bedSize = :bedSize
+    ))
+    AND (:bathroomType IS NULL OR r.bathroomType = :bathroomType)
+    GROUP BY r.id
+""")
     List<Room> searchForAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, Integer bedCount,
                                        BedSize bedSize, BathroomType bathroomType);
 }

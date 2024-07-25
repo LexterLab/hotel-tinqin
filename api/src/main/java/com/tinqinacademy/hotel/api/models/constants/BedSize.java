@@ -30,7 +30,7 @@ public enum BedSize {
         return Arrays.stream(BedSize.values())
                 .filter(size -> size.code.equals(code))
                 .findFirst()
-                .orElse(UNKNOWN);
+                .orElse(null);
     }
 
     @Override
