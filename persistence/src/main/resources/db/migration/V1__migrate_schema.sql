@@ -1,16 +1,13 @@
-CREATE TYPE BED AS ENUM ('', 'single', 'double', 'smallSingle', 'smallDouble', 'kingSize');
-CREATE TYPE BATHROOM_TYPE AS ENUM ('', 'private', 'shared');
-
 CREATE TABLE beds (
     id UUID PRIMARY KEY,
-    bed_size BED NOT NULL,
+    bed_size VARCHAR(50) NOT NULL,
     bed_capacity INT NOT NULL
 );
 
 CREATE TABLE rooms (
     id UUID PRIMARY KEY,
     room_no VARCHAR(4),
-    room_bathroom_type BATHROOM_TYPE NOT NULL,
+    bathroom_type VARCHAR(50) NOT NULL,
     floor INT NOT NULL,
     price NUMERIC(12,2) NOT NULL
 );

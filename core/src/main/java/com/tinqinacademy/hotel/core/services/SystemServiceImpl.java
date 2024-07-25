@@ -108,7 +108,8 @@ public class SystemServiceImpl implements SystemService {
         List<Bed> roomBeds = new ArrayList<>();
 
         for (BedSize size : input.beds()) {
-            Bed bed = bedRepository.findByBedSize(size)
+            log.info("Searching for bed with size: {}", size);
+            Bed bed = bedRepository.findByBedSize(size.toString())
                     .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
             roomBeds.add(bed);
         }
@@ -140,7 +141,7 @@ public class SystemServiceImpl implements SystemService {
         List<Bed> roomBeds = new ArrayList<>();
 
         for (BedSize size : input.getBeds()) {
-            Bed bed = bedRepository.findByBedSize(size)
+            Bed bed = bedRepository.findByBedSize(size.toString())
                     .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
             roomBeds.add(bed);
         }
@@ -175,7 +176,7 @@ public class SystemServiceImpl implements SystemService {
         if (input.getBeds() != null) {
             List<Bed> roomBeds = new ArrayList<>();
             for (BedSize size : input.getBeds()) {
-                Bed bed = bedRepository.findByBedSize(size)
+                Bed bed = bedRepository.findByBedSize(size.toString())
                         .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
                 roomBeds.add(bed);
             }
@@ -233,7 +234,7 @@ public class SystemServiceImpl implements SystemService {
         if (patchedRoom.getBeds() != null) {
             List<Bed> roomBeds = new ArrayList<>();
             for (BedSize size : patchedRoom.getBeds()) {
-                Bed bed = bedRepository.findByBedSize(size)
+                Bed bed = bedRepository.findByBedSize(size.toString())
                         .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
                 roomBeds.add(bed);
             }

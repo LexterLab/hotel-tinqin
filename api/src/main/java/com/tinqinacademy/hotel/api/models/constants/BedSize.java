@@ -11,17 +11,15 @@ import java.util.Arrays;
 
 @RequiredArgsConstructor
 public enum BedSize {
-    SINGLE("single", 2),
-    DOUBLE("double", 4),
-    SMALL_SINGLE("smallSingle", 1),
-    SMALL_DOUBLE("smallDouble", 2),
-    KING_SIZE("kingSize", 15),
-    UNKNOWN("", 0);
+    SINGLE("single"),
+    DOUBLE("double"),
+    SMALL_SINGLE("smallSingle"),
+    SMALL_DOUBLE("smallDouble"),
+    KING_SIZE("kingSize"),
+    UNKNOWN("");
 
 
     private final String code;
-    @Getter
-    private final Integer capacity;
 
 
 

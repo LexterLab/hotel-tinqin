@@ -18,9 +18,13 @@ public class Bed {
     @Id
     @GeneratedValue
     private UUID id;
-    @Enumerated
     @Column(nullable = false)
-    private BedSize bedSize;
+    @Setter(AccessLevel.NONE)
+    private String bedSize;
     @Column(nullable = false)
     private Integer bedCapacity;
+
+    public void setBedSize(BedSize bedSize) {
+        this.bedSize = bedSize.toString();
+    }
 }

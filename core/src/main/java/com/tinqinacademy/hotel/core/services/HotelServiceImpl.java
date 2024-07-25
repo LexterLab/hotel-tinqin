@@ -5,6 +5,7 @@ import com.tinqinacademy.hotel.api.exceptions.AlreadyFinishedVisitException;
 import com.tinqinacademy.hotel.api.exceptions.AlreadyStartedVisitException;
 import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
+import com.tinqinacademy.hotel.api.models.constants.BathroomType;
 import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
@@ -17,7 +18,6 @@ import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.HotelService;
 
 import com.tinqinacademy.hotel.core.mappers.BookingMapper;
-import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 
@@ -47,16 +47,20 @@ public class HotelServiceImpl implements HotelService {
     public SearchRoomOutput searchRoom(SearchRoomInput input) {
         log.info("Start searchRoom {}", input);
 
+
+        String bedSize = "";
+        String bathroomType = "";
+
         if (Objects.equals(input.getBathroomType().toString(), "")) {
-            input.setBathroomType(null);
+            bathroomType = null;
         }
 
         if (Objects.equals(input.getBedSize().toString(), "")) {
-            input.setBedSize(null);
+            bedSize = null;
         }
 
         List<UUID> availableRoomIds = roomRepository.searchForAvailableRooms(input.getStartDate(),
-                input.getEndDate(), input.getBedCount(), input.getBedSize(), input.getBathroomType())
+                input.getEndDate(), input.getBedCount(), bedSize, bathroomType)
                 .stream().map(Room::getId).toList();
 
         SearchRoomOutput searchRoomOutput = SearchRoomOutput.builder()
@@ -71,8 +75,9 @@ public class HotelServiceImpl implements HotelService {
         Room room = roomRepository.findById(input.getRoomId())
                         .orElseThrow(() -> new ResourceNotFoundException("room", "id", input.getRoomId().toString()));
 
+
         List<BedSize> bedSizes = room.getBeds().stream()
-                .map(Bed::getBedSize)
+                .map(b -> BedSize.getByCode(b.getBedSize()))
                 .toList();
 
         List<Booking> roomBookings =  bookingRepository.findBookingsByRoomIdAndCurrentDate(room.getId());
@@ -89,7 +94,7 @@ public class HotelServiceImpl implements HotelService {
                 .price(room.getPrice())
                 .floor(room.getFloor())
                 .bedSizes(bedSizes)
-                .bathroomType(room.getBathroomType())
+                .bathroomType(BathroomType.getByCode(room.getBathroomType()))
                 .datesOccupied(datesOccupied)
                 .bedCount(room.getBeds().size())
                 .build();

@@ -27,5 +27,5 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
             AND (:bathroomType IS NULL OR b.room.bathroomType = :bathroomType)
             """)
     List<Room> searchForAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, Integer bedCount,
-                                       BedSize bedSize, BathroomType bathroomType);
+                                       String bedSize, String bathroomType);
 }

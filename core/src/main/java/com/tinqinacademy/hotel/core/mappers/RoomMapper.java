@@ -15,6 +15,7 @@ import org.mapstruct.factory.Mappers;
 public interface RoomMapper {
     RoomMapper INSTANCE = Mappers.getMapper(RoomMapper.class);
 
+    @Mapping(target = "bathroomType", expression = "java(input.bathroomType().toString())")
     Room createRoomInputToRoom(CreateRoomInput input);
 
     @Mapping(target = "roomId", source = "id")

@@ -25,9 +25,9 @@ public class Room {
     private UUID id;
     @Column(nullable = false)
     private String roomNo;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BathroomType bathroomType;
+    @Setter(AccessLevel.NONE)
+    private String bathroomType;
     @Column(nullable = false, updatable = false)
     private Integer floor;
     @Column(nullable = false, precision = 10, scale = 2)
@@ -43,4 +43,8 @@ public class Room {
             inverseJoinColumns = @JoinColumn(name = "bed_id", referencedColumnName = "id")
     )
     private List<Bed> beds;
+
+    public void setBathroomType(BathroomType bathroomType) {
+        this.bathroomType = bathroomType.toString();
+    }
 }

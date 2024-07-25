@@ -180,6 +180,7 @@ public class SystemController {
     }
 
 
+    @Deprecated
     @PatchMapping("test-jsonpatch/{roomId}")
     public ResponseEntity<PartialUpdateRoomOutput> testJsonPatch(
             @Schema(example = "[{ \"op\": \"replace\", \"path\": \"/price\", \"value\": \"150.00\" }]")
