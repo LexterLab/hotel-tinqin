@@ -1,7 +1,6 @@
 package com.tinqinacademy.hotel.api.contracts;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
@@ -21,10 +20,9 @@ public interface SystemService {
     GetGuestReportOutput getGuestReport(GetGuestReportInput input);
     CreateRoomOutput createRoom(CreateRoomInput input);
     UpdateRoomOutput updateRoom(UpdateRoomInput input);
-    PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input);
+    PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input)
+            throws JsonPatchException, JsonProcessingException;
     DeleteRoomOutput deleteRoom(DeleteRoomInput input);
-    PartialUpdateRoomOutput testJsonPatch(PartialUpdateRoomInput input, JsonPatch jsonPatch
-    ) throws JsonPatchException, JsonProcessingException;
 
 }
 
