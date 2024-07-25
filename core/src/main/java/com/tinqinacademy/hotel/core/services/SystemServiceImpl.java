@@ -230,7 +230,6 @@ public class SystemServiceImpl implements SystemService {
 
         RoomMapper.INSTANCE.partialUpdateRoom(room, patchedRoom);
 
-
         if (patchedRoom.getBeds() != null) {
             List<Bed> roomBeds = new ArrayList<>();
             for (BedSize size : patchedRoom.getBeds()) {
