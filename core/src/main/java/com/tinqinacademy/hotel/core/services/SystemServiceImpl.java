@@ -2,8 +2,11 @@ package com.tinqinacademy.hotel.core.services;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.fge.jsonpatch.JsonPatch;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
@@ -32,6 +35,7 @@ import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,9 +52,10 @@ public class SystemServiceImpl implements SystemService {
     private final GuestRepository guestRepository;
     private final BedRepository bedRepository;
     private final BookingRepository bookingRepository;
-    private final JsonPatchService jsonPatchService;
+    private final ObjectMapper objectMapper;
 
     @Override
+    @Transactional
     public RegisterGuestOutput registerGuest(RegisterGuestInput input) {
         log.info("Start registerVisitor {}", input);
 
@@ -98,6 +103,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Transactional
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
@@ -127,6 +133,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Transactional
     public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
         log.info("Start updateRoom {}", input);
 
@@ -158,7 +165,8 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) {
+    @Transactional
+    public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) throws JsonPatchException, JsonProcessingException {
         log.info("Start partialUpdateRoom {}", input);
 
         Room room = roomRepository.findById(input.getRoomId())
@@ -170,7 +178,19 @@ public class SystemServiceImpl implements SystemService {
             }
         }
 
-        RoomMapper.INSTANCE.partialUpdateRoom(room, input);
+        JsonNode roomNode = objectMapper.convertValue(room, JsonNode.class);
+        JsonNode inputNode = objectMapper.convertValue(input, JsonNode.class);
+
+        ((ObjectNode) inputNode).remove("roomId");
+        ((ObjectNode) inputNode).remove("beds");
+
+        JsonMergePatch mergePatch = JsonMergePatch.fromJson(inputNode);
+
+        JsonNode patchedRoomNode = mergePatch.apply(roomNode);
+
+        Room patchedRoom = objectMapper.treeToValue(patchedRoomNode, Room.class);
+        patchedRoom.setId(room.getId());
+
 
         if (input.getBeds() != null) {
             List<Bed> roomBeds = new ArrayList<>();
@@ -179,14 +199,10 @@ public class SystemServiceImpl implements SystemService {
                         .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
                 roomBeds.add(bed);
             }
-            room.setBeds(roomBeds);
+            patchedRoom.setBeds(roomBeds);
         }
 
-//        W.I.P
-//        Room patchedRoom = roomPatchOperation.apply(patch, room) ;
-
-
-        roomRepository.save(room);
+        roomRepository.save(patchedRoom);
 
         PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
                 .roomId(input.getRoomId())
@@ -197,6 +213,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Transactional
     public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
         log.info("Start deleteRoom {}", input);
         Room room = roomRepository.findById(input.getRoomId())
@@ -207,46 +224,6 @@ public class SystemServiceImpl implements SystemService {
         roomRepository.delete(room);
         DeleteRoomOutput output = DeleteRoomOutput.builder().build();
         log.info("End deleteRoom {}", output);
-        return output;
-    }
-
-    @Override
-    public PartialUpdateRoomOutput testJsonPatch(PartialUpdateRoomInput input, JsonPatch jsonPatch) throws JsonPatchException, JsonProcessingException {
-        log.info("Start testJsonPatch {}", input);
-
-        Room room = roomRepository.findById(input.getRoomId())
-                .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
-
-        PartialUpdateRoomInput patchedRoom = jsonPatchService
-                .patch(jsonPatch, RoomMapper.INSTANCE.roomToPartialUpdateRoomInput(room), PartialUpdateRoomInput.class);
-
-
-
-        if (patchedRoom.getRoomNo() != null) {
-            if (roomRepository.countAllByRoomNo(input.getRoomNo()) > 0 && !room.getRoomNo().equals(input.getRoomNo())) {
-                throw new RoomNoAlreadyExistsException(input.getRoomNo());
-            }
-        }
-
-        RoomMapper.INSTANCE.partialUpdateRoom(room, patchedRoom);
-
-        if (patchedRoom.getBeds() != null) {
-            List<Bed> roomBeds = new ArrayList<>();
-            for (BedSize size : patchedRoom.getBeds()) {
-                Bed bed = bedRepository.findByBedSize(size)
-                        .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
-                roomBeds.add(bed);
-            }
-            room.setBeds(roomBeds);
-        }
-
-        roomRepository.save(room);
-
-
-        PartialUpdateRoomOutput output = PartialUpdateRoomOutput
-                .builder().build();
-
-        log.info("End testJsonPatch {}", output);
         return output;
     }
 }

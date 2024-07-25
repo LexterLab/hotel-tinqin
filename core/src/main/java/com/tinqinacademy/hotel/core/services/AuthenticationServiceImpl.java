@@ -7,6 +7,7 @@ import com.tinqinacademy.hotel.api.operations.signup.SignUpOutput;
 import com.tinqinacademy.hotel.core.mappers.UserMapper;
 import com.tinqinacademy.hotel.persistence.models.user.User;
 import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public SignUpOutput signUp(SignUpInput input) {
         log.info("Start signUp: {}", input);
         User user = UserMapper.INSTANCE.SignUpInputToUser(input);
