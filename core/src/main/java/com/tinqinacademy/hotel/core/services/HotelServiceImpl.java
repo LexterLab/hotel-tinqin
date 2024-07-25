@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -48,15 +47,15 @@ public class HotelServiceImpl implements HotelService {
         log.info("Start searchRoom {}", input);
 
 
-        String bedSize = "";
-        String bathroomType = "";
+        String bedSize = null;
+        String bathroomType = null;
 
-        if (Objects.equals(input.getBathroomType().toString(), "")) {
-            bathroomType = null;
+        if (input.getBathroomType() != null) {
+            bathroomType = input.getBathroomType().name();
         }
 
-        if (Objects.equals(input.getBedSize().toString(), "")) {
-            bedSize = null;
+        if (input.getBedSize() != null) {
+            bedSize = input.getBedSize().name();
         }
 
         List<UUID> availableRoomIds = roomRepository.searchForAvailableRooms(input.getStartDate(),

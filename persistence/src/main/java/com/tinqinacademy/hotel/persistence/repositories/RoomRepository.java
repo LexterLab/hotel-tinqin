@@ -1,7 +1,5 @@
 package com.tinqinacademy.hotel.persistence.repositories;
 
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
