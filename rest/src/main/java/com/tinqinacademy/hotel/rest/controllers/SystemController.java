@@ -2,7 +2,6 @@ package com.tinqinacademy.hotel.rest.controllers;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
@@ -19,7 +18,6 @@ import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -151,7 +149,8 @@ public class SystemController {
     })
     @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable UUID roomId,
-                                                                     @RequestBody @Valid PartialUpdateRoomInput input)  {
+                                                                     @RequestBody @Valid PartialUpdateRoomInput input)
+            throws JsonPatchException, JsonProcessingException {
         PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .beds(input.getBeds())
@@ -176,19 +175,6 @@ public class SystemController {
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
     public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable UUID roomId) {
         DeleteRoomOutput output = systemService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
-    }
-
-
-    @PatchMapping("test-jsonpatch/{roomId}")
-    public ResponseEntity<PartialUpdateRoomOutput> testJsonPatch(
-            @Schema(example = "[{ \"op\": \"replace\", \"path\": \"/price\", \"value\": \"150.00\" }]")
-            @RequestBody JsonPatch jsonPatch,
-            @PathVariable UUID roomId) throws JsonPatchException, JsonProcessingException {
-        PartialUpdateRoomOutput output = systemService.testJsonPatch(PartialUpdateRoomInput.builder()
-                .roomId(roomId)
-                        .build()
-                , jsonPatch);
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 }
