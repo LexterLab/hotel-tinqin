@@ -18,7 +18,7 @@ public class Bed {
     @Id
     @GeneratedValue
     private UUID id;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BedSize bedSize;
     @Column(nullable = false)
