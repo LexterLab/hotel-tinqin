@@ -35,6 +35,7 @@ import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,7 @@ public class SystemServiceImpl implements SystemService {
     private final ObjectMapper objectMapper;
 
     @Override
+    @Transactional
     public RegisterGuestOutput registerGuest(RegisterGuestInput input) {
         log.info("Start registerVisitor {}", input);
 
@@ -101,6 +103,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Transactional
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
@@ -130,6 +133,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Transactional
     public UpdateRoomOutput updateRoom(UpdateRoomInput input) {
         log.info("Start updateRoom {}", input);
 
@@ -161,6 +165,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Transactional
     public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) throws JsonPatchException, JsonProcessingException {
         log.info("Start partialUpdateRoom {}", input);
 
@@ -208,6 +213,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    @Transactional
     public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
         log.info("Start deleteRoom {}", input);
         Room room = roomRepository.findById(input.getRoomId())
