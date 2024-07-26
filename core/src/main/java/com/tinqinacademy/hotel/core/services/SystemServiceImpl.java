@@ -25,7 +25,6 @@ import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
 import com.tinqinacademy.hotel.core.mappers.GuestMapper;
-import com.tinqinacademy.hotel.core.mappers.RoomMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
@@ -38,6 +37,7 @@ import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -53,16 +53,21 @@ public class SystemServiceImpl implements SystemService {
     private final BedRepository bedRepository;
     private final BookingRepository bookingRepository;
     private final ObjectMapper objectMapper;
+    private final ConversionService conversionService;
 
     @Override
     @Transactional
     public RegisterGuestOutput registerGuest(RegisterGuestInput input) {
         log.info("Start registerVisitor {}", input);
 
-        List<Guest> guests = GuestMapper.INSTANCE.guestInputToGuestList(input.getGuests());
+        List<Guest> guests = input.getGuests()
+                .stream()
+                .map(guestInput -> conversionService.convert(guestInput, Guest.class))
+                .toList();
 
         Booking booking = bookingRepository.findById(input.getBookingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", input.getBookingId().toString()));
+
 
         for (Guest guest : guests) {
             Optional<Guest> existingGuest = guestRepository.findByIdCardNo(guest.getIdCardNo());
@@ -76,8 +81,6 @@ public class SystemServiceImpl implements SystemService {
                 booking.setGuests(List.of(guest));
                 guestRepository.save(guest);
             }
-
-
         }
 
         RegisterGuestOutput output = RegisterGuestOutput.builder().build();
@@ -119,10 +122,12 @@ public class SystemServiceImpl implements SystemService {
             roomBeds.add(bed);
         }
 
-        Room room = RoomMapper.INSTANCE.createRoomInputToRoom(input);
-        room.setBeds(roomBeds);
+        Room room = conversionService.convert(input, Room.class);
 
+
+        room.setBeds(roomBeds);
         roomRepository.save(room);
+
 
         CreateRoomOutput output = CreateRoomOutput.builder()
                 .roomId(room.getId().toString())
@@ -152,13 +157,15 @@ public class SystemServiceImpl implements SystemService {
             roomBeds.add(bed);
         }
 
-        RoomMapper.INSTANCE.updateRoom(room, input);
-        room.setBeds(roomBeds);
+//        RoomMapper.INSTANCE.updateRoom(room, input);
+        Room updatedRoom = conversionService.convert(input, Room.class);
+        updatedRoom.setBeds(roomBeds);
+        updatedRoom.setBookings(room.getBookings());
 
-        roomRepository.save(room);
+        roomRepository.save(updatedRoom);
 
         UpdateRoomOutput output = UpdateRoomOutput.builder()
-                .roomId(input.getRoomId())
+                .roomId(updatedRoom.getId())
                 .build();
         log.info("End updateRoom {}", output);
         return output;
@@ -172,8 +179,10 @@ public class SystemServiceImpl implements SystemService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
+        Long existingRoomNoCount = roomRepository.countAllByRoomNo(input.getRoomNo());
+
         if (input.getRoomNo() != null) {
-            if (roomRepository.countAllByRoomNo(input.getRoomNo()) > 0 && !room.getRoomNo().equals(input.getRoomNo())) {
+            if ( existingRoomNoCount> 0 && !room.getRoomNo().equals(input.getRoomNo())) {
                 throw new RoomNoAlreadyExistsException(input.getRoomNo());
             }
         }
