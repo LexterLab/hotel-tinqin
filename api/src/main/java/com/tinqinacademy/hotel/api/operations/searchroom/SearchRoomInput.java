@@ -4,7 +4,6 @@ import com.tinqinacademy.hotel.api.models.constants.BathroomType;
 import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
