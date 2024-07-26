@@ -28,6 +28,7 @@ import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ public class HotelServiceImpl implements HotelService {
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
+    private final ConversionService conversionService;
 
     @Override
     public SearchRoomOutput searchRoom(SearchRoomInput input) {
@@ -64,28 +66,10 @@ public class HotelServiceImpl implements HotelService {
         Room room = roomRepository.findById(input.getRoomId())
                         .orElseThrow(() -> new ResourceNotFoundException("room", "id", input.getRoomId().toString()));
 
-        List<BedSize> bedSizes = room.getBeds().stream()
-                .map(Bed::getBedSize)
-                .toList();
-
         List<Booking> roomBookings =  bookingRepository.findBookingsByRoomIdAndCurrentDate(room.getId());
+        room.setBookings(roomBookings);
 
-        List<LocalDateTime> datesOccupied = roomBookings
-                .stream()
-                .flatMap(booking -> Stream.of(booking.getStartDate(), booking.getEndDate()))
-                .distinct()
-                .toList();
-
-
-        GetRoomOutput output = GetRoomOutput.builder()
-                .id(room.getId())
-                .price(room.getPrice())
-                .floor(room.getFloor())
-                .bedSizes(bedSizes)
-                .bathroomType(room.getBathroomType())
-                .datesOccupied(datesOccupied)
-                .bedCount(room.getBeds().size())
-                .build();
+        GetRoomOutput output = conversionService.convert(room, GetRoomOutput.class);
 
         log.info("End getRoom {}", output);
         return output;

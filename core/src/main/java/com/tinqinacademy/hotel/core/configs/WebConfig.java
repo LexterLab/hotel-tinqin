@@ -2,6 +2,7 @@ package com.tinqinacademy.hotel.core.configs;
 
 import com.tinqinacademy.hotel.core.converters.CreateRoomInputToRoom;
 import com.tinqinacademy.hotel.core.converters.GuestInputToGuest;
+import com.tinqinacademy.hotel.core.converters.RoomToGetRoomOutput;
 import com.tinqinacademy.hotel.core.converters.UpdateRoomInputToRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -14,11 +15,13 @@ public class WebConfig implements WebMvcConfigurer {
     private final CreateRoomInputToRoom createRoomInputToRoom;
     private final UpdateRoomInputToRoom updateRoomInputToRoom;
     private final GuestInputToGuest guestInputToGuest;
+    private final RoomToGetRoomOutput roomToGetRoomOutput;
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(createRoomInputToRoom);
         registry.addConverter(updateRoomInputToRoom);
         registry.addConverter(guestInputToGuest);
+        registry.addConverter(roomToGetRoomOutput);
     }
 }
