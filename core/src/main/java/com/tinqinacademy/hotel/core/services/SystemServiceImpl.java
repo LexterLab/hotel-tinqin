@@ -17,6 +17,8 @@ import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
+import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
+import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
@@ -97,8 +99,12 @@ public class SystemServiceImpl implements SystemService {
                 input.getIdCardValidity(), input.getIdCardIssueAuthority(), input.getIdCardIssueDate(),
                 input.getRoomNo());
 
+        List<GuestOutput> guestReports = guests.stream()
+                .map(guest -> conversionService.convert(guest, GuestOutput.class))
+                .toList();
+
         GetGuestReportOutput output = GetGuestReportOutput.builder()
-                .guestsReports(GuestMapper.INSTANCE.guestToGuestOutput(guests))
+                .guestsReports(guestReports)
                 .build();
 
         log.info("End getVisitorsReport {}", output);
@@ -157,7 +163,6 @@ public class SystemServiceImpl implements SystemService {
             roomBeds.add(bed);
         }
 
-//        RoomMapper.INSTANCE.updateRoom(room, input);
         Room updatedRoom = conversionService.convert(input, Room.class);
         updatedRoom.setBeds(roomBeds);
         updatedRoom.setBookings(room.getBookings());
