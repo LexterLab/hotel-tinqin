@@ -3,6 +3,7 @@ package com.tinqinacademy.hotel.persistence.repositories;
 import com.tinqinacademy.hotel.api.models.constants.BathroomType;
 import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -31,4 +32,6 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
 """)
     List<Room> searchForAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, Integer bedCount,
                                        BedSize bedSize, BathroomType bathroomType);
+
+    List<Room> findAll(Specification<Room> spec);
 }
