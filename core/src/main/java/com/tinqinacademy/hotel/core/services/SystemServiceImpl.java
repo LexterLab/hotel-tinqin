@@ -17,7 +17,6 @@ import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
-import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
@@ -26,7 +25,6 @@ import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutpu
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
-import com.tinqinacademy.hotel.core.mappers.GuestMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
@@ -116,24 +114,14 @@ public class SystemServiceImpl implements SystemService {
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
-        if (roomRepository.countAllByRoomNo(input.roomNo()) > 0) {
-            throw new RoomNoAlreadyExistsException(input.roomNo());
-        }
+        validateCreateRoom(input);
 
-        List<Bed> roomBeds = new ArrayList<>();
-
-        for (BedSize size : input.beds()) {
-            Bed bed = bedRepository.findByBedSize(size)
-                    .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
-            roomBeds.add(bed);
-        }
+        List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(input.beds());
 
         Room room = conversionService.convert(input, Room.class);
-
-
         room.setBeds(roomBeds);
-        roomRepository.save(room);
 
+        roomRepository.save(room);
 
         CreateRoomOutput output = CreateRoomOutput.builder()
                 .roomId(room.getId().toString())
@@ -239,5 +227,17 @@ public class SystemServiceImpl implements SystemService {
         DeleteRoomOutput output = DeleteRoomOutput.builder().build();
         log.info("End deleteRoom {}", output);
         return output;
+    }
+
+    private void validateCreateRoom(CreateRoomInput input) {
+        log.info("Start validateCreateRoom {}", input);
+
+        Long existingRoomNoRooms = roomRepository.countAllByRoomNo(input.roomNo());
+
+        if (existingRoomNoRooms > 0) {
+            throw new RoomNoAlreadyExistsException(input.roomNo());
+        }
+
+        log.info("End validateCreateRoom {}", existingRoomNoRooms);
     }
 }
