@@ -86,9 +86,7 @@ public class HotelServiceImpl implements HotelService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", String.valueOf(input.getRoomId())));
 
-        if (bookingRepository.countByRoomAndDates(room.getId(), input.getStartDate(), input.getEndDate()) > 0) {
-            throw new BookingDateNotAvailableException();
-        }
+        checkIfBookingAvailable(input, room);
 
         Booking booking = BookingMapper.INSTANCE.bookRoomInputToBooking(input);
         booking.setUser(user);
@@ -100,6 +98,8 @@ public class HotelServiceImpl implements HotelService {
         log.info("End bookRoom {}", output);
         return output;
     }
+
+
 
     @Override
     @Transactional
@@ -119,11 +119,25 @@ public class HotelServiceImpl implements HotelService {
         return output;
     }
 
+
+    private void checkIfBookingAvailable(BookRoomInput input, Room room) {
+        log.info("Start checkIfBookingAvailable {}", input);
+        Long bookedByRooms =  bookingRepository
+                .countByRoomAndDates(room.getId(), input.getStartDate(), input.getEndDate());
+
+        if (bookedByRooms > 0) {
+            throw new BookingDateNotAvailableException();
+        }
+        log.info("End checkIfBookingAvailable {}", bookedByRooms);
+    }
+
     private void checkIfUnbookingIsPossible(Booking booking) {
+        log.info("Start checkIfUnbookingIsPossible {}", booking.getId());
         if (LocalDateTime.now().isAfter(booking.getEndDate())) {
             throw new AlreadyFinishedVisitException();
         } else if (LocalDateTime.now().isAfter(booking.getStartDate())) {
             throw new AlreadyStartedVisitException();
         }
+        log.info("End checkIfUnbookingIsPossible {}", booking.getId());
     }
 }
