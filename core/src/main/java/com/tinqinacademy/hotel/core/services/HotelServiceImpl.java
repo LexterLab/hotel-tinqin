@@ -107,19 +107,23 @@ public class HotelServiceImpl implements HotelService {
         log.info("Start unbookRoom {}", input);
 
         Booking booking = bookingRepository.findLatestByRoomIdAndUserId(input.getRoomId(), input.getUserId())
-                        .orElseThrow(() -> new ResourceNotFoundException("booking", "roomId & userId",
-                                input.getRoomId().toString()));
+                .orElseThrow(() -> new ResourceNotFoundException("booking", "roomId & userId",
+                        input.getRoomId().toString()));
 
-        if (LocalDateTime.now().isAfter(booking.getEndDate())) {
-            throw new AlreadyFinishedVisitException();
-        } else if (LocalDateTime.now().isAfter(booking.getStartDate())) {
-            throw new AlreadyStartedVisitException();
-        }
+        checkIfUnbookingIsPossible(booking);
 
         bookingRepository.delete(booking);
 
         UnbookRoomOutput output = UnbookRoomOutput.builder().build();
         log.info("End unbookRoom {}", output);
         return output;
+    }
+
+    private void checkIfUnbookingIsPossible(Booking booking) {
+        if (LocalDateTime.now().isAfter(booking.getEndDate())) {
+            throw new AlreadyFinishedVisitException();
+        } else if (LocalDateTime.now().isAfter(booking.getStartDate())) {
+            throw new AlreadyStartedVisitException();
+        }
     }
 }
