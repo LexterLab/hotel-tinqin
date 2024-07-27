@@ -58,28 +58,12 @@ public class SystemServiceImpl implements SystemService {
     public RegisterGuestOutput registerGuest(RegisterGuestInput input) {
         log.info("Start registerVisitor {}", input);
 
-        List<Guest> guests = input.getGuests()
-                .stream()
-                .map(guestInput -> conversionService.convert(guestInput, Guest.class))
-                .toList();
-
         Booking booking = bookingRepository.findById(input.getBookingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", input.getBookingId().toString()));
 
+        addGuestsToBooking(input, booking);
 
-        for (Guest guest : guests) {
-            Optional<Guest> existingGuest = guestRepository.findByIdCardNo(guest.getIdCardNo());
-            if (existingGuest.isPresent()) {
-                if (booking.getGuests().contains(existingGuest.get())) {
-                    throw new GuestAlreadyRegisteredException(guest.getId(), input.getBookingId());
-                }
-                booking.getGuests().add(existingGuest.get());
-                bookingRepository.save(booking);
-            } else {
-                booking.setGuests(List.of(guest));
-                guestRepository.save(guest);
-            }
-        }
+        bookingRepository.save(booking);
 
         RegisterGuestOutput output = RegisterGuestOutput.builder().build();
         log.info("End registerVisitor {}", output);
@@ -254,5 +238,27 @@ public class SystemServiceImpl implements SystemService {
         Room patchedRoom = objectMapper.treeToValue(patchedRoomNode, Room.class);
         log.info("End applyPartialUpdate {}", patchedRoom);
         return patchedRoom;
+    }
+
+    private void addGuestsToBooking(RegisterGuestInput input, Booking booking) {
+        log.info("Start addGuestsToBooking {}", input);
+        List<Guest> guests = input.getGuests()
+                .stream()
+                .map(guestInput -> conversionService.convert(guestInput, Guest.class))
+                .toList();
+
+        for (Guest guest : guests) {
+            Optional<Guest> existingGuest = guestRepository.findByIdCardNo(guest.getIdCardNo());
+            if (existingGuest.isPresent()) {
+                if (booking.getGuests().contains(existingGuest.get())) {
+                    throw new GuestAlreadyRegisteredException(existingGuest.get().getId(), input.getBookingId());
+                }
+                booking.getGuests().add(existingGuest.get());
+            } else {
+                booking.getGuests().add(guest);
+            }
+        }
+
+        log.info("End addGuestsToBooking {}", guests);
     }
 }
