@@ -139,17 +139,9 @@ public class SystemServiceImpl implements SystemService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
-        if (roomRepository.countAllByRoomNo(input.getRoomNo()) > 0 && !room.getRoomNo().equals(input.getRoomNo())) {
-            throw new RoomNoAlreadyExistsException(input.getRoomNo());
-        }
+        validateUpdateRoom(input, room);
 
-        List<Bed> roomBeds = new ArrayList<>();
-
-        for (BedSize size : input.getBeds()) {
-            Bed bed = bedRepository.findByBedSize(size)
-                    .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
-            roomBeds.add(bed);
-        }
+        List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(input.getBeds());
 
         Room updatedRoom = conversionService.convert(input, Room.class);
         updatedRoom.setBeds(roomBeds);
@@ -160,6 +152,7 @@ public class SystemServiceImpl implements SystemService {
         UpdateRoomOutput output = UpdateRoomOutput.builder()
                 .roomId(updatedRoom.getId())
                 .build();
+
         log.info("End updateRoom {}", output);
         return output;
     }
@@ -239,5 +232,15 @@ public class SystemServiceImpl implements SystemService {
         }
 
         log.info("End validateCreateRoom {}", existingRoomNoRooms);
+    }
+
+    private void validateUpdateRoom(UpdateRoomInput input, Room room) {
+        log.info("Start validateUpdateRoom {}", input);
+        Long existingRoomNoRooms = roomRepository.countAllByRoomNo(input.getRoomNo());
+        if (existingRoomNoRooms > 0 &&  !room.getRoomNo().equals(input.getRoomNo())) {
+            throw new RoomNoAlreadyExistsException(input.getRoomNo());
+        }
+
+        log.info("End validateUpdateRoom {}", existingRoomNoRooms);
     }
 }
