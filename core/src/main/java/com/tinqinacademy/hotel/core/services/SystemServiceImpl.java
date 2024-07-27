@@ -4,21 +4,19 @@ package com.tinqinacademy.hotel.core.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
-import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialRoomUpdate;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
@@ -26,7 +24,6 @@ import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutpu
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
-import com.tinqinacademy.hotel.core.mappers.GuestMapper;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
@@ -42,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,28 +58,12 @@ public class SystemServiceImpl implements SystemService {
     public RegisterGuestOutput registerGuest(RegisterGuestInput input) {
         log.info("Start registerVisitor {}", input);
 
-        List<Guest> guests = input.getGuests()
-                .stream()
-                .map(guestInput -> conversionService.convert(guestInput, Guest.class))
-                .toList();
-
         Booking booking = bookingRepository.findById(input.getBookingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", input.getBookingId().toString()));
 
+        addGuestsToBooking(input, booking);
 
-        for (Guest guest : guests) {
-            Optional<Guest> existingGuest = guestRepository.findByIdCardNo(guest.getIdCardNo());
-            if (existingGuest.isPresent()) {
-                if (booking.getGuests().contains(existingGuest.get())) {
-                    throw new GuestAlreadyRegisteredException(guest.getId(), input.getBookingId());
-                }
-                booking.getGuests().add(existingGuest.get());
-                bookingRepository.save(booking);
-            } else {
-                booking.setGuests(List.of(guest));
-                guestRepository.save(guest);
-            }
-        }
+        bookingRepository.save(booking);
 
         RegisterGuestOutput output = RegisterGuestOutput.builder().build();
         log.info("End registerVisitor {}", output);
@@ -116,24 +96,14 @@ public class SystemServiceImpl implements SystemService {
     public CreateRoomOutput createRoom(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
-        if (roomRepository.countAllByRoomNo(input.roomNo()) > 0) {
-            throw new RoomNoAlreadyExistsException(input.roomNo());
-        }
+        validateCreateRoom(input);
 
-        List<Bed> roomBeds = new ArrayList<>();
-
-        for (BedSize size : input.beds()) {
-            Bed bed = bedRepository.findByBedSize(size)
-                    .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
-            roomBeds.add(bed);
-        }
+        List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(input.beds());
 
         Room room = conversionService.convert(input, Room.class);
-
-
         room.setBeds(roomBeds);
-        roomRepository.save(room);
 
+        roomRepository.save(room);
 
         CreateRoomOutput output = CreateRoomOutput.builder()
                 .roomId(room.getId().toString())
@@ -151,17 +121,9 @@ public class SystemServiceImpl implements SystemService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
-        if (roomRepository.countAllByRoomNo(input.getRoomNo()) > 0 && !room.getRoomNo().equals(input.getRoomNo())) {
-            throw new RoomNoAlreadyExistsException(input.getRoomNo());
-        }
+        validateUpdateRoom(input, room);
 
-        List<Bed> roomBeds = new ArrayList<>();
-
-        for (BedSize size : input.getBeds()) {
-            Bed bed = bedRepository.findByBedSize(size)
-                    .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
-            roomBeds.add(bed);
-        }
+        List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(input.getBeds());
 
         Room updatedRoom = conversionService.convert(input, Room.class);
         updatedRoom.setBeds(roomBeds);
@@ -172,6 +134,7 @@ public class SystemServiceImpl implements SystemService {
         UpdateRoomOutput output = UpdateRoomOutput.builder()
                 .roomId(updatedRoom.getId())
                 .build();
+
         log.info("End updateRoom {}", output);
         return output;
     }
@@ -184,37 +147,12 @@ public class SystemServiceImpl implements SystemService {
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
-        Long existingRoomNoCount = roomRepository.countAllByRoomNo(input.getRoomNo());
+        validatePartialUpdate(input, room);
 
-        if (input.getRoomNo() != null) {
-            if ( existingRoomNoCount> 0 && !room.getRoomNo().equals(input.getRoomNo())) {
-                throw new RoomNoAlreadyExistsException(input.getRoomNo());
-            }
-        }
-
-        JsonNode roomNode = objectMapper.convertValue(room, JsonNode.class);
-        JsonNode inputNode = objectMapper.convertValue(input, JsonNode.class);
-
-        ((ObjectNode) inputNode).remove("roomId");
-        ((ObjectNode) inputNode).remove("beds");
-
-        JsonMergePatch mergePatch = JsonMergePatch.fromJson(inputNode);
-
-        JsonNode patchedRoomNode = mergePatch.apply(roomNode);
-
-        Room patchedRoom = objectMapper.treeToValue(patchedRoomNode, Room.class);
+        Room patchedRoom = applyPartialUpdate(input, room);
         patchedRoom.setId(room.getId());
 
-
-        if (input.getBeds() != null) {
-            List<Bed> roomBeds = new ArrayList<>();
-            for (BedSize size : input.getBeds()) {
-                Bed bed = bedRepository.findByBedSize(size)
-                        .orElseThrow(() -> new ResourceNotFoundException("Bed", "bedSize", size.toString()));
-                roomBeds.add(bed);
-            }
-            patchedRoom.setBeds(roomBeds);
-        }
+        updateRoomBeds(input, patchedRoom);
 
         roomRepository.save(patchedRoom);
 
@@ -239,5 +177,88 @@ public class SystemServiceImpl implements SystemService {
         DeleteRoomOutput output = DeleteRoomOutput.builder().build();
         log.info("End deleteRoom {}", output);
         return output;
+    }
+
+    private void validateCreateRoom(CreateRoomInput input) {
+        log.info("Start validateCreateRoom {}", input);
+
+        Long existingRoomNoRooms = roomRepository.countAllByRoomNo(input.roomNo());
+
+        if (existingRoomNoRooms > 0) {
+            throw new RoomNoAlreadyExistsException(input.roomNo());
+        }
+
+        log.info("End validateCreateRoom {}", existingRoomNoRooms);
+    }
+
+    private void validateUpdateRoom(UpdateRoomInput input, Room room) {
+        log.info("Start validateUpdateRoom {}", input);
+        
+        Long existingRoomNoRooms = roomRepository.countAllByRoomNo(input.getRoomNo());
+        if (existingRoomNoRooms > 0 &&  !room.getRoomNo().equals(input.getRoomNo())) {
+            throw new RoomNoAlreadyExistsException(input.getRoomNo());
+        }
+
+        log.info("End validateUpdateRoom {}", existingRoomNoRooms);
+    }
+
+    private void validatePartialUpdate(PartialUpdateRoomInput input, Room room) {
+        log.info("Start validatePartialUpdate {}", input);
+        Long existingRoomNoCount = roomRepository.countAllByRoomNo(input.getRoomNo());
+
+        if (input.getRoomNo() != null) {
+            if ( existingRoomNoCount> 0 && !room.getRoomNo().equals(input.getRoomNo())) {
+                throw new RoomNoAlreadyExistsException(input.getRoomNo());
+            }
+        }
+
+        log.info("End validatePartialUpdate {}", input);
+    }
+
+    private void updateRoomBeds(PartialUpdateRoomInput input, Room patchedRoom) {
+        log.info("Start updateRoomBeds {}", input);
+        if (input.getBeds() != null) {
+            List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(input.getBeds());
+            patchedRoom.setBeds(roomBeds);
+        }
+        log.info("End updateRoomBeds {}", patchedRoom);
+    }
+
+    private Room applyPartialUpdate(PartialUpdateRoomInput input, Room room) throws JsonPatchException, JsonProcessingException {
+        log.info("Start applyPartialUpdate {}", input);
+        JsonNode roomNode = objectMapper.convertValue(room, JsonNode.class);
+
+        PartialRoomUpdate partialRoomUpdate = conversionService.convert(input, PartialRoomUpdate.class);
+        JsonNode inputNode = objectMapper.convertValue(partialRoomUpdate, JsonNode.class);
+
+        JsonMergePatch mergePatch = JsonMergePatch.fromJson(inputNode);
+
+        JsonNode patchedRoomNode = mergePatch.apply(roomNode);
+
+        Room patchedRoom = objectMapper.treeToValue(patchedRoomNode, Room.class);
+        log.info("End applyPartialUpdate {}", patchedRoom);
+        return patchedRoom;
+    }
+
+    private void addGuestsToBooking(RegisterGuestInput input, Booking booking) {
+        log.info("Start addGuestsToBooking {}", input);
+        List<Guest> guests = input.getGuests()
+                .stream()
+                .map(guestInput -> conversionService.convert(guestInput, Guest.class))
+                .toList();
+
+        for (Guest guest : guests) {
+            Optional<Guest> existingGuest = guestRepository.findByIdCardNo(guest.getIdCardNo());
+            if (existingGuest.isPresent()) {
+                if (booking.getGuests().contains(existingGuest.get())) {
+                    throw new GuestAlreadyRegisteredException(existingGuest.get().getId(), input.getBookingId());
+                }
+                booking.getGuests().add(existingGuest.get());
+            } else {
+                booking.getGuests().add(guest);
+            }
+        }
+
+        log.info("End addGuestsToBooking {}", guests);
     }
 }

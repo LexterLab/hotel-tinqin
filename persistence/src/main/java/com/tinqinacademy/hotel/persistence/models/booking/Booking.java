@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,5 +39,5 @@ public class Booking {
             joinColumns = @JoinColumn(name = "booking_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "guest_id", referencedColumnName = "id")
     )
-    private List<Guest> guests;
+    private List<Guest> guests = new ArrayList<>();
 }
