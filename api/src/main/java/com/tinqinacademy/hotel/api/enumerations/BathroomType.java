@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.api.models.constants;
+package com.tinqinacademy.hotel.api.enumerations;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

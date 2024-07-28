@@ -1,8 +1,8 @@
 package com.tinqinacademy.hotel.api.operations.partialupdateroom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;

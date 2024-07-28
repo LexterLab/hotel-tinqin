@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.searchroom;
 
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import lombok.*;
 
 import java.time.LocalDateTime;

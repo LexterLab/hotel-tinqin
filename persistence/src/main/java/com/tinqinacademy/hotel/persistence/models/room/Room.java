@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "bookings")
 @Builder
 @Entity
 @Table(name = "rooms")
