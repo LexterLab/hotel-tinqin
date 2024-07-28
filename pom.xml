@@ -74,7 +74,6 @@
                 <configuration>
                 </configuration>
                 <executions>
-                    <!-- enable flattening -->
                     <execution>
                         <id>flatten</id>
                         <phase>process-resources</phase>
@@ -82,7 +81,6 @@
                             <goal>flatten</goal>
                         </goals>
                     </execution>
-                    <!-- ensure proper cleanup -->
                     <execution>
                         <id>flatten.clean</id>
                         <phase>clean</phase>
@@ -92,28 +90,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <version>3.11.0</version>-->
-<!--                <configuration>-->
-<!--                    <source>${java.version}</source>-->
-<!--                    <target>${java.version}</target>-->
-<!--                    <annotationProcessorPaths>-->
-<!--                        <path>-->
-<!--                            <groupId>org.projectlombok</groupId>-->
-<!--                            <artifactId>lombok</artifactId>-->
-<!--                            <version>${lombok.version}</version>-->
-<!--                        </path>-->
-<!--                        <path>-->
-<!--                            <groupId>org.mapstruct</groupId>-->
-<!--                            <artifactId>mapstruct-processor</artifactId>-->
-<!--                            <version>${mapstruct.version}</version>-->
-<!--                        </path>-->
-<!--                    </annotationProcessorPaths>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 
