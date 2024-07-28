@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.core.converters;
 
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
+import com.tinqinacademy.hotel.persistence.enumerations.BathroomType;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ public class UpdateRoomInputToRoom extends AbstractConverter<UpdateRoomInput, Ro
                 .id(source.getRoomId())
                 .floor(source.getFloor())
                 .price(source.getPrice())
-                .bathroomType(source.getBathroomType())
+                .bathroomType(BathroomType.getByCode(source.getBathroomType().toString()))
                 .roomNo(source.getRoomNo())
                 .build();
 

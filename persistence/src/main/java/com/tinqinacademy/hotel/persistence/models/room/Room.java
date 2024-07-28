@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.persistence.models.room;
 
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
+import com.tinqinacademy.hotel.persistence.enumerations.BathroomType;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import jakarta.persistence.*;

@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core.converters;
 
+import com.tinqinacademy.hotel.api.models.constants.BathroomType;
 import com.tinqinacademy.hotel.api.models.constants.BedSize;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
@@ -14,7 +15,6 @@ import java.util.stream.Stream;
 public class RoomToGetRoomOutput extends AbstractConverter<Room, GetRoomOutput> {
     @Override
     protected Class<GetRoomOutput> getTargetClass() {
-
         return GetRoomOutput.class;
     }
 
@@ -22,6 +22,7 @@ public class RoomToGetRoomOutput extends AbstractConverter<Room, GetRoomOutput> 
     protected GetRoomOutput doConvert(Room source) {
         List<BedSize> bedSizes = source.getBeds().stream()
                 .map(Bed::getBedSize)
+                .map(bedSize -> BedSize.getByCode(bedSize.toString()))
                 .toList();
 
         List<LocalDateTime> datesOccupied = source.getBookings()
@@ -36,7 +37,7 @@ public class RoomToGetRoomOutput extends AbstractConverter<Room, GetRoomOutput> 
                 .price(source.getPrice())
                 .floor(source.getFloor())
                 .bedSizes(bedSizes)
-                .bathroomType(source.getBathroomType())
+                .bathroomType(BathroomType.getByCode(source.getBathroomType().toString()))
                 .bedCount(bedSizes.size())
                 .datesOccupied(datesOccupied)
                 .build();

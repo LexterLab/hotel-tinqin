@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.persistence.bootstrap;
 
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
+
+import com.tinqinacademy.hotel.persistence.enumerations.BedSize;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import lombok.RequiredArgsConstructor;
