@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.persistence.models.bed;
 
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
+import com.tinqinacademy.hotel.persistence.enumerations.BedSize;
 import jakarta.persistence.*;
 import lombok.*;
 

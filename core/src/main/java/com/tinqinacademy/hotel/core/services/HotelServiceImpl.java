@@ -16,6 +16,8 @@ import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.HotelService;
 
 import com.tinqinacademy.hotel.core.mappers.BookingMapper;
+import com.tinqinacademy.hotel.persistence.enumerations.BathroomType;
+import com.tinqinacademy.hotel.persistence.enumerations.BedSize;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 
@@ -49,7 +51,8 @@ public class HotelServiceImpl implements HotelService {
         log.info("Start searchRoom {}", input);
 
         List<UUID> availableRoomIds = roomRepository.findAll(roomSpecification.searchForAvailableRooms(input.getStartDate(),
-                input.getEndDate(), input.getBedCount(), input.getBedSize(), input.getBathroomType())).stream()
+                input.getEndDate(), input.getBedCount(), BedSize.getByCode(input.getBedSize().toString()),
+                        BathroomType.getByCode(input.getBathroomType().toString()))).stream()
                 .map(Room::getId).toList();
 
         SearchRoomOutput searchRoomOutput = SearchRoomOutput.builder()

@@ -24,6 +24,7 @@ import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutpu
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.contracts.SystemService;
+import com.tinqinacademy.hotel.persistence.enumerations.BedSize;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
@@ -98,7 +99,11 @@ public class SystemServiceImpl implements SystemService {
 
         validateCreateRoom(input);
 
-        List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(input.beds());
+        List<BedSize> bedSizes = input.beds().stream()
+                .map(bedSize -> BedSize.getByCode(bedSize.toString()))
+                .toList();
+
+        List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(bedSizes);
 
         Room room = conversionService.convert(input, Room.class);
         room.setBeds(roomBeds);
@@ -123,7 +128,11 @@ public class SystemServiceImpl implements SystemService {
 
         validateUpdateRoom(input, room);
 
-        List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(input.getBeds());
+        List<BedSize> bedSizes = input.getBeds().stream()
+                .map(bedSize -> BedSize.getByCode(bedSize.toString()))
+                .toList();
+
+        List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(bedSizes);
 
         Room updatedRoom = conversionService.convert(input, Room.class);
         updatedRoom.setBeds(roomBeds);
@@ -218,7 +227,11 @@ public class SystemServiceImpl implements SystemService {
     private void updateRoomBeds(PartialUpdateRoomInput input, Room patchedRoom) {
         log.info("Start updateRoomBeds {}", input);
         if (input.getBeds() != null) {
-            List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(input.getBeds());
+            List<BedSize> bedSizes = input.getBeds().stream()
+                    .map(bedSize -> BedSize.getByCode(bedSize.toString()))
+                    .toList();
+
+            List<Bed> roomBeds = bedRepository.findAllByBedSizeIn(bedSizes);
             patchedRoom.setBeds(roomBeds);
         }
         log.info("End updateRoomBeds {}", patchedRoom);

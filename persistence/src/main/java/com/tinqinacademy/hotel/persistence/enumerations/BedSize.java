@@ -1,5 +1,4 @@
-package com.tinqinacademy.hotel.api.models.constants;
-
+package com.tinqinacademy.hotel.persistence.enumerations;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -7,7 +6,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
-
 
 @RequiredArgsConstructor
 public enum BedSize {

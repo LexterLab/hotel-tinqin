@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;

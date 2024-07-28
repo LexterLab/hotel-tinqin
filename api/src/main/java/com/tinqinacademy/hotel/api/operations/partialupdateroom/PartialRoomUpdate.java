@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.partialupdateroom;
 
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import lombok.*;
 
 import java.math.BigDecimal;
