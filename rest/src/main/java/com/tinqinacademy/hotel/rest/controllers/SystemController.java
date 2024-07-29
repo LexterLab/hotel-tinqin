@@ -3,9 +3,7 @@ package com.tinqinacademy.hotel.rest.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.tinqinacademy.hotel.api.contracts.CreateRoomService;
-import com.tinqinacademy.hotel.api.contracts.GetGuestReportService;
-import com.tinqinacademy.hotel.api.contracts.RegisterGuestService;
+import com.tinqinacademy.hotel.api.contracts.*;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
@@ -18,7 +16,6 @@ import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.hotel.api.contracts.SystemService;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,6 +39,7 @@ public class SystemController {
     private final RegisterGuestService registerGuestService;
     private final GetGuestReportService getGuestReportService;
     private final CreateRoomService createRoomService;
+    private final UpdateRoomService updateRoomService;
 
     @Operation(
             summary = "Register Room Guest Rest API",
@@ -119,7 +117,6 @@ public class SystemController {
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
-
     @Operation(
             summary = "Update Room Rest API",
             description = "Update Room Rest API is for updating rooms"
@@ -132,7 +129,7 @@ public class SystemController {
     })
     @PutMapping(RestAPIRoutes.UPDATE_ROOM)
     public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable UUID roomId, @Valid @RequestBody UpdateRoomInput input) {
-        UpdateRoomOutput output = systemService.updateRoom(UpdateRoomInput.builder()
+        UpdateRoomOutput output = updateRoomService.updateRoom(UpdateRoomInput.builder()
                 .roomId(roomId)
                 .bathroomType(input.getBathroomType())
                 .floor(input.getFloor())
