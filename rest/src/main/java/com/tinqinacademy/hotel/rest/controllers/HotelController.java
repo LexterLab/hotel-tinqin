@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
+import com.tinqinacademy.hotel.api.contracts.BookRoomService;
 import com.tinqinacademy.hotel.api.contracts.GetRoomService;
 import com.tinqinacademy.hotel.api.contracts.SearchRoomService;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
@@ -34,6 +35,7 @@ public class HotelController {
     private final HotelService hotelService;
     private final SearchRoomService searchRoomService;
     private final GetRoomService getRoomService;
+    private final BookRoomService bookRoomService;
 
     @Operation(
             summary = "Search Rooms Rest API",
@@ -93,7 +95,7 @@ public class HotelController {
     )
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
     public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable UUID roomId , @Valid @RequestBody BookRoomInput input) {
-        BookRoomOutput output = hotelService.bookRoom(BookRoomInput.builder()
+        BookRoomOutput output = bookRoomService.bookRoom(BookRoomInput.builder()
                 .roomId(roomId)
                 .startDate(input.getStartDate())
                 .endDate(input.getEndDate())
