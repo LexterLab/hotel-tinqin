@@ -14,7 +14,22 @@ services:
       - hotel
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+#      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  commentdb:
+    container_name: commentdb
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: commentdb
+    ports:
+      - "5434:5432"
+    networks:
+      - hotel
+    volumes:
+      - comment_data:/var/lib/postgresql/data
+
 
   pgadmin:
     container_name: pgadmin
@@ -38,3 +53,4 @@ networks:
 volumes:
   pgadmin_data:
   postgres_data:
+  comment_data:
