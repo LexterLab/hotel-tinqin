@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
+import com.tinqinacademy.hotel.api.contracts.*;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
@@ -10,7 +11,6 @@ import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.hotel.api.contracts.HotelService;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,9 +29,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "Hotel REST APIs")
 public class HotelController {
-
-    private final HotelService hotelService;
-
+    private final SearchRoomService searchRoomService;
+    private final GetRoomService getRoomService;
+    private final BookRoomService bookRoomService;
+    private final UnbookRoomService unbookRoomService;
 
     @Operation(
             summary = "Search Rooms Rest API",
@@ -50,7 +51,7 @@ public class HotelController {
             @RequestParam(required = false) String bedSize,
             @RequestParam(required = false) String bathroomType
             ) {
-        SearchRoomOutput output = hotelService.searchRoom(
+        SearchRoomOutput output = searchRoomService.searchRoom(
                 SearchRoomInput.builder()
                         .bathroomType(BathroomType.getByCode(bathroomType))
                         .bedSize(BedSize.getByCode(bedSize))
@@ -73,7 +74,7 @@ public class HotelController {
     )
     @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
     public ResponseEntity<GetRoomOutput> getRoomById(@PathVariable UUID roomId) {
-        GetRoomOutput output = hotelService.getRoom(GetRoomInput.builder()
+        GetRoomOutput output = getRoomService.getRoom(GetRoomInput.builder()
                 .roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
@@ -91,7 +92,7 @@ public class HotelController {
     )
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
     public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable UUID roomId , @Valid @RequestBody BookRoomInput input) {
-        BookRoomOutput output = hotelService.bookRoom(BookRoomInput.builder()
+        BookRoomOutput output = bookRoomService.bookRoom(BookRoomInput.builder()
                 .roomId(roomId)
                 .startDate(input.getStartDate())
                 .endDate(input.getEndDate())
@@ -118,7 +119,7 @@ public class HotelController {
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
     public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable UUID roomId,
                                                        @Valid @RequestBody UnbookRoomInput input) {
-        UnbookRoomOutput output = hotelService.unbookRoom(UnbookRoomInput
+        UnbookRoomOutput output = unbookRoomService.unbookRoom(UnbookRoomInput
                 .builder()
                 .roomId(roomId)
                 .userId(input.getUserId())
