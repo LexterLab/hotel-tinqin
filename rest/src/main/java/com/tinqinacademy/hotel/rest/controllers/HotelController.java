@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
+import com.tinqinacademy.hotel.api.contracts.GetRoomService;
 import com.tinqinacademy.hotel.api.contracts.SearchRoomService;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
@@ -32,6 +33,7 @@ import java.util.UUID;
 public class HotelController {
     private final HotelService hotelService;
     private final SearchRoomService searchRoomService;
+    private final GetRoomService getRoomService;
 
     @Operation(
             summary = "Search Rooms Rest API",
@@ -73,7 +75,7 @@ public class HotelController {
     )
     @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
     public ResponseEntity<GetRoomOutput> getRoomById(@PathVariable UUID roomId) {
-        GetRoomOutput output = hotelService.getRoom(GetRoomInput.builder()
+        GetRoomOutput output = getRoomService.getRoom(GetRoomInput.builder()
                 .roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
