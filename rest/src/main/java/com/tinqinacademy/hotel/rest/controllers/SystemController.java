@@ -35,12 +35,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "System REST APIs")
 public class SystemController {
-    private final SystemService systemService;
     private final RegisterGuestService registerGuestService;
     private final GetGuestReportService getGuestReportService;
     private final CreateRoomService createRoomService;
     private final UpdateRoomService updateRoomService;
     private final PartialUpdateRoomService partialUpdateRoomService;
+    private final DeleteRoomService deleteRoomService;
 
     @Operation(
             summary = "Register Room Guest Rest API",
@@ -178,7 +178,7 @@ public class SystemController {
     })
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
     public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable UUID roomId) {
-        DeleteRoomOutput output = systemService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
+        DeleteRoomOutput output = deleteRoomService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 }
