@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -54,9 +53,6 @@ class SystemServiceImplTest {
 
     @Mock
     private GuestRepository guestRepository;
-
-    @Mock
-    private ObjectMapper objectMapper;
 
     @Mock
     private ConversionService conversionService;
