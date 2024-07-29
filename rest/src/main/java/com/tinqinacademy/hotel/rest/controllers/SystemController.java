@@ -3,6 +3,7 @@ package com.tinqinacademy.hotel.rest.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.tinqinacademy.hotel.api.contracts.CreateRoomService;
 import com.tinqinacademy.hotel.api.contracts.GetGuestReportService;
 import com.tinqinacademy.hotel.api.contracts.RegisterGuestService;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
@@ -40,6 +41,7 @@ public class SystemController {
     private final SystemService systemService;
     private final RegisterGuestService registerGuestService;
     private final GetGuestReportService getGuestReportService;
+    private final CreateRoomService createRoomService;
 
     @Operation(
             summary = "Register Room Guest Rest API",
@@ -113,7 +115,7 @@ public class SystemController {
     })
     @PostMapping(RestAPIRoutes.CREATE_ROOM)
     public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
-        CreateRoomOutput output = systemService.createRoom(input);
+        CreateRoomOutput output = createRoomService.createRoom(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
