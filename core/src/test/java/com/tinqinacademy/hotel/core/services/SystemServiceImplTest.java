@@ -1,5 +1,8 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
@@ -7,10 +10,14 @@ import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
+import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialRoomUpdate;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
@@ -58,6 +65,9 @@ class SystemServiceImplTest {
 
     @Mock
     private GuestRepository guestRepository;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @Mock
     private ConversionService conversionService;
@@ -379,4 +389,24 @@ class SystemServiceImplTest {
         assertThrows(RoomNoAlreadyExistsException.class, () -> systemService.updateRoom(input));
     }
 
+    @Test
+    void shouldDeleteRoom() {
+        DeleteRoomInput input = DeleteRoomInput
+                .builder()
+                .roomId(UUID.randomUUID())
+                .build();
+
+        Room room = Room
+                .builder()
+                .id(input.getRoomId())
+                .build();
+
+        when(roomRepository.findById(input.getRoomId())).thenReturn(Optional.of(room));
+        doNothing().when(bookingRepository).deleteAll(room.getBookings());
+        doNothing().when(roomRepository).delete(room);
+
+        systemService.deleteRoom(input);
+
+        verify(roomRepository).delete(room);
+    }
 }
