@@ -1,8 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
@@ -15,9 +13,6 @@ import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
-import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialRoomUpdate;
-import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
-import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;

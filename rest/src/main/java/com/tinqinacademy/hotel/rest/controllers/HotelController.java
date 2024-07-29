@@ -1,8 +1,6 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
-import com.tinqinacademy.hotel.api.contracts.BookRoomService;
-import com.tinqinacademy.hotel.api.contracts.GetRoomService;
-import com.tinqinacademy.hotel.api.contracts.SearchRoomService;
+import com.tinqinacademy.hotel.api.contracts.*;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
@@ -13,7 +11,6 @@ import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.hotel.api.contracts.HotelService;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,10 +29,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "Hotel REST APIs")
 public class HotelController {
-    private final HotelService hotelService;
     private final SearchRoomService searchRoomService;
     private final GetRoomService getRoomService;
     private final BookRoomService bookRoomService;
+    private final UnbookRoomService unbookRoomService;
 
     @Operation(
             summary = "Search Rooms Rest API",
@@ -122,7 +119,7 @@ public class HotelController {
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
     public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable UUID roomId,
                                                        @Valid @RequestBody UnbookRoomInput input) {
-        UnbookRoomOutput output = hotelService.unbookRoom(UnbookRoomInput
+        UnbookRoomOutput output = unbookRoomService.unbookRoom(UnbookRoomInput
                 .builder()
                 .roomId(roomId)
                 .userId(input.getUserId())
