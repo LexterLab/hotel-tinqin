@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
+import com.tinqinacademy.hotel.api.contracts.SearchRoomService;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
@@ -29,9 +30,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "Hotel REST APIs")
 public class HotelController {
-
     private final HotelService hotelService;
-
+    private final SearchRoomService searchRoomService;
 
     @Operation(
             summary = "Search Rooms Rest API",
@@ -50,7 +50,7 @@ public class HotelController {
             @RequestParam(required = false) String bedSize,
             @RequestParam(required = false) String bathroomType
             ) {
-        SearchRoomOutput output = hotelService.searchRoom(
+        SearchRoomOutput output = searchRoomService.searchRoom(
                 SearchRoomInput.builder()
                         .bathroomType(BathroomType.getByCode(bathroomType))
                         .bedSize(BedSize.getByCode(bedSize))
