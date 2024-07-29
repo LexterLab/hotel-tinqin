@@ -40,6 +40,7 @@ public class SystemController {
     private final GetGuestReportService getGuestReportService;
     private final CreateRoomService createRoomService;
     private final UpdateRoomService updateRoomService;
+    private final PartialUpdateRoomService partialUpdateRoomService;
 
     @Operation(
             summary = "Register Room Guest Rest API",
@@ -154,7 +155,7 @@ public class SystemController {
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable UUID roomId,
                                                                      @RequestBody @Valid PartialUpdateRoomInput input)
             throws JsonPatchException, JsonProcessingException {
-        PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
+        PartialUpdateRoomOutput output = partialUpdateRoomService.partialUpdateRoom(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .beds(input.getBeds())
                 .bathroomType(input.getBathroomType())
