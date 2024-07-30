@@ -5,6 +5,7 @@ import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
+import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomProcessor;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
@@ -31,7 +32,7 @@ import java.util.UUID;
 public class HotelController {
     private final SearchRoomService searchRoomService;
     private final GetRoomService getRoomService;
-    private final BookRoomService bookRoomService;
+    private final BookRoomProcessor bookRoomProcessor;
     private final UnbookRoomService unbookRoomService;
 
     @Operation(
@@ -92,7 +93,7 @@ public class HotelController {
     )
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
     public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable UUID roomId , @Valid @RequestBody BookRoomInput input) {
-        BookRoomOutput output = bookRoomService.bookRoom(BookRoomInput.builder()
+        BookRoomOutput output = bookRoomProcessor.process(BookRoomInput.builder()
                 .roomId(roomId)
                 .startDate(input.getStartDate())
                 .endDate(input.getEndDate())

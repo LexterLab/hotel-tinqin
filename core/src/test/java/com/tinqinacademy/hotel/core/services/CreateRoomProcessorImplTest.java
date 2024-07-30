@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CreateRoomServiceImplTest {
+class CreateRoomProcessorImplTest {
 
     @InjectMocks
     private CreateRoomServiceImpl createRoomServiceImpl;

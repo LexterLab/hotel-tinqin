@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.BookRoomService;
+import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomProcessor;
 import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
@@ -19,13 +19,13 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BookRoomServiceImpl implements BookRoomService {
+public class BookRoomProcessorImpl implements BookRoomProcessor {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
 
     @Override
-    public BookRoomOutput bookRoom(BookRoomInput input) {
+    public BookRoomOutput process(BookRoomInput input) {
         log.info("Start bookRoom {}", input);
 
         User user = userRepository.findById(input.getUserId())
