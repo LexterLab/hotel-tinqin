@@ -118,9 +118,13 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.CREATE_ROOM)
-    public ResponseEntity<Either<ErrorOutput, CreateRoomOutput>> createRoom(@Valid @RequestBody CreateRoomInput input) {
-        Either<ErrorOutput, CreateRoomOutput> output = createRoom.process(input);
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+    public ResponseEntity<?> createRoom(@Valid @RequestBody CreateRoomInput input) {
+        Either<ErrorOutput, CreateRoomOutput> result = createRoom.process(input);
+
+        return result.fold(
+                errorOutput -> new ResponseEntity<>(errorOutput, HttpStatus.BAD_REQUEST),
+                createRoomOutput -> new ResponseEntity<>(createRoomOutput, HttpStatus.CREATED)
+        );
     }
 
     @Operation(
