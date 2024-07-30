@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.tinqinacademy.hotel.api.contracts.PartialUpdateRoomService;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomProcessor;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialRoomUpdate;
@@ -26,14 +26,14 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PartialUpdateRoomServiceImpl implements PartialUpdateRoomService {
+public class PartialUpdateRoomProcessorImpl implements PartialUpdateRoomProcessor {
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
     private final BedRepository bedRepository;
     private final ConversionService conversionService;
 
     @Override
-    public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) throws JsonPatchException, JsonProcessingException {
+    public PartialUpdateRoomOutput process(PartialUpdateRoomInput input) throws JsonPatchException, JsonProcessingException {
         log.info("Start partialUpdateRoom {}", input);
 
         Room room = roomRepository.findById(input.getRoomId())

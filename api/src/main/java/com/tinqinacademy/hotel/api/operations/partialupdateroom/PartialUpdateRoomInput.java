@@ -1,6 +1,8 @@
 package com.tinqinacademy.hotel.api.operations.partialupdateroom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tinqinacademy.hotel.api.base.OperationInput;
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +19,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @ToString
-public class PartialUpdateRoomInput {
+public class PartialUpdateRoomInput implements OperationInput {
     @JsonIgnore
     private UUID roomId;
     private List<BedSize> beds;

@@ -15,6 +15,7 @@ import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutpu
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportProcessor;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomProcessor;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
@@ -42,7 +43,7 @@ public class SystemController {
     private final GetGuestReportProcessor getGuestReportProcessor;
     private final CreateRoomProcessor createRoomProcessor;
     private final UpdateRoomService updateRoomService;
-    private final PartialUpdateRoomService partialUpdateRoomService;
+    private final PartialUpdateRoomProcessor partialUpdateRoomProcessor;
     private final DeleteRoomProcessor deleteRoomProcessor;
 
     @Operation(
@@ -158,7 +159,7 @@ public class SystemController {
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable UUID roomId,
                                                                      @RequestBody @Valid PartialUpdateRoomInput input)
             throws JsonPatchException, JsonProcessingException {
-        PartialUpdateRoomOutput output = partialUpdateRoomService.partialUpdateRoom(PartialUpdateRoomInput.builder()
+        PartialUpdateRoomOutput output = partialUpdateRoomProcessor.process(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .beds(input.getBeds())
                 .bathroomType(input.getBathroomType())
