@@ -159,10 +159,9 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
-    public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable UUID roomId,
-                                                                     @RequestBody @Valid PartialUpdateRoomInput input)
-            throws JsonPatchException, JsonProcessingException {
-        PartialUpdateRoomOutput output = partialUpdateRoom.process(PartialUpdateRoomInput.builder()
+    public ResponseEntity<Either<ErrorOutput,PartialUpdateRoomOutput>> partialUpdateRoom(@PathVariable UUID roomId,
+                                                                     @RequestBody @Valid PartialUpdateRoomInput input) {
+        Either<ErrorOutput,PartialUpdateRoomOutput> output = partialUpdateRoom.process(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .beds(input.getBeds())
                 .bathroomType(input.getBathroomType())
