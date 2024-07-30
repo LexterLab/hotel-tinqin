@@ -123,9 +123,9 @@ public class HotelController {
     }
     )
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
-    public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable UUID roomId,
+    public ResponseEntity<Either<ErrorOutput, UnbookRoomOutput>> unbookRoom(@PathVariable UUID roomId,
                                                        @Valid @RequestBody UnbookRoomInput input) {
-        UnbookRoomOutput output = unbookRoom.unbookRoom(UnbookRoomInput
+       Either<ErrorOutput, UnbookRoomOutput>  output = unbookRoom.process(UnbookRoomInput
                 .builder()
                 .roomId(roomId)
                 .userId(input.getUserId())
