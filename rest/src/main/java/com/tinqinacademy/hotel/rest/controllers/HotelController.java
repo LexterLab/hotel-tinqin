@@ -8,6 +8,7 @@ import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomProcessor;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
+import com.tinqinacademy.hotel.api.operations.getroom.GetRoomProcessor;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
@@ -31,7 +32,7 @@ import java.util.UUID;
 @Tag(name = "Hotel REST APIs")
 public class HotelController {
     private final SearchRoomService searchRoomService;
-    private final GetRoomService getRoomService;
+    private final GetRoomProcessor getRoomProcessor;
     private final BookRoomProcessor bookRoomProcessor;
     private final UnbookRoomService unbookRoomService;
 
@@ -75,7 +76,7 @@ public class HotelController {
     )
     @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
     public ResponseEntity<GetRoomOutput> getRoomById(@PathVariable UUID roomId) {
-        GetRoomOutput output = getRoomService.getRoom(GetRoomInput.builder()
+        GetRoomOutput output = getRoomProcessor.process(GetRoomInput.builder()
                 .roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }

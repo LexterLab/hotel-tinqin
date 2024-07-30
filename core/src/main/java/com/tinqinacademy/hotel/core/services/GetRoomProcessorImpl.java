@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.GetRoomService;
+import com.tinqinacademy.hotel.api.operations.getroom.GetRoomProcessor;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
@@ -18,13 +18,13 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class GetRoomServiceImpl implements GetRoomService {
+public class GetRoomProcessorImpl implements GetRoomProcessor {
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
     private final ConversionService conversionService;
 
     @Override
-    public GetRoomOutput getRoom(GetRoomInput input) {
+    public GetRoomOutput process(GetRoomInput input) {
         log.info("Start getRoom {}", input);
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("room", "id", input.getRoomId().toString()));
