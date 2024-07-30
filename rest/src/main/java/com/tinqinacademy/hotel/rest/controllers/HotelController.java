@@ -5,6 +5,7 @@ import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoom;
+import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoom;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.vavr.control.Either;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -94,8 +96,9 @@ public class HotelController {
     }
     )
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
-    public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable UUID roomId , @Valid @RequestBody BookRoomInput input) {
-        BookRoomOutput output = bookRoom.process(BookRoomInput.builder()
+    public ResponseEntity<Either<ErrorOutput, BookRoomOutput>> bookRoom(@PathVariable UUID roomId ,
+                                                                        @Valid @RequestBody BookRoomInput input) {
+        Either<ErrorOutput,BookRoomOutput> output = bookRoom.process(BookRoomInput.builder()
                 .roomId(roomId)
                 .startDate(input.getStartDate())
                 .endDate(input.getEndDate())
