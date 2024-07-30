@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.RegisterGuestService;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RegisterGuestServiceImpl implements RegisterGuestService {
+public class RegisterGuestImpl implements RegisterGuest {
     private final BookingRepository bookingRepository;
     private final GuestRepository guestRepository;
     private final ConversionService conversionService;

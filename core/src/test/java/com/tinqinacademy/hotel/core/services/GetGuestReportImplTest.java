@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GetGuestReportProcessorImplTest {
+class GetGuestReportImplTest {
 
     @InjectMocks
-    private GetGuestReportProcessorImpl getGuestReportServiceImpl;
+    private GetGuestReportImpl getGuestReportServiceImpl;
 
     @Mock
     private ConversionService conversionService;

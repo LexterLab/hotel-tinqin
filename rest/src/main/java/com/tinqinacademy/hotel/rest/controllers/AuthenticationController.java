@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
-import com.tinqinacademy.hotel.api.contracts.AuthenticationService;
+import com.tinqinacademy.hotel.api.operations.signup.SignUp;
 import com.tinqinacademy.hotel.api.operations.signup.SignUpInput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUpOutput;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Authentication REST APIs")
 public class AuthenticationController {
-    private final AuthenticationService authenticationService;
+    private final SignUp signUp;
 
     @Operation(
             summary = "Sign Up User Rest API",
@@ -33,7 +33,7 @@ public class AuthenticationController {
     })
     @PostMapping(RestAPIRoutes.SIGN_UP)
     public ResponseEntity<SignUpOutput> signUp(@Valid @RequestBody SignUpInput input) {
-        SignUpOutput output = authenticationService.signUp(input);
+        SignUpOutput output = signUp.signUp(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 }

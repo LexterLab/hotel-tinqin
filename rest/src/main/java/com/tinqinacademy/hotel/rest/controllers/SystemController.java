@@ -6,18 +6,19 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.tinqinacademy.hotel.api.contracts.*;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomProcessor;
+import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
-import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomProcessor;
+import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoom;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
-import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportProcessor;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReport;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomProcessor;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoom;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
@@ -39,12 +40,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "System REST APIs")
 public class SystemController {
-    private final RegisterGuestService registerGuestService;
-    private final GetGuestReportProcessor getGuestReportProcessor;
-    private final CreateRoomProcessor createRoomProcessor;
+    private final RegisterGuest registerGuest;
+    private final GetGuestReport getGuestReport;
+    private final CreateRoom createRoom;
     private final UpdateRoomService updateRoomService;
-    private final PartialUpdateRoomProcessor partialUpdateRoomProcessor;
-    private final DeleteRoomProcessor deleteRoomProcessor;
+    private final PartialUpdateRoom partialUpdateRoom;
+    private final DeleteRoom deleteRoom;
 
     @Operation(
             summary = "Register Room Guest Rest API",
@@ -60,7 +61,7 @@ public class SystemController {
             @Valid @RequestBody RegisterGuestInput input,
             @PathVariable UUID bookingId
     ) {
-        RegisterGuestOutput output = registerGuestService.registerGuest(RegisterGuestInput
+        RegisterGuestOutput output = registerGuest.registerGuest(RegisterGuestInput
                 .builder()
                 .bookingId(bookingId)
                 .guests(input.getGuests())
@@ -91,7 +92,7 @@ public class SystemController {
             @RequestParam(required = false) String roomNo
 
             ) {
-        GetGuestReportOutput output = getGuestReportProcessor.process(GetGuestReportInput.builder()
+        GetGuestReportOutput output = getGuestReport.process(GetGuestReportInput.builder()
                 .idCardIssueAuthority(idCardAuthority)
                 .idCardIssueDate(idCardIssueDate)
                 .idCardNo(idCardNo)
@@ -118,7 +119,7 @@ public class SystemController {
     })
     @PostMapping(RestAPIRoutes.CREATE_ROOM)
     public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
-        CreateRoomOutput output = createRoomProcessor.process(input);
+        CreateRoomOutput output = createRoom.process(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
@@ -159,7 +160,7 @@ public class SystemController {
     public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable UUID roomId,
                                                                      @RequestBody @Valid PartialUpdateRoomInput input)
             throws JsonPatchException, JsonProcessingException {
-        PartialUpdateRoomOutput output = partialUpdateRoomProcessor.process(PartialUpdateRoomInput.builder()
+        PartialUpdateRoomOutput output = partialUpdateRoom.process(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .beds(input.getBeds())
                 .bathroomType(input.getBathroomType())
@@ -182,7 +183,7 @@ public class SystemController {
     })
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
     public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable UUID roomId) {
-        DeleteRoomOutput output = deleteRoomProcessor.process(DeleteRoomInput.builder().roomId(roomId).build());
+        DeleteRoomOutput output = deleteRoom.process(DeleteRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 }

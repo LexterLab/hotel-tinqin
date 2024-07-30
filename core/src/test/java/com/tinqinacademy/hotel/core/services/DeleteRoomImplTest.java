@@ -16,10 +16,10 @@ import java.util.UUID;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteRoomProcessorImplTest {
+class DeleteRoomImplTest {
 
     @InjectMocks
-    private DeleteRoomProcessorImpl deleteRoomServiceImpl;
+    private DeleteRoomImpl deleteRoomServiceImpl;
 
     @Mock
     private RoomRepository roomRepository;

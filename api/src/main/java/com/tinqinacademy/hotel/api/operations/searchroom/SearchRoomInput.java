@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.searchroom;
 
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import lombok.*;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Builder
-public class SearchRoomInput {
+public class SearchRoomInput implements OperationInput {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer bedCount;

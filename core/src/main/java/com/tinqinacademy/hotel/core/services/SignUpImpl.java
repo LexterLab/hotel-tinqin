@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.AuthenticationService;
+import com.tinqinacademy.hotel.api.operations.signup.SignUp;
 import com.tinqinacademy.hotel.api.exceptions.EmailAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.signup.SignUpInput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUpOutput;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class SignUpImpl implements SignUp {
     private final UserRepository userRepository;
 
     @Override

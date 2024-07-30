@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.UnbookRoomService;
+import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoom;
 import com.tinqinacademy.hotel.api.exceptions.AlreadyFinishedVisitException;
 import com.tinqinacademy.hotel.api.exceptions.AlreadyStartedVisitException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UnbookRoomServiceImpl implements UnbookRoomService {
+public class UnbookRoomImpl implements UnbookRoom {
     private final BookingRepository bookingRepository;
 
     @Override

@@ -26,10 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RegisterGuestServiceImplTest {
+class RegisterGuestImplTest {
 
     @InjectMocks
-    private RegisterGuestServiceImpl registerGuestServiceImpl;
+    private RegisterGuestImpl registerGuestServiceImpl;
 
     @Mock
     private BookingRepository bookingRepository;

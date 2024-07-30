@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.SearchRoomService;
+import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoom;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.hotel.persistence.enumerations.BathroomType;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SearchRoomServiceImpl implements SearchRoomService {
+public class SearchRoomImpl implements SearchRoom {
     private final RoomRepository roomRepository;
     private final RoomSpecification roomSpecification;
 

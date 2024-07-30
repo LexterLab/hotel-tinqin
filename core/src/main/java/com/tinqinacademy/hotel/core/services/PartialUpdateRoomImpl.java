@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomProcessor;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialRoomUpdate;
@@ -26,7 +26,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PartialUpdateRoomProcessorImpl implements PartialUpdateRoomProcessor {
+public class PartialUpdateRoomImpl implements PartialUpdateRoom {
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
     private final BedRepository bedRepository;

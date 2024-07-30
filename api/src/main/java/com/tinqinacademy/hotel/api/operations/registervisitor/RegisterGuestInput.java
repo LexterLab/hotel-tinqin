@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.registervisitor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Builder
-public class RegisterGuestInput {
+public class RegisterGuestInput implements OperationInput {
    @JsonIgnore
    private UUID bookingId;
    @Valid
