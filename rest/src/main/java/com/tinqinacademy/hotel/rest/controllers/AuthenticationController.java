@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
+import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUp;
 import com.tinqinacademy.hotel.api.operations.signup.SignUpInput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUpOutput;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.vavr.control.Either;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,8 +34,8 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.SIGN_UP)
-    public ResponseEntity<SignUpOutput> signUp(@Valid @RequestBody SignUpInput input) {
-        SignUpOutput output = signUp.signUp(input);
+    public ResponseEntity<Either<ErrorOutput, SignUpOutput>> signUp(@Valid @RequestBody SignUpInput input) {
+        Either<ErrorOutput, SignUpOutput> output = signUp.process(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 }
