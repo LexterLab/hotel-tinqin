@@ -1,9 +1,6 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.tinqinacademy.hotel.api.contracts.*;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
@@ -20,6 +17,7 @@ import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoo
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
+import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoom;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
@@ -45,7 +43,7 @@ public class SystemController {
     private final RegisterGuest registerGuest;
     private final GetGuestReport getGuestReport;
     private final CreateRoom createRoom;
-    private final UpdateRoomService updateRoomService;
+    private final UpdateRoom updateRoom;
     private final PartialUpdateRoom partialUpdateRoom;
     private final DeleteRoom deleteRoom;
 
@@ -136,8 +134,8 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PutMapping(RestAPIRoutes.UPDATE_ROOM)
-    public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable UUID roomId, @Valid @RequestBody UpdateRoomInput input) {
-        UpdateRoomOutput output = updateRoomService.updateRoom(UpdateRoomInput.builder()
+    public ResponseEntity<Either<ErrorOutput, UpdateRoomOutput>> updateRoom(@PathVariable UUID roomId, @Valid @RequestBody UpdateRoomInput input) {
+        Either<ErrorOutput, UpdateRoomOutput> output = updateRoom.process(UpdateRoomInput.builder()
                 .roomId(roomId)
                 .bathroomType(input.getBathroomType())
                 .floor(input.getFloor())
