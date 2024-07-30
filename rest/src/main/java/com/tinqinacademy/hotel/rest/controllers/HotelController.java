@@ -49,14 +49,14 @@ public class HotelController {
     }
     )
     @GetMapping(RestAPIRoutes.SEARCH_ROOMS)
-    public ResponseEntity<SearchRoomOutput> searchRooms(
+    public ResponseEntity<Either<ErrorOutput, SearchRoomOutput>> searchRooms(
             @RequestParam()  LocalDateTime startDate,
             @RequestParam() LocalDateTime endDate,
             @RequestParam(required = false) Integer bedCount,
             @RequestParam(required = false) String bedSize,
             @RequestParam(required = false) String bathroomType
             ) {
-        SearchRoomOutput output = searchRoom.searchRoom(
+        Either<ErrorOutput, SearchRoomOutput> output = searchRoom.process(
                 SearchRoomInput.builder()
                         .bathroomType(BathroomType.getByCode(bathroomType))
                         .bedSize(BedSize.getByCode(bedSize))

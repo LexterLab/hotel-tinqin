@@ -1,5 +1,7 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.operations.errors.Error;
+import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoom;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
@@ -8,6 +10,8 @@ import com.tinqinacademy.hotel.persistence.enumerations.BedSize;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import com.tinqinacademy.hotel.persistence.specifications.RoomSpecification;
+import io.vavr.control.Either;
+import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,25 +19,48 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static io.vavr.API.*;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SearchRoomImpl implements SearchRoom {
+public class SearchRoomProcessor implements SearchRoom {
     private final RoomRepository roomRepository;
     private final RoomSpecification roomSpecification;
 
     @Override
-    public SearchRoomOutput searchRoom(SearchRoomInput input) {
+    public Either<ErrorOutput, SearchRoomOutput> process(SearchRoomInput input) {
         log.info("Start searchRoom {}", input);
+
+      return   Try.of(() -> {
+            List<UUID> availableRoomIds = getAvailableRoomIds(input);
+
+            SearchRoomOutput searchRoomOutput = SearchRoomOutput.builder()
+                    .roomIds(availableRoomIds).build();
+            log.info("End searchRoom {}", searchRoomOutput);
+            return searchRoomOutput;
+        }).toEither()
+              .mapLeft(throwable -> Match(throwable).of(
+                      Case($(), () -> ErrorOutput.builder()
+                              .errors(List.of(Error.builder()
+                                      .message(throwable.getMessage())
+                                      .build()))
+                              .build())
+              ));
+
+
+    }
+
+    private List<UUID> getAvailableRoomIds(SearchRoomInput input) {
+        log.info("Start getAvailableRoomIds {}", input);
 
         List<UUID> availableRoomIds = roomRepository.findAll(roomSpecification.searchForAvailableRooms(input.getStartDate(),
                         input.getEndDate(), input.getBedCount(), BedSize.getByCode(input.getBedSize().toString()),
                         BathroomType.getByCode(input.getBathroomType().toString()))).stream()
                 .map(Room::getId).toList();
 
-        SearchRoomOutput searchRoomOutput = SearchRoomOutput.builder()
-                .roomIds(availableRoomIds).build();
-        log.info("End searchRoom {}", searchRoomOutput);
-        return searchRoomOutput;
+        log.info("End getAvailableRoomIds {}", availableRoomIds);
+
+        return availableRoomIds;
     }
 }
