@@ -9,6 +9,7 @@ import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomProcessor;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
+import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomProcessor;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
@@ -41,7 +42,7 @@ public class SystemController {
     private final CreateRoomProcessor createRoomProcessor;
     private final UpdateRoomService updateRoomService;
     private final PartialUpdateRoomService partialUpdateRoomService;
-    private final DeleteRoomService deleteRoomService;
+    private final DeleteRoomProcessor deleteRoomProcessor;
 
     @Operation(
             summary = "Register Room Guest Rest API",
@@ -179,7 +180,7 @@ public class SystemController {
     })
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
     public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable UUID roomId) {
-        DeleteRoomOutput output = deleteRoomService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
+        DeleteRoomOutput output = deleteRoomProcessor.process(DeleteRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 }

@@ -13,14 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteRoomServiceImplTest {
+class DeleteRoomProcessorImplTest {
 
     @InjectMocks
-    private DeleteRoomServiceImpl deleteRoomServiceImpl;
+    private DeleteRoomProcessorImpl deleteRoomServiceImpl;
 
     @Mock
     private RoomRepository roomRepository;
@@ -29,7 +28,7 @@ class DeleteRoomServiceImplTest {
     private BookingRepository bookingRepository;
 
     @Test
-    void shouldDeleteRoom() {
+    void shouldProcess() {
         DeleteRoomInput input = DeleteRoomInput
                 .builder()
                 .roomId(UUID.randomUUID())
@@ -44,7 +43,7 @@ class DeleteRoomServiceImplTest {
         doNothing().when(bookingRepository).deleteAll(room.getBookings());
         doNothing().when(roomRepository).delete(room);
 
-        deleteRoomServiceImpl.deleteRoom(input);
+        deleteRoomServiceImpl.process(input);
 
         verify(roomRepository).delete(room);
     }

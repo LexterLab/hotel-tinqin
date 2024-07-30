@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.DeleteRoomService;
+import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomProcessor;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class DeleteRoomServiceImpl implements DeleteRoomService {
+public class DeleteRoomProcessorImpl implements DeleteRoomProcessor {
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
 
     @Override
-    public DeleteRoomOutput deleteRoom(DeleteRoomInput input) {
+    public DeleteRoomOutput process(DeleteRoomInput input) {
         log.info("Start deleteRoom {}", input);
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
