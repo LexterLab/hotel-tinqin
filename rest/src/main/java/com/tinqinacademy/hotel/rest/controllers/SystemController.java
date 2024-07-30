@@ -81,7 +81,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @GetMapping(RestAPIRoutes.GET_VISITORS_REPORT)
-    public ResponseEntity<GetGuestReportOutput> getGuestReport(
+    public ResponseEntity<Either<ErrorOutput,GetGuestReportOutput>> getGuestReport(
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String firstName,
@@ -94,7 +94,7 @@ public class SystemController {
             @RequestParam(required = false) String roomNo
 
             ) {
-        GetGuestReportOutput output = getGuestReport.process(GetGuestReportInput.builder()
+       Either<ErrorOutput,GetGuestReportOutput> output = getGuestReport.process(GetGuestReportInput.builder()
                 .idCardIssueAuthority(idCardAuthority)
                 .idCardIssueDate(idCardIssueDate)
                 .idCardNo(idCardNo)
