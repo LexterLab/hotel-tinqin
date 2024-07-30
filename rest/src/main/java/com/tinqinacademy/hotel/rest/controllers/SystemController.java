@@ -59,11 +59,11 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.REGISTER_VISITOR)
-    public ResponseEntity<RegisterGuestOutput> register(
+    public ResponseEntity<Either<ErrorOutput, RegisterGuestOutput>> register(
             @Valid @RequestBody RegisterGuestInput input,
             @PathVariable UUID bookingId
     ) {
-        RegisterGuestOutput output = registerGuest.registerGuest(RegisterGuestInput
+        Either<ErrorOutput, RegisterGuestOutput> output = registerGuest.process(RegisterGuestInput
                 .builder()
                 .bookingId(bookingId)
                 .guests(input.getGuests())
@@ -81,7 +81,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @GetMapping(RestAPIRoutes.GET_VISITORS_REPORT)
-    public ResponseEntity<Either<ErrorOutput,GetGuestReportOutput>> getGuestReport(
+    public ResponseEntity<Either<ErrorOutput, GetGuestReportOutput>> getGuestReport(
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String firstName,
