@@ -184,8 +184,8 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
-    public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable UUID roomId) {
-        DeleteRoomOutput output = deleteRoom.process(DeleteRoomInput.builder().roomId(roomId).build());
+    public ResponseEntity<Either<ErrorOutput, DeleteRoomOutput>> deleteRoom(@PathVariable UUID roomId) {
+        Either<ErrorOutput, DeleteRoomOutput> output = deleteRoom.process(DeleteRoomInput.builder().roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 }
