@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.CreateRoomService;
+import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomProcessor;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
@@ -19,18 +19,18 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CreateRoomServiceImpl implements CreateRoomService {
+public class CreateRoomProcessorImpl implements CreateRoomProcessor {
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
     private final ConversionService conversionService;
 
     @Override
-    public CreateRoomOutput createRoom(CreateRoomInput input) {
+    public CreateRoomOutput process(CreateRoomInput input) {
         log.info("Start createRoom {}", input);
 
         validateCreateRoom(input);
 
-        List<BedSize> bedSizes = input.beds().stream()
+        List<BedSize> bedSizes = input.getBeds().stream()
                 .map(bedSize -> BedSize.getByCode(bedSize.toString()))
                 .toList();
 
@@ -52,10 +52,10 @@ public class CreateRoomServiceImpl implements CreateRoomService {
     private void validateCreateRoom(CreateRoomInput input) {
         log.info("Start validateCreateRoom {}", input);
 
-        Long existingRoomNoRooms = roomRepository.countAllByRoomNo(input.roomNo());
+        Long existingRoomNoRooms = roomRepository.countAllByRoomNo(input.getRoomNo());
 
         if (existingRoomNoRooms > 0) {
-            throw new RoomNoAlreadyExistsException(input.roomNo());
+            throw new RoomNoAlreadyExistsException(input.getRoomNo());
         }
 
         log.info("End validateCreateRoom {}", existingRoomNoRooms);

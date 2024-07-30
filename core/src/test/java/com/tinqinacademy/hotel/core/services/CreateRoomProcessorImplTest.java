@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 class CreateRoomProcessorImplTest {
 
     @InjectMocks
-    private CreateRoomServiceImpl createRoomServiceImpl;
+    private CreateRoomProcessorImpl createRoomServiceImpl;
 
     @Mock
     private RoomRepository roomRepository;
@@ -42,7 +42,7 @@ class CreateRoomProcessorImplTest {
 
 
     @Test
-    void shouldCreateRoom() {
+    void shouldProcess() {
         CreateRoomInput input = CreateRoomInput
                 .builder()
                 .roomNo("201A")
@@ -52,7 +52,7 @@ class CreateRoomProcessorImplTest {
                 .bathroomType(BathroomType.PRIVATE)
                 .build();
 
-        List<com.tinqinacademy.hotel.persistence.enumerations.BedSize> bedSizes = input.beds().stream()
+        List<com.tinqinacademy.hotel.persistence.enumerations.BedSize> bedSizes = input.getBeds().stream()
                 .map(bedSize -> com.tinqinacademy.hotel.persistence.enumerations.BedSize
                         .getByCode(bedSize.toString()))
                 .toList();
@@ -68,18 +68,18 @@ class CreateRoomProcessorImplTest {
         Room room = Room.builder()
                 .bathroomType(com.tinqinacademy.hotel.persistence.enumerations.BathroomType.PRIVATE)
                 .beds(roomBeds)
-                .price(input.price())
-                .floor(input.floor())
-                .roomNo(input.roomNo())
+                .price(input.getPrice())
+                .floor(input.getFloor())
+                .roomNo(input.getRoomNo())
                 .id(UUID.randomUUID())
                 .build();
 
-        when(roomRepository.countAllByRoomNo(input.roomNo())).thenReturn(0L);
+        when(roomRepository.countAllByRoomNo(input.getRoomNo())).thenReturn(0L);
         when(bedRepository.findAllByBedSizeIn(bedSizes)).thenReturn(roomBeds);
         when(conversionService.convert(input, Room.class)).thenReturn(room);
         when(roomRepository.save(room)).thenReturn(room);
 
-        CreateRoomOutput output = createRoomServiceImpl.createRoom(input);
+        CreateRoomOutput output = createRoomServiceImpl.process(input);
 
         assertEquals(room.getId().toString(), output.getRoomId());
     }
@@ -98,9 +98,9 @@ class CreateRoomProcessorImplTest {
 
 
 
-        when(roomRepository.countAllByRoomNo(input.roomNo())).thenReturn(1L);
+        when(roomRepository.countAllByRoomNo(input.getRoomNo())).thenReturn(1L);
 
 
-        assertThrows(RoomNoAlreadyExistsException.class, () -> createRoomServiceImpl.createRoom(input));
+        assertThrows(RoomNoAlreadyExistsException.class, () -> createRoomServiceImpl.process(input));
     }
 }

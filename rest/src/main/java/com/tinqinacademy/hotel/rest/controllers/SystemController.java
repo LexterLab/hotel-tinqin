@@ -6,6 +6,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.tinqinacademy.hotel.api.contracts.*;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
+import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomProcessor;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
@@ -37,7 +38,7 @@ import java.util.UUID;
 public class SystemController {
     private final RegisterGuestService registerGuestService;
     private final GetGuestReportService getGuestReportService;
-    private final CreateRoomService createRoomService;
+    private final CreateRoomProcessor createRoomProcessor;
     private final UpdateRoomService updateRoomService;
     private final PartialUpdateRoomService partialUpdateRoomService;
     private final DeleteRoomService deleteRoomService;
@@ -114,7 +115,7 @@ public class SystemController {
     })
     @PostMapping(RestAPIRoutes.CREATE_ROOM)
     public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
-        CreateRoomOutput output = createRoomService.createRoom(input);
+        CreateRoomOutput output = createRoomProcessor.process(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 

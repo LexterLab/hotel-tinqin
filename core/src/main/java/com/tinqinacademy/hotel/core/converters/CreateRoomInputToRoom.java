@@ -15,10 +15,10 @@ public class CreateRoomInputToRoom extends AbstractConverter<CreateRoomInput, Ro
     @Override
     protected Room doConvert(CreateRoomInput source) {
         Room room = Room.builder()
-                .roomNo(source.roomNo())
-                .price(source.price())
-                .floor(source.floor())
-                .bathroomType(BathroomType.getByCode(source.bathroomType().toString()))
+                .roomNo(source.getRoomNo())
+                .price(source.getPrice())
+                .floor(source.getFloor())
+                .bathroomType(BathroomType.getByCode(source.getBathroomType().toString()))
                 .build();
 
         return room;
