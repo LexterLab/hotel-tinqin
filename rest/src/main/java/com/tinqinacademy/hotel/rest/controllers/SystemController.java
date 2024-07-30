@@ -10,6 +10,7 @@ import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoom;
+import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReport;
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.vavr.control.Either;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -118,8 +120,8 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.CREATE_ROOM)
-    public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
-        CreateRoomOutput output = createRoom.process(input);
+    public ResponseEntity<Either<ErrorOutput, CreateRoomOutput>> createRoom(@Valid @RequestBody CreateRoomInput input) {
+        Either<ErrorOutput, CreateRoomOutput> output = createRoom.process(input);
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 
