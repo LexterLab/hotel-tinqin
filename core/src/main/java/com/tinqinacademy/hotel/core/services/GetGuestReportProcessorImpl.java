@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.contracts.GetGuestReportService;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportProcessor;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
@@ -16,12 +16,12 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class GetGuestReportServiceImpl implements GetGuestReportService {
+public class GetGuestReportProcessorImpl implements GetGuestReportProcessor {
     private final GuestRepository guestRepository;
     private final ConversionService conversionService;
 
     @Override
-    public GetGuestReportOutput getGuestReport(GetGuestReportInput input) {
+    public GetGuestReportOutput process(GetGuestReportInput input) {
         log.info("Start getVisitorsReport {}", input);
 
         List<Guest> guests = guestRepository.searchGuest(input.getStartDate(), input.getEndDate(),

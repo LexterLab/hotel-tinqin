@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GetGuestReportServiceImplTest {
+class GetGuestReportProcessorImplTest {
 
     @InjectMocks
-    private GetGuestReportServiceImpl getGuestReportServiceImpl;
+    private GetGuestReportProcessorImpl getGuestReportServiceImpl;
 
     @Mock
     private ConversionService conversionService;
@@ -81,7 +81,7 @@ class GetGuestReportServiceImplTest {
                 input.getRoomNo())).thenReturn(guests);
         when(conversionService.convert(guest, GuestOutput.class)).thenReturn(guestOutput);
 
-        GetGuestReportOutput output = getGuestReportServiceImpl.getGuestReport(input);
+        GetGuestReportOutput output = getGuestReportServiceImpl.process(input);
 
         assertEquals(expectedOutput.toString(), output.toString());
     }

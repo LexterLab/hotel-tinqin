@@ -12,6 +12,7 @@ import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomProcessor;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportProcessor;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
@@ -38,7 +39,7 @@ import java.util.UUID;
 @Tag(name = "System REST APIs")
 public class SystemController {
     private final RegisterGuestService registerGuestService;
-    private final GetGuestReportService getGuestReportService;
+    private final GetGuestReportProcessor getGuestReportProcessor;
     private final CreateRoomProcessor createRoomProcessor;
     private final UpdateRoomService updateRoomService;
     private final PartialUpdateRoomService partialUpdateRoomService;
@@ -89,7 +90,7 @@ public class SystemController {
             @RequestParam(required = false) String roomNo
 
             ) {
-        GetGuestReportOutput output = getGuestReportService.getGuestReport(GetGuestReportInput.builder()
+        GetGuestReportOutput output = getGuestReportProcessor.process(GetGuestReportInput.builder()
                 .idCardIssueAuthority(idCardAuthority)
                 .idCardIssueDate(idCardIssueDate)
                 .idCardNo(idCardNo)
