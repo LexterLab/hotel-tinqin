@@ -78,8 +78,8 @@ public class HotelController {
     }
     )
     @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
-    public ResponseEntity<GetRoomOutput> getRoomById(@PathVariable UUID roomId) {
-        GetRoomOutput output = getRoom.process(GetRoomInput.builder()
+    public ResponseEntity<Either<ErrorOutput, GetRoomOutput>> getRoomById(@PathVariable UUID roomId) {
+        Either<ErrorOutput, GetRoomOutput> output = getRoom.process(GetRoomInput.builder()
                 .roomId(roomId).build());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }

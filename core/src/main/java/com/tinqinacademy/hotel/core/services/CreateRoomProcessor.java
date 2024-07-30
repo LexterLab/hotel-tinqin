@@ -65,7 +65,7 @@ public class CreateRoomProcessor implements CreateRoom {
                                .build()),
                        Case($(), () -> ErrorOutput.builder()
                                .errors(List.of(Error.builder()
-                                       .message("Unexpected error occurred")
+                                       .message(throwable.getMessage())
                                        .build()))
                                .build())
                ));
