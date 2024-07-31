@@ -3,12 +3,21 @@ package com.tinqinacademy.hotel.core.services;
 import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import io.vavr.API;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.Validator;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
@@ -34,6 +43,41 @@ public abstract class BaseProcessor {
                         .build()))
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build());
+    }
+
+    protected API.Match.Case<Exception, ErrorOutput> validatorCase(Throwable throwable, HttpStatus status,
+                                                                   Class<MethodArgumentNotValidException> e) {
+        List<Error> errors = new ArrayList<>();
+        ((MethodArgumentNotValidException) throwable).getBindingResult()
+                .getFieldErrors()
+                .forEach(error -> errors.add(Error.builder()
+                        .message(error.getDefaultMessage())
+                        .field(error.getField()).build()));
+        return Case($(instanceOf(e)), () -> ErrorOutput.builder()
+                .errors(errors)
+                .statusCode(status)
+                .build());
+    }
+
+    protected <T> void validateInput(T input) throws MethodArgumentNotValidException {
+        Set<ConstraintViolation<T>> violations = validator.validate(input);
+        if (!violations.isEmpty()) {
+            List<Error> errors = violations.stream()
+                    .map(violation -> Error.builder()
+                            .message(violation.getMessage())
+                            .field(violation.getPropertyPath().toString())
+                            .build())
+                    .collect(Collectors.toList());
+            throw new MethodArgumentNotValidException(null, createBindingResult(errors));
+        }
+    }
+
+    protected BindingResult createBindingResult(List<Error> errors) {
+        BindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "input");
+        for (Error error : errors) {
+            bindingResult.addError(new FieldError("input", error.getField(), error.getMessage()));
+        }
+        return bindingResult;
     }
 
 
