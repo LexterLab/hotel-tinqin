@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.errors;
 
 import lombok.*;
+import org.springframework.http.HttpStatusCode;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ import java.util.List;
 @Builder
 public class ErrorOutput {
     private List<Error> errors;
+    private HttpStatusCode statusCode;
 }
