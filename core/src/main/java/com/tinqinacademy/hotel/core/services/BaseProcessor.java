@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import io.vavr.API;
@@ -46,9 +47,9 @@ public abstract class BaseProcessor {
     }
 
     protected API.Match.Case<Exception, ErrorOutput> validatorCase(Throwable throwable, HttpStatus status,
-                                                                   Class<MethodArgumentNotValidException> e) {
+                                                                   Class<InputValidationException> e) {
         List<Error> errors = new ArrayList<>();
-        ((MethodArgumentNotValidException) throwable).getBindingResult()
+        ((InputValidationException) throwable).getBindingResult()
                 .getFieldErrors()
                 .forEach(error -> errors.add(Error.builder()
                         .message(error.getDefaultMessage())
@@ -68,7 +69,7 @@ public abstract class BaseProcessor {
                             .field(violation.getPropertyPath().toString())
                             .build())
                     .collect(Collectors.toList());
-            throw new MethodArgumentNotValidException(null, createBindingResult(errors));
+            throw new InputValidationException(createBindingResult(errors));
         }
     }
 
