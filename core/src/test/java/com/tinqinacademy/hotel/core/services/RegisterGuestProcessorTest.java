@@ -1,18 +1,24 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
+import com.tinqinacademy.hotel.api.Messages;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
+import com.tinqinacademy.hotel.api.operations.errors.Error;
+import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import com.tinqinacademy.hotel.persistence.repositories.*;
+import io.vavr.control.Either;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,10 +32,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RegisterGuestServiceImplTest {
+class RegisterGuestProcessorTest {
 
     @InjectMocks
-    private RegisterGuestServiceImpl registerGuestServiceImpl;
+    private RegisterGuestProcessor registerGuestServiceImpl;
 
     @Mock
     private BookingRepository bookingRepository;
@@ -37,6 +43,8 @@ class RegisterGuestServiceImplTest {
     @Mock
     private GuestRepository guestRepository;
 
+    @Mock
+    private Validator validator;
 
     @Mock
     private ConversionService conversionService;
@@ -80,7 +88,7 @@ class RegisterGuestServiceImplTest {
         when(conversionService.convert(guestInput, Guest.class)).thenReturn(guest);
         when(guestRepository.findByIdCardNo(guestInput.getIdCardNo())).thenReturn(Optional.empty());
 
-        registerGuestServiceImpl.registerGuest(input);
+        registerGuestServiceImpl.process(input);
 
         verify(bookingRepository).save(any(Booking.class));
     }
@@ -92,12 +100,21 @@ class RegisterGuestServiceImplTest {
         RegisterGuestInput input = RegisterGuestInput
                 .builder()
                 .bookingId(bookingId)
+                .guests(List.of(GuestInput.builder().build()))
                 .build();
 
         when(bookingRepository.findById(input.getBookingId())).thenThrow(ResourceNotFoundException.class);
 
+        ErrorOutput expectedOutput = ErrorOutput.builder()
+                .errors(List.of(Error.builder().message(String
+                        .format(Messages.RESOURCE_NOT_FOUND, "room", "id", bookingId))
+                        .build()))
+                .statusCode(HttpStatus.NOT_FOUND)
+                .build();
 
-        assertThrows(ResourceNotFoundException.class, () -> registerGuestServiceImpl.registerGuest(input));
+        Either<ErrorOutput, RegisterGuestOutput> result = registerGuestServiceImpl.process(input);
+
+        assertEquals(expectedOutput.getStatusCode().toString(), result.getLeft().getStatusCode().toString());
     }
 
     @Test
@@ -135,12 +152,23 @@ class RegisterGuestServiceImplTest {
                 .id(bookingId)
                 .build();
 
+        ErrorOutput expectedOutput = ErrorOutput.builder()
+                        .errors(List.of(Error.builder()
+                                .message(String.format(Messages.GUEST_ALREADY_REGISTERED, guest.getId(), bookingId))
+                                .build()))
+                .statusCode(HttpStatus.BAD_REQUEST)
+                                .build();
+
 
         when(bookingRepository.findById(input.getBookingId())).thenReturn(Optional.of(booking));
         when(conversionService.convert(guestInput, Guest.class)).thenReturn(guest);
         when(guestRepository.findByIdCardNo(guestInput.getIdCardNo())).thenReturn(Optional.of(guest));
 
-        assertThrows(GuestAlreadyRegisteredException.class, () -> registerGuestServiceImpl.registerGuest(input));
+
+        Either<ErrorOutput, RegisterGuestOutput> result = registerGuestServiceImpl.process(input);
+
+        assertEquals(expectedOutput.getStatusCode().toString(), result.getLeft().getStatusCode().toString());
+        assertEquals(expectedOutput.getErrors().toString(), result.getLeft().getErrors().toString());
     }
 
 

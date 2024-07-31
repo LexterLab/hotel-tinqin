@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.api.operations.getroom;
 
 
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @ToString
-public class GetRoomOutput {
+public class GetRoomOutput implements OperationOutput {
     private UUID id;
     @Schema(example = "3232")
     private BigDecimal price;

@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.signup;
 
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import com.tinqinacademy.hotel.api.validators.PasswordValueMatches;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -17,7 +18,7 @@ import lombok.*;
                 fieldMatch = "confirmPassword"
         )
 })
-public class SignUpInput {
+public class SignUpInput implements OperationInput {
     @Schema(example = "Michael")
     @NotBlank(message = "Field firstName must not be empty")
     @Size(min = 2, max = 20, message = "Field firstName must be between 2-20 characters")

@@ -4,6 +4,7 @@ import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,23 +14,25 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteRoomServiceImplTest {
+class DeleteRoomProcessorTest {
 
     @InjectMocks
-    private DeleteRoomServiceImpl deleteRoomServiceImpl;
+    private DeleteRoomProcessor deleteRoomServiceImpl;
 
     @Mock
     private RoomRepository roomRepository;
 
     @Mock
+    private Validator validator;
+
+    @Mock
     private BookingRepository bookingRepository;
 
     @Test
-    void shouldDeleteRoom() {
+    void shouldProcess() {
         DeleteRoomInput input = DeleteRoomInput
                 .builder()
                 .roomId(UUID.randomUUID())
@@ -44,7 +47,7 @@ class DeleteRoomServiceImplTest {
         doNothing().when(bookingRepository).deleteAll(room.getBookings());
         doNothing().when(roomRepository).delete(room);
 
-        deleteRoomServiceImpl.deleteRoom(input);
+        deleteRoomServiceImpl.process(input);
 
         verify(roomRepository).delete(room);
     }

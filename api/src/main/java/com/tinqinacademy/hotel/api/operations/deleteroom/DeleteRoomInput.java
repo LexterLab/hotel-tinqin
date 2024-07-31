@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.deleteroom;
 
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import lombok.*;
 
 import java.util.UUID;
@@ -10,6 +11,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @ToString
-public class DeleteRoomInput {
+public class DeleteRoomInput implements OperationInput {
     private UUID roomId;
 }

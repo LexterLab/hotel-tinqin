@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.tinqinacademy.hotel.api.contracts.PartialUpdateRoomService;
+import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialRoomUpdate;
@@ -16,44 +17,76 @@ import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
-import lombok.RequiredArgsConstructor;
+import io.vavr.control.Either;
+import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import jakarta.validation.Validator;
 
 import java.util.List;
 
+import static io.vavr.API.*;
+
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class PartialUpdateRoomServiceImpl implements PartialUpdateRoomService {
+public class PartialUpdateRoomProcessor extends BaseProcessor implements PartialUpdateRoom {
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
     private final BedRepository bedRepository;
-    private final ConversionService conversionService;
+
+    public PartialUpdateRoomProcessor(ConversionService conversionService, Validator validator, RoomRepository roomRepository, ObjectMapper objectMapper, BedRepository bedRepository) {
+        super(conversionService, validator);
+        this.roomRepository = roomRepository;
+        this.objectMapper = objectMapper;
+        this.bedRepository = bedRepository;
+    }
+
 
     @Override
-    public PartialUpdateRoomOutput partialUpdateRoom(PartialUpdateRoomInput input) throws JsonPatchException, JsonProcessingException {
+    public Either<ErrorOutput, PartialUpdateRoomOutput> process(PartialUpdateRoomInput input) {
         log.info("Start partialUpdateRoom {}", input);
+
+        return Try.of(() -> {
+            Room room = fetchRoomFromInput(input);
+
+            validateInput(input);
+
+            validatePartialUpdate(input, room);
+
+            Room patchedRoom = applyPartialUpdate(input, room);
+            patchedRoom.setId(room.getId());
+
+            updateRoomBeds(input, patchedRoom);
+
+            roomRepository.save(patchedRoom);
+
+            PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
+                    .roomId(input.getRoomId())
+                    .build();
+
+            log.info("End partialUpdateRoom {}", output);
+            return output;
+        }).toEither()
+                .mapLeft(throwable -> Match(throwable).of(
+                        validatorCase(throwable),
+                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
+                        customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class),
+                        customCase(throwable, HttpStatus.INTERNAL_SERVER_ERROR, JsonPatchException.class),
+                        customCase(throwable, HttpStatus.INTERNAL_SERVER_ERROR, JsonProcessingException.class),
+                        defaultCase(throwable)
+                ));
+    }
+
+    private Room fetchRoomFromInput(PartialUpdateRoomInput input) {
+        log.info("Start fetchRoomFromInput {}", input);
 
         Room room = roomRepository.findById(input.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
 
-        validatePartialUpdate(input, room);
-
-        Room patchedRoom = applyPartialUpdate(input, room);
-        patchedRoom.setId(room.getId());
-
-        updateRoomBeds(input, patchedRoom);
-
-        roomRepository.save(patchedRoom);
-
-        PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
-                .roomId(input.getRoomId())
-                .build();
-
-        log.info("End partialUpdateRoom {}", output);
-        return output;
+        log.info("End fetchRoomFromInput {}", room);
+        return room;
     }
 
     private void validatePartialUpdate(PartialUpdateRoomInput input, Room room) {
