@@ -4,7 +4,6 @@ import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.persistence.enumerations.BedSize;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
@@ -15,13 +14,13 @@ import io.vavr.control.Either;
 import io.vavr.control.Try;
 
 import static io.vavr.API.*;
-import static io.vavr.Predicates.instanceOf;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.Validator;
 
 import java.util.List;
 
@@ -31,9 +30,8 @@ public class CreateRoomProcessor extends BaseProcessor implements CreateRoom {
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
 
-    public CreateRoomProcessor(ConversionService conversionService, RoomRepository roomRepository,
-                               BedRepository bedRepository) {
-        super(conversionService);
+    public CreateRoomProcessor(ConversionService conversionService, Validator validator, RoomRepository roomRepository, BedRepository bedRepository) {
+        super(conversionService, validator);
         this.roomRepository = roomRepository;
         this.bedRepository = bedRepository;
     }

@@ -5,7 +5,6 @@ import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
-import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.core.mappers.BookingMapper;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
@@ -16,18 +15,14 @@ import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import org.springframework.validation.Validator;
 
 import static io.vavr.API.*;
-import static io.vavr.Predicates.instanceOf;
 
 @Service
 @Slf4j
@@ -36,8 +31,8 @@ public class BookRomProcessor extends BaseProcessor implements BookRoom {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
 
-    public BookRomProcessor(ConversionService conversionService, UserRepository userRepository, BookingRepository bookingRepository, RoomRepository roomRepository) {
-        super(conversionService);
+    public BookRomProcessor(ConversionService conversionService, Validator validator, UserRepository userRepository, BookingRepository bookingRepository, RoomRepository roomRepository) {
+        super(conversionService, validator);
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;

@@ -14,6 +14,7 @@ import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Validator;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,11 +27,12 @@ public class SearchRoomProcessor extends BaseProcessor implements SearchRoom {
     private final RoomRepository roomRepository;
     private final RoomSpecification roomSpecification;
 
-    public SearchRoomProcessor(ConversionService conversionService, RoomRepository roomRepository, RoomSpecification roomSpecification) {
-        super(conversionService);
+    public SearchRoomProcessor(ConversionService conversionService, Validator validator, RoomRepository roomRepository, RoomSpecification roomSpecification) {
+        super(conversionService, validator);
         this.roomRepository = roomRepository;
         this.roomSpecification = roomSpecification;
     }
+
 
     @Override
     public Either<ErrorOutput, SearchRoomOutput> process(SearchRoomInput input) {

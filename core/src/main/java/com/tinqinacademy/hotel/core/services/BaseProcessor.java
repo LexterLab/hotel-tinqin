@@ -6,6 +6,7 @@ import io.vavr.API;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.Validator;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import static io.vavr.Predicates.instanceOf;
 @RequiredArgsConstructor
 public abstract class BaseProcessor {
     protected final ConversionService conversionService;
+    protected final Validator validator;
 
     protected API.Match.Case<Exception, ErrorOutput> customCase(Throwable throwable, HttpStatus status,
                                                                 Class<? extends Exception> e) {

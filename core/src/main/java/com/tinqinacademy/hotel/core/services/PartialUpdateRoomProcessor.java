@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Validator;
 
 import java.util.List;
 
@@ -37,12 +38,13 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
     private final ObjectMapper objectMapper;
     private final BedRepository bedRepository;
 
-    public PartialUpdateRoomProcessor(ConversionService conversionService, RoomRepository roomRepository, ObjectMapper objectMapper, BedRepository bedRepository) {
-        super(conversionService);
+    public PartialUpdateRoomProcessor(ConversionService conversionService, Validator validator, RoomRepository roomRepository, ObjectMapper objectMapper, BedRepository bedRepository) {
+        super(conversionService, validator);
         this.roomRepository = roomRepository;
         this.objectMapper = objectMapper;
         this.bedRepository = bedRepository;
     }
+
 
     @Override
     public Either<ErrorOutput, PartialUpdateRoomOutput> process(PartialUpdateRoomInput input) {

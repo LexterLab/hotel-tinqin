@@ -12,6 +12,7 @@ import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Validator;
 
 import java.util.List;
 
@@ -22,10 +23,11 @@ import static io.vavr.API.*;
 public class GetGuestReportProcessor extends BaseProcessor implements GetGuestReport {
     private final GuestRepository guestRepository;
 
-    public GetGuestReportProcessor(ConversionService conversionService, GuestRepository guestRepository) {
-        super(conversionService);
+    public GetGuestReportProcessor(ConversionService conversionService, Validator validator, GuestRepository guestRepository) {
+        super(conversionService, validator);
         this.guestRepository = guestRepository;
     }
+
 
     @Override
     public Either<ErrorOutput, GetGuestReportOutput> process(GetGuestReportInput input) {

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Validator;
 
 import java.util.List;
 
@@ -26,11 +27,12 @@ public class GetRoomProcessor extends BaseProcessor implements GetRoom {
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
 
-    public GetRoomProcessor(ConversionService conversionService, RoomRepository roomRepository, BookingRepository bookingRepository) {
-        super(conversionService);
+    public GetRoomProcessor(ConversionService conversionService, Validator validator, RoomRepository roomRepository, BookingRepository bookingRepository) {
+        super(conversionService, validator);
         this.roomRepository = roomRepository;
         this.bookingRepository = bookingRepository;
     }
+
 
     @Override
     public Either<ErrorOutput, GetRoomOutput> process(GetRoomInput input) {

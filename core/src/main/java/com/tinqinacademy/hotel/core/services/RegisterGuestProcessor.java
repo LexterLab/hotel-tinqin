@@ -17,6 +17,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.Validator;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,9 +30,8 @@ public class RegisterGuestProcessor extends BaseProcessor implements RegisterGue
     private final BookingRepository bookingRepository;
     private final GuestRepository guestRepository;
 
-
-    public RegisterGuestProcessor(ConversionService conversionService, BookingRepository bookingRepository, GuestRepository guestRepository) {
-        super(conversionService);
+    public RegisterGuestProcessor(ConversionService conversionService, Validator validator, BookingRepository bookingRepository, GuestRepository guestRepository) {
+        super(conversionService, validator);
         this.bookingRepository = bookingRepository;
         this.guestRepository = guestRepository;
     }

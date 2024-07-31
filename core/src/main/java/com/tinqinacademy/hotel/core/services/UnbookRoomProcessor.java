@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Validator;
 
 import java.time.LocalDateTime;
 
@@ -25,8 +26,8 @@ import static io.vavr.API.*;
 public class UnbookRoomProcessor extends BaseProcessor implements UnbookRoom {
     private final BookingRepository bookingRepository;
 
-    public UnbookRoomProcessor(ConversionService conversionService, BookingRepository bookingRepository) {
-        super(conversionService);
+    public UnbookRoomProcessor(ConversionService conversionService, Validator validator, BookingRepository bookingRepository) {
+        super(conversionService, validator);
         this.bookingRepository = bookingRepository;
     }
 

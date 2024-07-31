@@ -15,20 +15,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Validator;
 
 import static io.vavr.API.*;
 
 @Service
-
 @Slf4j
 public class SignUpProcessor extends BaseProcessor implements SignUp {
     private final UserRepository userRepository;
 
-
-    public SignUpProcessor(ConversionService conversionService, UserRepository userRepository) {
-        super(conversionService);
+    public SignUpProcessor(ConversionService conversionService, Validator validator, UserRepository userRepository) {
+        super(conversionService, validator);
         this.userRepository = userRepository;
     }
+
 
     @Override
     @Transactional
