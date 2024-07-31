@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Authentication REST APIs")
-public class AuthenticationController {
+public class AuthenticationController extends BaseController {
     private final SignUp signUp;
 
     @Operation(
@@ -34,8 +34,8 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.SIGN_UP)
-    public ResponseEntity<Either<ErrorOutput, SignUpOutput>> signUp(@Valid @RequestBody SignUpInput input) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpInput input) {
         Either<ErrorOutput, SignUpOutput> output = signUp.process(input);
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+        return handleOutput(output, HttpStatus.CREATED);
     }
 }
