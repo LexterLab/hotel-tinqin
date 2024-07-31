@@ -39,7 +39,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "System REST APIs")
-public class SystemController {
+public class SystemController extends BaseController {
     private final RegisterGuest registerGuest;
     private final GetGuestReport getGuestReport;
     private final CreateRoom createRoom;
@@ -57,7 +57,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.REGISTER_VISITOR)
-    public ResponseEntity<Either<ErrorOutput, RegisterGuestOutput>> register(
+    public ResponseEntity<?> register(
             @Valid @RequestBody RegisterGuestInput input,
             @PathVariable UUID bookingId
     ) {
@@ -66,7 +66,7 @@ public class SystemController {
                 .bookingId(bookingId)
                 .guests(input.getGuests())
                 .build());
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+        return handleOutput(output, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -79,7 +79,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @GetMapping(RestAPIRoutes.GET_VISITORS_REPORT)
-    public ResponseEntity<Either<ErrorOutput, GetGuestReportOutput>> getGuestReport(
+    public ResponseEntity<?> getGuestReport(
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String firstName,
@@ -104,7 +104,7 @@ public class SystemController {
                 .phoneNo(phoneNo)
                 .startDate(startDate)
                 .build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 
 
@@ -120,11 +120,7 @@ public class SystemController {
     @PostMapping(RestAPIRoutes.CREATE_ROOM)
     public ResponseEntity<?> createRoom(@Valid @RequestBody CreateRoomInput input) {
         Either<ErrorOutput, CreateRoomOutput> result = createRoom.process(input);
-
-        return result.fold(
-                errorOutput -> new ResponseEntity<>(errorOutput, HttpStatus.BAD_REQUEST),
-                createRoomOutput -> new ResponseEntity<>(createRoomOutput, HttpStatus.CREATED)
-        );
+        return handleOutput(result, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -138,7 +134,7 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PutMapping(RestAPIRoutes.UPDATE_ROOM)
-    public ResponseEntity<Either<ErrorOutput, UpdateRoomOutput>> updateRoom(@PathVariable UUID roomId, @Valid @RequestBody UpdateRoomInput input) {
+    public ResponseEntity<?> updateRoom(@PathVariable UUID roomId, @Valid @RequestBody UpdateRoomInput input) {
         Either<ErrorOutput, UpdateRoomOutput> output = updateRoom.process(UpdateRoomInput.builder()
                 .roomId(roomId)
                 .bathroomType(input.getBathroomType())
@@ -147,7 +143,7 @@ public class SystemController {
                 .roomNo(input.getRoomNo())
                 .price(input.getPrice())
                 .build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -161,7 +157,7 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
-    public ResponseEntity<Either<ErrorOutput,PartialUpdateRoomOutput>> partialUpdateRoom(@PathVariable UUID roomId,
+    public ResponseEntity<?> partialUpdateRoom(@PathVariable UUID roomId,
                                                                      @RequestBody @Valid PartialUpdateRoomInput input) {
         Either<ErrorOutput,PartialUpdateRoomOutput> output = partialUpdateRoom.process(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
@@ -170,8 +166,8 @@ public class SystemController {
                 .floor(input.getFloor())
                 .roomNo(input.getRoomNo())
                 .price(input.getPrice())
-                .build()); ;
-        return new ResponseEntity<>(output, HttpStatus.OK);
+                .build());
+        return handleOutput(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -185,8 +181,8 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
-    public ResponseEntity<Either<ErrorOutput, DeleteRoomOutput>> deleteRoom(@PathVariable UUID roomId) {
+    public ResponseEntity<?> deleteRoom(@PathVariable UUID roomId) {
         Either<ErrorOutput, DeleteRoomOutput> output = deleteRoom.process(DeleteRoomInput.builder().roomId(roomId).build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 }
