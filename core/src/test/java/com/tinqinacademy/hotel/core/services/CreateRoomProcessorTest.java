@@ -13,12 +13,14 @@ import com.tinqinacademy.hotel.persistence.models.room.Room;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,6 +38,8 @@ class CreateRoomProcessorTest {
     @Mock
     private RoomRepository roomRepository;
 
+    @Mock
+    private Validator validator;
 
     @Mock
     private BedRepository bedRepository;
@@ -115,4 +119,5 @@ class CreateRoomProcessorTest {
         assertNotNull(output.getLeft());
         assertEquals(expectedOutput.getErrors().toString(), output.getLeft().getErrors().toString());
     }
+
 }

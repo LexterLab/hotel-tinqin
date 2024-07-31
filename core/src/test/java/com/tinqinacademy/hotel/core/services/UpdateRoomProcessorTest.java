@@ -1,21 +1,27 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.Messages;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
+import com.tinqinacademy.hotel.api.operations.errors.Error;
+import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import io.vavr.control.Either;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,14 +32,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UpdateRoomServiceImplTest {
+class UpdateRoomProcessorTest {
 
     @InjectMocks
-    private UpdateRoomServiceImpl updateRoomServiceImpl;
+    private UpdateRoomProcessor updateRoomProcessor;
 
     @Mock
     private RoomRepository roomRepository;
 
+    @Mock
+    private Validator validator;
 
     @Mock
     private BedRepository bedRepository;
@@ -89,9 +97,9 @@ class UpdateRoomServiceImplTest {
         when(conversionService.convert(input, Room.class)).thenReturn(updatedRoom);
         when(roomRepository.save(updatedRoom)).thenReturn(updatedRoom);
 
-        UpdateRoomOutput output = updateRoomServiceImpl.updateRoom(input);
+        Either<ErrorOutput, UpdateRoomOutput> output = updateRoomProcessor.process(input);
 
-        assertEquals(updatedRoom.getId(), output.getRoomId());
+        assertEquals(updatedRoom.getId(), output.get().getRoomId());
     }
 
     @Test
@@ -105,9 +113,15 @@ class UpdateRoomServiceImplTest {
                 .bathroomType(BathroomType.PRIVATE)
                 .build();
 
+        ErrorOutput expectedOutput = ErrorOutput.builder()
+                        .statusCode(HttpStatus.NOT_FOUND)
+                                .build();
+
         when(roomRepository.findById(input.getRoomId())).thenThrow(ResourceNotFoundException.class);
 
-        assertThrows(ResourceNotFoundException.class, () -> updateRoomServiceImpl.updateRoom(input));
+        Either<ErrorOutput, UpdateRoomOutput> output = updateRoomProcessor.process(input);
+
+        assertEquals(expectedOutput.getStatusCode(), output.getLeft().getStatusCode());
     }
 
     @Test
@@ -130,10 +144,18 @@ class UpdateRoomServiceImplTest {
                 .price(BigDecimal.valueOf(200))
                 .build();
 
+        ErrorOutput expectedOutput = ErrorOutput.builder()
+                .errors(List.of(Error.builder()
+                        .message(String.format(Messages.ROOM_NO_ALREADY_EXISTS, input.getRoomNo()))
+                        .build()))
+                .statusCode(HttpStatus.BAD_REQUEST)
+                .build();
+
         when(roomRepository.findById(input.getRoomId())).thenReturn(Optional.of(room));
         when(roomRepository.countAllByRoomNo(input.getRoomNo())).thenReturn(1L);
 
-        assertThrows(RoomNoAlreadyExistsException.class, () -> updateRoomServiceImpl.updateRoom(input));
+        Either<ErrorOutput, UpdateRoomOutput> output = updateRoomProcessor.process(input);
+        assertEquals(expectedOutput.toString(), output.getLeft().toString());
     }
 
 }

@@ -1,10 +1,13 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
+import io.vavr.control.Either;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,13 +24,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GetGuestReportImplTest {
+class GetGuestReportProcessorTest {
 
     @InjectMocks
-    private GetGuestReportImpl getGuestReportServiceImpl;
+    private GetGuestReportProcessor getGuestReportServiceImpl;
 
     @Mock
     private ConversionService conversionService;
+
+    @Mock
+    private Validator validator;
 
     @Mock
     private GuestRepository guestRepository;
@@ -81,8 +87,8 @@ class GetGuestReportImplTest {
                 input.getRoomNo())).thenReturn(guests);
         when(conversionService.convert(guest, GuestOutput.class)).thenReturn(guestOutput);
 
-        GetGuestReportOutput output = getGuestReportServiceImpl.process(input);
+        Either<ErrorOutput, GetGuestReportOutput> output = getGuestReportServiceImpl.process(input);
 
-        assertEquals(expectedOutput.toString(), output.toString());
+        assertEquals(expectedOutput.toString(), output.get().toString());
     }
 }
