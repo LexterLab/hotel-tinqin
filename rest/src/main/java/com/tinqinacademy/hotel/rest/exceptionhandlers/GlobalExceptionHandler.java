@@ -58,17 +58,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AlreadyFinishedVisitException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorOutput> handleAlreadyFinishedVisitException(Exception e, HttpServletRequest request) {
         log.error("Request {} raised AlreadyFinishedVisitException {}", request.getRequestURL(), e.getMessage());
-        return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(AlreadyStartedVisitException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorOutput> handleAlreadyStartedVisitException(Exception e, HttpServletRequest request) {
         log.error("Request {} raised AlreadyStartedVisitException {}", request.getRequestURL(), e.getMessage());
-        return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorHandler.handle(e), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(RoomNoAlreadyExistsException.class)

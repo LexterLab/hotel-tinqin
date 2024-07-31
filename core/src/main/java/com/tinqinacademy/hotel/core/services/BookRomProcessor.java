@@ -18,6 +18,9 @@ import io.vavr.control.Either;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +31,18 @@ import static io.vavr.Predicates.instanceOf;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class BookRomProcessor implements BookRoom {
+public class BookRomProcessor extends BaseProcessor implements BookRoom {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
+
+    public BookRomProcessor(ConversionService conversionService, UserRepository userRepository, BookingRepository bookingRepository, RoomRepository roomRepository) {
+        super(conversionService);
+        this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
+        this.roomRepository = roomRepository;
+    }
+
 
     @Override
     @Transactional
@@ -57,18 +67,9 @@ public class BookRomProcessor implements BookRoom {
             return output;
         }).toEither()
                 .mapLeft(throwable ->  Match(throwable).of(
-                        Case($(instanceOf(ResourceNotFoundException.class)), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build()
-                        ),
-                        Case($(instanceOf(BookingDateNotAvailableException.class)), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build()
-                        )
+                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
+                        customCase(throwable, HttpStatus.BAD_REQUEST, BookingDateNotAvailableException.class),
+                        defaultCase(throwable)
                 ));
 
     }

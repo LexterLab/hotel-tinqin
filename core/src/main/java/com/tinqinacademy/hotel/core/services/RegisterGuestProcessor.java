@@ -1,7 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
-import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
@@ -14,9 +12,9 @@ import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,15 +22,20 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.vavr.API.*;
-import static io.vavr.Predicates.instanceOf;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
-public class RegisterGuestProcessor implements RegisterGuest {
+public class RegisterGuestProcessor extends BaseProcessor implements RegisterGuest {
     private final BookingRepository bookingRepository;
     private final GuestRepository guestRepository;
-    private final ConversionService conversionService;
+
+
+    public RegisterGuestProcessor(ConversionService conversionService, BookingRepository bookingRepository, GuestRepository guestRepository) {
+        super(conversionService);
+        this.bookingRepository = bookingRepository;
+        this.guestRepository = guestRepository;
+    }
+
 
     @Override
     @Transactional
@@ -51,21 +54,9 @@ public class RegisterGuestProcessor implements RegisterGuest {
             return output;
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
-                       Case($(instanceOf(ResourceNotFoundException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build()),
-                       Case($(instanceOf(GuestAlreadyRegisteredException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build()),
-                       Case($(), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build())
+                       customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
+                       customCase(throwable, HttpStatus.BAD_REQUEST, GuestAlreadyRegisteredException.class),
+                      defaultCase(throwable)
                ));
 
     }

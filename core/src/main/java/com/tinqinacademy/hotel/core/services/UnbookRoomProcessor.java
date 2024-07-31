@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoom;
 import com.tinqinacademy.hotel.api.exceptions.AlreadyFinishedVisitException;
@@ -12,21 +11,24 @@ import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static io.vavr.API.*;
-import static io.vavr.Predicates.instanceOf;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class UnbookRoomProcessor implements UnbookRoom {
+public class UnbookRoomProcessor extends BaseProcessor implements UnbookRoom {
     private final BookingRepository bookingRepository;
+
+    public UnbookRoomProcessor(ConversionService conversionService, BookingRepository bookingRepository) {
+        super(conversionService);
+        this.bookingRepository = bookingRepository;
+    }
 
     @Override
     public Either<ErrorOutput, UnbookRoomOutput> process(UnbookRoomInput input) {
@@ -45,29 +47,10 @@ public class UnbookRoomProcessor implements UnbookRoom {
             return output;
         }).toEither()
                .mapLeft(throwable ->  Match(throwable).of(
-                       Case($(instanceOf(ResourceNotFoundException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build()
-                       ),
-                       Case($(instanceOf(AlreadyFinishedVisitException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build()
-                       ),
-                       Case($(instanceOf(AlreadyStartedVisitException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build()
-                       ),
-                       Case($(), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build())
+                       customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
+                       customCase(throwable, HttpStatus.CONFLICT, AlreadyFinishedVisitException.class),
+                       customCase(throwable, HttpStatus.CONFLICT, AlreadyStartedVisitException.class),
+                       defaultCase(throwable)
                ));
 
     }

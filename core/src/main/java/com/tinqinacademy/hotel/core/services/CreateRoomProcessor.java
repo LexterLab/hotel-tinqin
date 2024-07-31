@@ -16,9 +16,10 @@ import io.vavr.control.Try;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +27,17 @@ import java.util.List;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class CreateRoomProcessor implements CreateRoom {
+public class CreateRoomProcessor extends BaseProcessor implements CreateRoom {
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
-    private final ConversionService conversionService;
+
+    public CreateRoomProcessor(ConversionService conversionService, RoomRepository roomRepository,
+                               BedRepository bedRepository) {
+        super(conversionService);
+        this.roomRepository = roomRepository;
+        this.bedRepository = bedRepository;
+    }
+
 
     @Override
     @Transactional
@@ -58,16 +65,8 @@ public class CreateRoomProcessor implements CreateRoom {
             return output;
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
-                       Case($(instanceOf(RoomNoAlreadyExistsException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build()),
-                       Case($(), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build())
+                       customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class ),
+                       defaultCase(throwable)
                ));
     }
 

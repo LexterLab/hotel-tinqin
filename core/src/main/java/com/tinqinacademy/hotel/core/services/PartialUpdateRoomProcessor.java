@@ -20,9 +20,9 @@ import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,12 +32,17 @@ import static io.vavr.Predicates.instanceOf;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class PartialUpdateRoomProcessor implements PartialUpdateRoom {
+public class PartialUpdateRoomProcessor extends BaseProcessor implements PartialUpdateRoom {
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
     private final BedRepository bedRepository;
-    private final ConversionService conversionService;
+
+    public PartialUpdateRoomProcessor(ConversionService conversionService, RoomRepository roomRepository, ObjectMapper objectMapper, BedRepository bedRepository) {
+        super(conversionService);
+        this.roomRepository = roomRepository;
+        this.objectMapper = objectMapper;
+        this.bedRepository = bedRepository;
+    }
 
     @Override
     public Either<ErrorOutput, PartialUpdateRoomOutput> process(PartialUpdateRoomInput input) {
@@ -63,40 +68,13 @@ public class PartialUpdateRoomProcessor implements PartialUpdateRoom {
             return output;
         }).toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        Case($(instanceOf(RoomNoAlreadyExistsException.class)), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build()),
-                        Case($(instanceOf(ResourceNotFoundException.class)), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build()
-                        ),
-                        Case($(instanceOf(JsonPatchException.class)), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build()
-                        ),
-                        Case($(instanceOf(JsonProcessingException.class)), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build()
-                        ),
-
-                        Case($(), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build())
+                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
+                        customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class),
+                        customCase(throwable, HttpStatus.INTERNAL_SERVER_ERROR, JsonPatchException.class),
+                        customCase(throwable, HttpStatus.INTERNAL_SERVER_ERROR, JsonProcessingException.class),
+                        defaultCase(throwable)
                 ));
-
-
     }
-
 
     private Room fetchRoomFromInput(PartialUpdateRoomInput input) {
         log.info("Start fetchRoomFromInput {}", input);

@@ -13,6 +13,8 @@ import io.vavr.control.Either;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,10 +24,15 @@ import static io.vavr.Predicates.instanceOf;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class DeleteRoomProcessor implements DeleteRoom {
+public class DeleteRoomProcessor extends BaseProcessor implements DeleteRoom {
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
+
+    public DeleteRoomProcessor(ConversionService conversionService, RoomRepository roomRepository, BookingRepository bookingRepository) {
+        super(conversionService);
+        this.roomRepository = roomRepository;
+        this.bookingRepository = bookingRepository;
+    }
 
     @Override
     public Either<ErrorOutput,DeleteRoomOutput> process(DeleteRoomInput input) {
@@ -37,17 +44,15 @@ public class DeleteRoomProcessor implements DeleteRoom {
            bookingRepository.deleteAll(room.getBookings());
 
            roomRepository.delete(room);
+
            DeleteRoomOutput output = DeleteRoomOutput.builder().build();
 
            log.info("End deleteRoom {}", output);
            return output;
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
-                       Case($(instanceOf(ResourceNotFoundException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build())
+                      customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
+                      defaultCase(throwable)
                ));
 
     }

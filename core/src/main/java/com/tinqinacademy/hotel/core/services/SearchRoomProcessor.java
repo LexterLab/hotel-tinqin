@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoom;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
@@ -12,8 +11,8 @@ import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import com.tinqinacademy.hotel.persistence.specifications.RoomSpecification;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,10 +22,15 @@ import static io.vavr.API.*;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class SearchRoomProcessor implements SearchRoom {
+public class SearchRoomProcessor extends BaseProcessor implements SearchRoom {
     private final RoomRepository roomRepository;
     private final RoomSpecification roomSpecification;
+
+    public SearchRoomProcessor(ConversionService conversionService, RoomRepository roomRepository, RoomSpecification roomSpecification) {
+        super(conversionService);
+        this.roomRepository = roomRepository;
+        this.roomSpecification = roomSpecification;
+    }
 
     @Override
     public Either<ErrorOutput, SearchRoomOutput> process(SearchRoomInput input) {
@@ -41,11 +45,7 @@ public class SearchRoomProcessor implements SearchRoom {
             return searchRoomOutput;
         }).toEither()
               .mapLeft(throwable -> Match(throwable).of(
-                      Case($(), () -> ErrorOutput.builder()
-                              .errors(List.of(Error.builder()
-                                      .message(throwable.getMessage())
-                                      .build()))
-                              .build())
+                     defaultCase(throwable)
               ));
 
 

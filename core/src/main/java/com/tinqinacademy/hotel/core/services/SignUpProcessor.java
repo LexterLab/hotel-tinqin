@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUp;
 import com.tinqinacademy.hotel.api.exceptions.EmailAlreadyExistsException;
@@ -12,21 +11,24 @@ import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static io.vavr.API.*;
-import static io.vavr.Predicates.instanceOf;
-
 
 @Service
-@RequiredArgsConstructor
+
 @Slf4j
-public class SignUpProcessor implements SignUp {
+public class SignUpProcessor extends BaseProcessor implements SignUp {
     private final UserRepository userRepository;
+
+
+    public SignUpProcessor(ConversionService conversionService, UserRepository userRepository) {
+        super(conversionService);
+        this.userRepository = userRepository;
+    }
 
     @Override
     @Transactional
@@ -50,16 +52,8 @@ public class SignUpProcessor implements SignUp {
             return output;
         }).toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        Case($(instanceOf(EmailAlreadyExistsException.class)), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build()),
-                        Case($(), () -> ErrorOutput.builder()
-                                .errors(List.of(Error.builder()
-                                        .message(throwable.getMessage())
-                                        .build()))
-                                .build())
+                        customCase(throwable, HttpStatus.BAD_REQUEST, EmailAlreadyExistsException.class),
+                        defaultCase(throwable)
                 ));
 
 

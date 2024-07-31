@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -14,23 +13,26 @@ import com.tinqinacademy.hotel.persistence.repositories.BedRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static io.vavr.API.*;
-import static io.vavr.Predicates.instanceOf;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class UpdateRoomProcessor implements UpdateRoom {
+public class UpdateRoomProcessor extends BaseProcessor implements UpdateRoom {
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
-    private final ConversionService conversionService;
+
+    public UpdateRoomProcessor(ConversionService conversionService, RoomRepository roomRepository, BedRepository bedRepository) {
+        super(conversionService);
+        this.roomRepository = roomRepository;
+        this.bedRepository = bedRepository;
+    }
 
     @Override
     public Either<ErrorOutput, UpdateRoomOutput> process(UpdateRoomInput input) {
@@ -59,19 +61,10 @@ public class UpdateRoomProcessor implements UpdateRoom {
 
        }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
-                       Case($(instanceOf(RoomNoAlreadyExistsException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build()),
-                       Case($(instanceOf(ResourceNotFoundException.class)), () -> ErrorOutput.builder()
-                               .errors(List.of(Error.builder()
-                                       .message(throwable.getMessage())
-                                       .build()))
-                               .build()
-                       )));
-
-
+                       customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
+                       customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class),
+                       defaultCase(throwable)
+                       ));
     }
 
     private List<Bed> fetchBedsFromInput(UpdateRoomInput input) {
