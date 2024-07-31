@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoom;
 import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -15,12 +16,13 @@ import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.Validator;
+
 
 import static io.vavr.API.*;
 
@@ -45,6 +47,9 @@ public class BookRomProcessor extends BaseProcessor implements BookRoom {
         log.info("Start bookRoom {}", input);
 
         return Try.of(() ->{
+
+            validateInput(input);
+
             User user = fetchUserFromInput(input);
 
             Room room = fetchRoomFromInput(input);
@@ -62,6 +67,7 @@ public class BookRomProcessor extends BaseProcessor implements BookRoom {
             return output;
         }).toEither()
                 .mapLeft(throwable ->  Match(throwable).of(
+                        validatorCase(throwable, InputValidationException.class),
                         customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                         customCase(throwable, HttpStatus.BAD_REQUEST, BookingDateNotAvailableException.class),
                         defaultCase(throwable)

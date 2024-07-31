@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUp;
 import com.tinqinacademy.hotel.api.exceptions.EmailAlreadyExistsException;
@@ -15,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Validator;
+import jakarta.validation.Validator;
 
 import static io.vavr.API.*;
 
@@ -37,6 +38,7 @@ public class SignUpProcessor extends BaseProcessor implements SignUp {
 
 
         return Try.of(() -> {
+            validateInput(input);
             checkForExistingEmail(input);
 
             User user = UserMapper.INSTANCE.SignUpInputToUser(input);
@@ -52,6 +54,7 @@ public class SignUpProcessor extends BaseProcessor implements SignUp {
             return output;
         }).toEither()
                 .mapLeft(throwable -> Match(throwable).of(
+                        validatorCase(throwable, InputValidationException.class),
                         customCase(throwable, HttpStatus.BAD_REQUEST, EmailAlreadyExistsException.class),
                         defaultCase(throwable)
                 ));

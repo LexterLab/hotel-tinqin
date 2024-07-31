@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
+import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoom;
@@ -24,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Validator;
+import jakarta.validation.Validator;
 
 import java.util.List;
 
@@ -53,6 +54,8 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
         return Try.of(() -> {
             Room room = fetchRoomFromInput(input);
 
+            validateInput(input);
+
             validatePartialUpdate(input, room);
 
             Room patchedRoom = applyPartialUpdate(input, room);
@@ -70,6 +73,7 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
             return output;
         }).toEither()
                 .mapLeft(throwable -> Match(throwable).of(
+                        validatorCase(throwable, InputValidationException.class),
                         customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                         customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class),
                         customCase(throwable, HttpStatus.INTERNAL_SERVER_ERROR, JsonPatchException.class),

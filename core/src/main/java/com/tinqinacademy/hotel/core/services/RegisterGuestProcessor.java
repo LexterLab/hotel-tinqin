@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
@@ -17,7 +18,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.Validator;
+import jakarta.validation.Validator;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,8 @@ public class RegisterGuestProcessor extends BaseProcessor implements RegisterGue
         log.info("Start registerVisitor {}", input);
 
        return Try.of(() -> {
+            input.getGuests().forEach(this::validateInput);
+
             Booking booking = fetchBookingFromInput(input);
 
             addGuestsToBooking(input, booking);
@@ -54,6 +57,7 @@ public class RegisterGuestProcessor extends BaseProcessor implements RegisterGue
             return output;
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
+                       validatorCase(throwable, InputValidationException.class),
                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                        customCase(throwable, HttpStatus.BAD_REQUEST, GuestAlreadyRegisteredException.class),
                       defaultCase(throwable)

@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
@@ -15,12 +16,13 @@ import io.vavr.control.Try;
 
 import static io.vavr.API.*;
 
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.Validator;
+
 
 import java.util.List;
 
@@ -43,11 +45,14 @@ public class CreateRoomProcessor extends BaseProcessor implements CreateRoom {
         log.info("Start createRoom {}", input);
 
        return Try.of(() -> {
+            validateInput(input);
+
             validateRoomNo(input);
 
             List<BedSize> bedSizes = getBedSizes(input);
 
             List<Bed> beds = fetchRoomBeds(bedSizes);
+
 
             Room room = conversionService.convert(input, Room.class);
             room.setBeds(beds);
@@ -64,6 +69,7 @@ public class CreateRoomProcessor extends BaseProcessor implements CreateRoom {
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
                        customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class ),
+                       validatorCase(throwable, InputValidationException.class),
                        defaultCase(throwable)
                ));
     }

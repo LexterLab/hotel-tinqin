@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Validator;
+import jakarta.validation.Validator;
 
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class UpdateRoomProcessor extends BaseProcessor implements UpdateRoom {
 
 
        return Try.of(() -> {
+           validateInput(input);
            Room room = fetchRoomFromInput(input);
 
            validateUpdateRoom(input, room);
@@ -63,6 +65,7 @@ public class UpdateRoomProcessor extends BaseProcessor implements UpdateRoom {
 
        }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
+                       validatorCase(throwable, InputValidationException.class),
                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                        customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class),
                        defaultCase(throwable)

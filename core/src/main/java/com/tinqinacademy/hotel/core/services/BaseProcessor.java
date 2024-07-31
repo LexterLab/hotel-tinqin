@@ -46,7 +46,7 @@ public abstract class BaseProcessor {
                 .build());
     }
 
-    protected API.Match.Case<Exception, ErrorOutput> validatorCase(Throwable throwable, HttpStatus status,
+    protected API.Match.Case<Exception, ErrorOutput> validatorCase(Throwable throwable,
                                                                    Class<InputValidationException> e) {
         List<Error> errors = new ArrayList<>();
         ((InputValidationException) throwable).getBindingResult()
@@ -56,11 +56,11 @@ public abstract class BaseProcessor {
                         .field(error.getField()).build()));
         return Case($(instanceOf(e)), () -> ErrorOutput.builder()
                 .errors(errors)
-                .statusCode(status)
+                .statusCode(HttpStatus.BAD_REQUEST)
                 .build());
     }
 
-    protected <T> void validateInput(T input) throws MethodArgumentNotValidException {
+    protected <T> void validateInput(T input) {
         Set<ConstraintViolation<T>> violations = validator.validate(input);
         if (!violations.isEmpty()) {
             List<Error> errors = violations.stream()
