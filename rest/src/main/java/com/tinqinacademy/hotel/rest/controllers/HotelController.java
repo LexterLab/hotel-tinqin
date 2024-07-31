@@ -33,7 +33,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Hotel REST APIs")
-public class HotelController {
+public class HotelController extends BaseController {
     private final SearchRoom searchRoom;
     private final GetRoom getRoom;
     private final BookRoom bookRoom;
@@ -49,7 +49,7 @@ public class HotelController {
     }
     )
     @GetMapping(RestAPIRoutes.SEARCH_ROOMS)
-    public ResponseEntity<Either<ErrorOutput, SearchRoomOutput>> searchRooms(
+    public ResponseEntity<?> searchRooms(
             @RequestParam()  LocalDateTime startDate,
             @RequestParam() LocalDateTime endDate,
             @RequestParam(required = false) Integer bedCount,
@@ -64,7 +64,7 @@ public class HotelController {
                         .startDate(startDate)
                         .bedCount(bedCount)
                         .build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -78,10 +78,10 @@ public class HotelController {
     }
     )
     @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
-    public ResponseEntity<Either<ErrorOutput, GetRoomOutput>> getRoomById(@PathVariable UUID roomId) {
+    public ResponseEntity<?> getRoomById(@PathVariable UUID roomId) {
         Either<ErrorOutput, GetRoomOutput> output = getRoom.process(GetRoomInput.builder()
                 .roomId(roomId).build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -96,7 +96,7 @@ public class HotelController {
     }
     )
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
-    public ResponseEntity<Either<ErrorOutput, BookRoomOutput>> bookRoom(@PathVariable UUID roomId ,
+    public ResponseEntity<?> bookRoom(@PathVariable UUID roomId ,
                                                                         @Valid @RequestBody BookRoomInput input) {
         Either<ErrorOutput,BookRoomOutput> output = bookRoom.process(BookRoomInput.builder()
                 .roomId(roomId)
@@ -108,7 +108,7 @@ public class HotelController {
                 .userId(input.getUserId())
                 .build());
 
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+       return handleOutput(output, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -123,13 +123,13 @@ public class HotelController {
     }
     )
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
-    public ResponseEntity<Either<ErrorOutput, UnbookRoomOutput>> unbookRoom(@PathVariable UUID roomId,
+    public ResponseEntity<?> unbookRoom(@PathVariable UUID roomId,
                                                        @Valid @RequestBody UnbookRoomInput input) {
        Either<ErrorOutput, UnbookRoomOutput>  output = unbookRoom.process(UnbookRoomInput
                 .builder()
                 .roomId(roomId)
                 .userId(input.getUserId())
                 .build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 }
