@@ -96,8 +96,7 @@ public class HotelController extends BaseController {
     }
     )
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
-    public ResponseEntity<?> bookRoom(@PathVariable UUID roomId ,
-                                                                        @Valid @RequestBody BookRoomInput input) {
+    public ResponseEntity<?> bookRoom(@PathVariable UUID roomId , @RequestBody BookRoomInput input) {
         Either<ErrorOutput,BookRoomOutput> output = bookRoom.process(BookRoomInput.builder()
                 .roomId(roomId)
                 .startDate(input.getStartDate())
@@ -123,8 +122,7 @@ public class HotelController extends BaseController {
     }
     )
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
-    public ResponseEntity<?> unbookRoom(@PathVariable UUID roomId,
-                                                       @Valid @RequestBody UnbookRoomInput input) {
+    public ResponseEntity<?> unbookRoom(@PathVariable UUID roomId, @RequestBody UnbookRoomInput input) {
        Either<ErrorOutput, UnbookRoomOutput>  output = unbookRoom.process(UnbookRoomInput
                 .builder()
                 .roomId(roomId)

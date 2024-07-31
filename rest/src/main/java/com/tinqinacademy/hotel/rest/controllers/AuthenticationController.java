@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vavr.control.Either;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,7 @@ public class AuthenticationController extends BaseController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.SIGN_UP)
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpInput input) {
+    public ResponseEntity<?> signUp(@RequestBody SignUpInput input) {
         Either<ErrorOutput, SignUpOutput> output = signUp.process(input);
         return handleOutput(output, HttpStatus.CREATED);
     }
