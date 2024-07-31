@@ -9,11 +9,6 @@ import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,15 +41,15 @@ public abstract class BaseProcessor {
                 .build());
     }
 
-    protected API.Match.Case<Exception, ErrorOutput> validatorCase(Throwable throwable,
-                                                                   Class<InputValidationException> e) {
+    protected API.Match.Case<Exception, ErrorOutput> validatorCase(Throwable throwable) {
         List<Error> errors = new ArrayList<>();
-        ((InputValidationException) throwable).getBindingResult()
-                .getFieldErrors()
-                .forEach(error -> errors.add(Error.builder()
-                        .message(error.getDefaultMessage())
-                        .field(error.getField()).build()));
-        return Case($(instanceOf(e)), () -> ErrorOutput.builder()
+        if (throwable instanceof InputValidationException) {
+            ((InputValidationException) throwable).getErrors()
+                    .forEach(error -> errors.add(Error.builder()
+                            .message(error.getMessage())
+                            .field(error.getField()).build()));
+        }
+        return Case($(instanceOf(InputValidationException.class)), () -> ErrorOutput.builder()
                 .errors(errors)
                 .statusCode(HttpStatus.BAD_REQUEST)
                 .build());
@@ -69,18 +64,7 @@ public abstract class BaseProcessor {
                             .field(violation.getPropertyPath().toString())
                             .build())
                     .collect(Collectors.toList());
-            throw new InputValidationException(createBindingResult(errors));
+            throw new InputValidationException(errors);
         }
     }
-
-    protected BindingResult createBindingResult(List<Error> errors) {
-        BindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "input");
-        for (Error error : errors) {
-            bindingResult.addError(new FieldError("input", error.getField(), error.getMessage()));
-        }
-        return bindingResult;
-    }
-
-
-
 }

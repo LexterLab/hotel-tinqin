@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUp;
 import com.tinqinacademy.hotel.api.exceptions.EmailAlreadyExistsException;
@@ -54,7 +53,7 @@ public class SignUpProcessor extends BaseProcessor implements SignUp {
             return output;
         }).toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        validatorCase(throwable, InputValidationException.class),
+                        validatorCase(throwable),
                         customCase(throwable, HttpStatus.BAD_REQUEST, EmailAlreadyExistsException.class),
                         defaultCase(throwable)
                 ));

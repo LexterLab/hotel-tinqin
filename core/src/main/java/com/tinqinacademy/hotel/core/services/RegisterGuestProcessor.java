@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
@@ -57,7 +56,7 @@ public class RegisterGuestProcessor extends BaseProcessor implements RegisterGue
             return output;
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
-                       validatorCase(throwable, InputValidationException.class),
+                       validatorCase(throwable),
                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                        customCase(throwable, HttpStatus.BAD_REQUEST, GuestAlreadyRegisteredException.class),
                       defaultCase(throwable)

@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoom;
 import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -67,7 +66,7 @@ public class BookRomProcessor extends BaseProcessor implements BookRoom {
             return output;
         }).toEither()
                 .mapLeft(throwable ->  Match(throwable).of(
-                        validatorCase(throwable, InputValidationException.class),
+                        validatorCase(throwable),
                         customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                         customCase(throwable, HttpStatus.BAD_REQUEST, BookingDateNotAvailableException.class),
                         defaultCase(throwable)

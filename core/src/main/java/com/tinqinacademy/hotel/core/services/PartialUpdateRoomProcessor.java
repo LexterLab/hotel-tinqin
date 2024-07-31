@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
-import com.tinqinacademy.hotel.api.operations.errors.Error;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -30,7 +28,6 @@ import jakarta.validation.Validator;
 import java.util.List;
 
 import static io.vavr.API.*;
-import static io.vavr.Predicates.instanceOf;
 
 @Service
 @Slf4j
@@ -73,7 +70,7 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
             return output;
         }).toEither()
                 .mapLeft(throwable -> Match(throwable).of(
-                        validatorCase(throwable, InputValidationException.class),
+                        validatorCase(throwable),
                         customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                         customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class),
                         customCase(throwable, HttpStatus.INTERNAL_SERVER_ERROR, JsonPatchException.class),

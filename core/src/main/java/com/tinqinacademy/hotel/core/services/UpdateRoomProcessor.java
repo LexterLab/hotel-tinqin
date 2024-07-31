@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -65,7 +64,7 @@ public class UpdateRoomProcessor extends BaseProcessor implements UpdateRoom {
 
        }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
-                       validatorCase(throwable, InputValidationException.class),
+                       validatorCase(throwable),
                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                        customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class),
                        defaultCase(throwable)

@@ -1,6 +1,5 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
@@ -68,8 +67,8 @@ public class CreateRoomProcessor extends BaseProcessor implements CreateRoom {
             return output;
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
+                       validatorCase(throwable),
                        customCase(throwable, HttpStatus.BAD_REQUEST, RoomNoAlreadyExistsException.class ),
-                       validatorCase(throwable, InputValidationException.class),
                        defaultCase(throwable)
                ));
     }
