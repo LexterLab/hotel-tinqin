@@ -30,7 +30,7 @@
         <model.version>4.0.0</model.version>
         <swagger.version>2.6.0</swagger.version>
         <lombok.version>1.18.30</lombok.version>
-        <group.id>com.tinqinacademy</group.id>
+        <group.id>com.tinqinacademy.hotel</group.id>
         <jackson.version>2.17.1</jackson.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <jsonpatch.version>1.13</jsonpatch.version>

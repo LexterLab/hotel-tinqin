@@ -8,6 +8,7 @@
         <version>${revision}</version>
     </parent>
 
+    <groupId>com.tinqinacademy.hotel</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>restexport</artifactId>
 

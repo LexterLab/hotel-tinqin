@@ -10,6 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>rest</artifactId>
+    <groupId>com.tinqinacademy.hotel</groupId>
 
     <dependencies>
         <dependency>
