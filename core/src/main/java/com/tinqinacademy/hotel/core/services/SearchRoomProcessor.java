@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoom;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
@@ -38,7 +38,7 @@ public class SearchRoomProcessor extends BaseProcessor implements SearchRoom {
     public Either<ErrorOutput, SearchRoomOutput> process(SearchRoomInput input) {
         log.info("Start searchRoom {}", input);
 
-      return   Try.of(() -> {
+      return  Try.of(() -> {
             List<UUID> availableRoomIds = getAvailableRoomIds(input);
 
             SearchRoomOutput searchRoomOutput = SearchRoomOutput.builder()
@@ -47,6 +47,7 @@ public class SearchRoomProcessor extends BaseProcessor implements SearchRoom {
             return searchRoomOutput;
         }).toEither()
               .mapLeft(throwable -> Match(throwable).of(
+                     validatorCase(throwable),
                      defaultCase(throwable)
               ));
 

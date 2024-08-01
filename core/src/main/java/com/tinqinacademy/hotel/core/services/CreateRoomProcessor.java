@@ -4,7 +4,7 @@ import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.persistence.enumerations.BedSize;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
 import com.tinqinacademy.hotel.persistence.models.room.Room;

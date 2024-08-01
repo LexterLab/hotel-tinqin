@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoom;
 import com.tinqinacademy.hotel.api.exceptions.AlreadyFinishedVisitException;
 import com.tinqinacademy.hotel.api.exceptions.AlreadyStartedVisitException;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import jakarta.validation.Validator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static io.vavr.API.*;
 
@@ -48,6 +49,7 @@ public class UnbookRoomProcessor extends BaseProcessor implements UnbookRoom {
             return output;
         }).toEither()
                .mapLeft(throwable ->  Match(throwable).of(
+                       validatorCase(throwable),
                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                        customCase(throwable, HttpStatus.CONFLICT, AlreadyFinishedVisitException.class),
                        customCase(throwable, HttpStatus.CONFLICT, AlreadyStartedVisitException.class),
@@ -60,9 +62,10 @@ public class UnbookRoomProcessor extends BaseProcessor implements UnbookRoom {
     private Booking findLatestBooking(UnbookRoomInput input) {
         log.info("Start findLatestBooking {}", input);
 
-        Booking booking = bookingRepository.findLatestByRoomIdAndUserId(input.getRoomId(), input.getUserId())
+        Booking booking = bookingRepository.findLatestByRoomIdAndUserId(UUID.fromString(input.getRoomId()),
+                        UUID.fromString(input.getUserId()))
                 .orElseThrow(() -> new ResourceNotFoundException("booking", "roomId & userId",
-                        input.getRoomId().toString()));
+                        input.getRoomId()));
 
         log.info("End findLatestBooking {}", booking);
         return booking;

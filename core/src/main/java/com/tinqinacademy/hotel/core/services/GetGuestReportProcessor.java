@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReport;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
@@ -44,6 +44,7 @@ public class GetGuestReportProcessor extends BaseProcessor implements GetGuestRe
             return output;
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
+                       validatorCase(throwable),
                        defaultCase(throwable)
                ));
 

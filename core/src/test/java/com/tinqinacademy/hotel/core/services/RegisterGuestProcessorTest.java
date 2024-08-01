@@ -2,8 +2,8 @@ package com.tinqinacademy.hotel.core.services;
 
 import com.tinqinacademy.hotel.api.Messages;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
-import com.tinqinacademy.hotel.api.operations.errors.Error;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.Error;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
@@ -67,7 +67,7 @@ class RegisterGuestProcessorTest {
 
         RegisterGuestInput input = RegisterGuestInput
                 .builder()
-                .bookingId(bookingId)
+                .bookingId(String.valueOf(bookingId))
                 .guests(List.of(guestInput))
                 .build();
 
@@ -84,7 +84,7 @@ class RegisterGuestProcessorTest {
                 .build();
 
 
-        when(bookingRepository.findById(input.getBookingId())).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(UUID.fromString(input.getBookingId()))).thenReturn(Optional.of(booking));
         when(conversionService.convert(guestInput, Guest.class)).thenReturn(guest);
         when(guestRepository.findByIdCardNo(guestInput.getIdCardNo())).thenReturn(Optional.empty());
 
@@ -99,11 +99,11 @@ class RegisterGuestProcessorTest {
 
         RegisterGuestInput input = RegisterGuestInput
                 .builder()
-                .bookingId(bookingId)
+                .bookingId(String.valueOf(bookingId))
                 .guests(List.of(GuestInput.builder().build()))
                 .build();
 
-        when(bookingRepository.findById(input.getBookingId())).thenThrow(ResourceNotFoundException.class);
+        when(bookingRepository.findById(UUID.fromString(input.getBookingId()))).thenThrow(ResourceNotFoundException.class);
 
         ErrorOutput expectedOutput = ErrorOutput.builder()
                 .errors(List.of(Error.builder().message(String
@@ -135,7 +135,7 @@ class RegisterGuestProcessorTest {
 
         RegisterGuestInput input = RegisterGuestInput
                 .builder()
-                .bookingId(bookingId)
+                .bookingId(String.valueOf(bookingId))
                 .guests(List.of(guestInput))
                 .build();
 
@@ -160,7 +160,7 @@ class RegisterGuestProcessorTest {
                                 .build();
 
 
-        when(bookingRepository.findById(input.getBookingId())).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(UUID.fromString(input.getBookingId()))).thenReturn(Optional.of(booking));
         when(conversionService.convert(guestInput, Guest.class)).thenReturn(guest);
         when(guestRepository.findByIdCardNo(guestInput.getIdCardNo())).thenReturn(Optional.of(guest));
 

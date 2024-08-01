@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import jakarta.validation.Validator;
 
 import java.util.List;
+import java.util.UUID;
 
 import static io.vavr.API.*;
 
@@ -63,7 +64,7 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
             roomRepository.save(patchedRoom);
 
             PartialUpdateRoomOutput output = PartialUpdateRoomOutput.builder()
-                    .roomId(input.getRoomId())
+                    .roomId(UUID.fromString(input.getRoomId()))
                     .build();
 
             log.info("End partialUpdateRoom {}", output);
@@ -82,8 +83,8 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
     private Room fetchRoomFromInput(PartialUpdateRoomInput input) {
         log.info("Start fetchRoomFromInput {}", input);
 
-        Room room = roomRepository.findById(input.getRoomId())
-                .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
+        Room room = roomRepository.findById(UUID.fromString(input.getRoomId()))
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId()));
 
         log.info("End fetchRoomFromInput {}", room);
         return room;

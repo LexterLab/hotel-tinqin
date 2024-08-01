@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.guest;
 
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 @Setter
 @ToString
-public class GuestInput {
+public class GuestInput implements OperationInput {
     @Schema(example = "Michael")
     @NotBlank(message = "Field firstName must not be empty")
     @Size(min = 2, max = 20, message = "Field firstName must be between 2-20 characters")

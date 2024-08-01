@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tinqinacademy.hotel.api.base.OperationInput;
 import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.validator.constraints.UUID;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,7 +19,9 @@ import java.util.UUID;
 @Builder
 public class RegisterGuestInput implements OperationInput {
    @JsonIgnore
-   private UUID bookingId;
-   @Valid
-   List<GuestInput> guests;
+   @NotBlank(message = "Field bookingId must not be blank")
+   @UUID(message = "Field bookingId must be UUID")
+   private String bookingId;
+   @NotNull(message = "Field guests cannot be null")
+   private List<@Valid GuestInput> guests;
 }

@@ -1,7 +1,7 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUp;
 import com.tinqinacademy.hotel.api.operations.signup.SignUpInput;
 import com.tinqinacademy.hotel.api.operations.signup.SignUpOutput;

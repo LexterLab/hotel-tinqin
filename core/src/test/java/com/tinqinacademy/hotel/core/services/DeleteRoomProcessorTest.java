@@ -35,15 +35,15 @@ class DeleteRoomProcessorTest {
     void shouldProcess() {
         DeleteRoomInput input = DeleteRoomInput
                 .builder()
-                .roomId(UUID.randomUUID())
+                .roomId(String.valueOf(UUID.randomUUID()))
                 .build();
 
         Room room = Room
                 .builder()
-                .id(input.getRoomId())
+                .id(UUID.fromString(input.getRoomId()))
                 .build();
 
-        when(roomRepository.findById(input.getRoomId())).thenReturn(Optional.of(room));
+        when(roomRepository.findById(UUID.fromString(input.getRoomId()))).thenReturn(Optional.of(room));
         doNothing().when(bookingRepository).deleteAll(room.getBookings());
         doNothing().when(roomRepository).delete(room);
 

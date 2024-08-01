@@ -7,10 +7,10 @@ import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +20,9 @@ import java.util.UUID;
 @ToString
 public class UpdateRoomInput implements OperationInput {
     @JsonIgnore
-    private UUID roomId;
+    @UUID(message = "Field roomId must be UUID")
+    @NotBlank(message = "Field roomId must not be blank")
+    private String roomId;
     private List<BedSize> beds;
     @Schema(example = "private")
     @NotNull(message = "Field bathroomType must not be null")

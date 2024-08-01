@@ -5,7 +5,7 @@ import com.tinqinacademy.hotel.api.exceptions.BookingDateNotAvailableException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.core.mappers.BookingMapper;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
@@ -22,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.UUID;
 
 import static io.vavr.API.*;
 
@@ -88,8 +90,8 @@ public class BookRomProcessor extends BaseProcessor implements BookRoom {
     private User fetchUserFromInput(BookRoomInput input) {
         log.info("Start fetchUserFromInput {}", input);
 
-        User user = userRepository.findById(input.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("user", "id", input.getUserId().toString()));
+        User user = userRepository.findById(UUID.fromString(input.getUserId()))
+                .orElseThrow(() -> new ResourceNotFoundException("user", "id", input.getUserId()));
 
         log.info("End fetchUserFromInput {}", user);
 
@@ -99,7 +101,7 @@ public class BookRomProcessor extends BaseProcessor implements BookRoom {
     private Room fetchRoomFromInput(BookRoomInput input) {
         log.info("Start fetchRoomFromInput {}", input);
 
-        Room room = roomRepository.findById(input.getRoomId())
+        Room room = roomRepository.findById(UUID.fromString(input.getRoomId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", String.valueOf(input.getRoomId())));
 
         log.info("End fetchRoomFromInput {}", room);

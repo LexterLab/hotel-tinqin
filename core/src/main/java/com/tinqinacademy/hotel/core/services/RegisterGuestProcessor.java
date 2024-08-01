@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
@@ -21,6 +21,7 @@ import jakarta.validation.Validator;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static io.vavr.API.*;
 
@@ -43,8 +44,7 @@ public class RegisterGuestProcessor extends BaseProcessor implements RegisterGue
         log.info("Start registerVisitor {}", input);
 
        return Try.of(() -> {
-            input.getGuests().forEach(this::validateInput);
-
+            validateInput(input);
             Booking booking = fetchBookingFromInput(input);
 
             addGuestsToBooking(input, booking);
@@ -59,7 +59,7 @@ public class RegisterGuestProcessor extends BaseProcessor implements RegisterGue
                        validatorCase(throwable),
                        customCase(throwable, HttpStatus.NOT_FOUND, ResourceNotFoundException.class),
                        customCase(throwable, HttpStatus.BAD_REQUEST, GuestAlreadyRegisteredException.class),
-                      defaultCase(throwable)
+                       defaultCase(throwable)
                ));
 
     }
@@ -67,8 +67,8 @@ public class RegisterGuestProcessor extends BaseProcessor implements RegisterGue
     private Booking fetchBookingFromInput(RegisterGuestInput input) {
         log.info("Start fetchBooking {}", input);
 
-        Booking booking = bookingRepository.findById(input.getBookingId())
-                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", input.getBookingId().toString()));
+        Booking booking = bookingRepository.findById(UUID.fromString(input.getBookingId()))
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", input.getBookingId()));
 
         log.info("End fetchBooking {}", booking);
         return booking;
@@ -86,7 +86,8 @@ public class RegisterGuestProcessor extends BaseProcessor implements RegisterGue
             Optional<Guest> existingGuest = guestRepository.findByIdCardNo(guest.getIdCardNo());
             if (existingGuest.isPresent()) {
                 if (booking.getGuests().contains(existingGuest.get())) {
-                    throw new GuestAlreadyRegisteredException(existingGuest.get().getId(), input.getBookingId());
+                    throw new GuestAlreadyRegisteredException(existingGuest.get().getId(),
+                            UUID.fromString(input.getBookingId()));
                 }
                 booking.getGuests().add(existingGuest.get());
             } else {

@@ -1,8 +1,8 @@
-package com.tinqinacademy.hotel.core.services;
+package com.tinqinacademy.hotel.core.errors;
 
 import com.tinqinacademy.hotel.api.contracts.ErrorHandler;
-import com.tinqinacademy.hotel.api.operations.errors.Error;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.Error;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 

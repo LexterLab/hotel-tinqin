@@ -4,9 +4,8 @@ import com.tinqinacademy.hotel.api.Messages;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
-import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
-import com.tinqinacademy.hotel.api.operations.errors.Error;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.Error;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.persistence.models.bed.Bed;
@@ -54,7 +53,7 @@ class UpdateRoomProcessorTest {
         UpdateRoomInput input = UpdateRoomInput
                 .builder()
                 .roomNo("202A")
-                .roomId(UUID.randomUUID())
+                .roomId(String.valueOf(UUID.randomUUID()))
                 .floor(4)
                 .beds(List.of(BedSize.KING_SIZE))
                 .bathroomType(BathroomType.PRIVATE)
@@ -83,7 +82,7 @@ class UpdateRoomProcessorTest {
 
         Room updatedRoom = Room
                 .builder()
-                .id(input.getRoomId())
+                .id(UUID.fromString(input.getRoomId()))
                 .roomNo(input.getRoomNo())
                 .floor(input.getFloor())
                 .beds(roomBeds)
@@ -92,7 +91,7 @@ class UpdateRoomProcessorTest {
                 .build();
 
 
-        when(roomRepository.findById(input.getRoomId())).thenReturn(Optional.of(room));
+        when(roomRepository.findById(UUID.fromString(input.getRoomId()))).thenReturn(Optional.of(room));
         when(bedRepository.findAllByBedSizeIn(bedSizes)).thenReturn(roomBeds);
         when(conversionService.convert(input, Room.class)).thenReturn(updatedRoom);
         when(roomRepository.save(updatedRoom)).thenReturn(updatedRoom);
@@ -107,7 +106,7 @@ class UpdateRoomProcessorTest {
         UpdateRoomInput input = UpdateRoomInput
                 .builder()
                 .roomNo("202A")
-                .roomId(UUID.randomUUID())
+                .roomId(String.valueOf(UUID.randomUUID()))
                 .floor(4)
                 .beds(List.of(BedSize.KING_SIZE))
                 .bathroomType(BathroomType.PRIVATE)
@@ -117,7 +116,7 @@ class UpdateRoomProcessorTest {
                         .statusCode(HttpStatus.NOT_FOUND)
                                 .build();
 
-        when(roomRepository.findById(input.getRoomId())).thenThrow(ResourceNotFoundException.class);
+        when(roomRepository.findById(UUID.fromString(input.getRoomId()))).thenThrow(ResourceNotFoundException.class);
 
         Either<ErrorOutput, UpdateRoomOutput> output = updateRoomProcessor.process(input);
 
@@ -129,7 +128,7 @@ class UpdateRoomProcessorTest {
         UpdateRoomInput input = UpdateRoomInput
                 .builder()
                 .roomNo("202A")
-                .roomId(UUID.randomUUID())
+                .roomId(String.valueOf(UUID.randomUUID()))
                 .floor(4)
                 .beds(List.of(BedSize.KING_SIZE))
                 .bathroomType(BathroomType.PRIVATE)
@@ -151,7 +150,7 @@ class UpdateRoomProcessorTest {
                 .statusCode(HttpStatus.BAD_REQUEST)
                 .build();
 
-        when(roomRepository.findById(input.getRoomId())).thenReturn(Optional.of(room));
+        when(roomRepository.findById(UUID.fromString(input.getRoomId()))).thenReturn(Optional.of(room));
         when(roomRepository.countAllByRoomNo(input.getRoomNo())).thenReturn(1L);
 
         Either<ErrorOutput, UpdateRoomOutput> output = updateRoomProcessor.process(input);

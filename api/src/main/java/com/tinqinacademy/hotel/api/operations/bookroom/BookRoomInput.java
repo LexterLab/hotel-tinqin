@@ -5,9 +5,8 @@ import com.tinqinacademy.hotel.api.base.OperationInput;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
-
+import org.hibernate.validator.constraints.UUID;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,7 +16,9 @@ import java.util.UUID;
 @Builder
 public class BookRoomInput implements OperationInput {
     @JsonIgnore
-    private UUID roomId;
+    @UUID(message = "Field roomId must be UUID")
+    @NotBlank(message = "Field roomId must not be blank")
+    private String roomId;
     @Schema(example = "2025-01-01")
     @FutureOrPresent(message = "Field startDate must be future or present")
     @NotNull(message = "Field startDate should not be null")
@@ -36,8 +37,9 @@ public class BookRoomInput implements OperationInput {
     private String lastName;
     @Schema(example = "+359742342342")
     @NotEmpty(message = "Field phoneNo should not be empty")
-    @Pattern(regexp = "^\\+[1-9]{1}[0-9]{3,14}$")
+    @Pattern(regexp = "^\\+[1-9][0-9]{3,14}$")
     private String phoneNo;
-    @NotNull(message = "Field userId must not be null")
-    private UUID userId;
+    @UUID(message = "Field userId must be UUID")
+    @NotBlank(message = "Field userId must not be blank")
+    private String userId;
 }

@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.services;
 
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.exceptions.RoomNoAlreadyExistsException;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import jakarta.validation.Validator;
 
 import java.util.List;
+import java.util.UUID;
 
 import static io.vavr.API.*;
 
@@ -87,8 +88,8 @@ public class UpdateRoomProcessor extends BaseProcessor implements UpdateRoom {
     private Room fetchRoomFromInput(UpdateRoomInput input) {
         log.info("Start fetchRoom {}", input);
 
-        Room room = roomRepository.findById(input.getRoomId())
-                .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId().toString()));
+        Room room = roomRepository.findById(UUID.fromString(input.getRoomId()))
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "roomId", input.getRoomId()));
 
         log.info("End fetchRoom {}", room);
         return room;
