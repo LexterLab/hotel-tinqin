@@ -1,8 +1,9 @@
 package com.tinqinacademy.hotel.core.services;
 
+import com.tinqinacademy.hotel.api.base.OperationInput;
 import com.tinqinacademy.hotel.api.exceptions.InputValidationException;
-import com.tinqinacademy.hotel.api.operations.errors.Error;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.Error;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import io.vavr.API;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -42,6 +43,30 @@ public abstract class BaseProcessor {
     }
 
     protected API.Match.Case<Exception, ErrorOutput> validatorCase(Throwable throwable) {
+        List<Error> errors = mapExceptionToErrors(throwable);
+        return Case($(instanceOf(InputValidationException.class)), () -> ErrorOutput.builder()
+                .errors(errors)
+                .statusCode(HttpStatus.BAD_REQUEST)
+                .build());
+    }
+
+    protected void validateInput(OperationInput input) {
+        Set<ConstraintViolation<OperationInput>> violations = validator.validate(input);
+        if (!violations.isEmpty()) {
+            throw new InputValidationException(mapConstraintViolations(violations));
+        }
+    }
+
+    private List<Error> mapConstraintViolations(Set<ConstraintViolation<OperationInput>> violations) {
+        return  violations.stream()
+                .map(violation -> Error.builder()
+                        .message(violation.getMessage())
+                        .field(violation.getPropertyPath().toString())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<Error> mapExceptionToErrors(Throwable throwable) {
         List<Error> errors = new ArrayList<>();
         if (throwable instanceof InputValidationException) {
             ((InputValidationException) throwable).getErrors()
@@ -49,22 +74,7 @@ public abstract class BaseProcessor {
                             .message(error.getMessage())
                             .field(error.getField()).build()));
         }
-        return Case($(instanceOf(InputValidationException.class)), () -> ErrorOutput.builder()
-                .errors(errors)
-                .statusCode(HttpStatus.BAD_REQUEST)
-                .build());
+        return errors;
     }
 
-    protected <T> void validateInput(T input) {
-        Set<ConstraintViolation<T>> violations = validator.validate(input);
-        if (!violations.isEmpty()) {
-            List<Error> errors = violations.stream()
-                    .map(violation -> Error.builder()
-                            .message(violation.getMessage())
-                            .field(violation.getPropertyPath().toString())
-                            .build())
-                    .collect(Collectors.toList());
-            throw new InputValidationException(errors);
-        }
-    }
 }
