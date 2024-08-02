@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.core.services;
+package com.tinqinacademy.hotel.core.processors;
 
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoom;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;

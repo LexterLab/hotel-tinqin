@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.core.services;
+package com.tinqinacademy.hotel.core.processors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
