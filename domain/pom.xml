@@ -3,10 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>domain</artifactId>
-    <groupId>com.tinqinacademy.hotel</groupId>
 
     <parent>
-        <groupId>com.tinqinacademy</groupId>
+        <groupId>com.tinqinacademy.hotel</groupId>
         <artifactId>hotel</artifactId>
         <version>${revision}</version>
     </parent>
