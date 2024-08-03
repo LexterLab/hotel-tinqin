@@ -40,6 +40,7 @@ public class GetRoomProcessor extends BaseProcessor implements GetRoom {
         log.info("Start getRoom {}", input);
 
         return Try.of(() -> {
+            validateInput(input);
             Room room = fetchRoomFromInput(input);
 
             List<Booking> roomBookings =  bookingRepository.findBookingsByRoomIdAndCurrentDate(room.getId());

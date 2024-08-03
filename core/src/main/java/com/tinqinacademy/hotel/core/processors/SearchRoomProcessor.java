@@ -39,6 +39,7 @@ public class SearchRoomProcessor extends BaseProcessor implements SearchRoom {
         log.info("Start searchRoom {}", input);
 
       return  Try.of(() -> {
+
             List<UUID> availableRoomIds = getAvailableRoomIds(input);
 
             SearchRoomOutput searchRoomOutput = SearchRoomOutput.builder()
@@ -47,11 +48,8 @@ public class SearchRoomProcessor extends BaseProcessor implements SearchRoom {
             return searchRoomOutput;
         }).toEither()
               .mapLeft(throwable -> Match(throwable).of(
-                     validatorCase(throwable),
                      defaultCase(throwable)
               ));
-
-
     }
 
     private List<UUID> getAvailableRoomIds(SearchRoomInput input) {

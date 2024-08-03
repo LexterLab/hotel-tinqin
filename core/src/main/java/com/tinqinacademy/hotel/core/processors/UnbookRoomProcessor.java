@@ -37,6 +37,7 @@ public class UnbookRoomProcessor extends BaseProcessor implements UnbookRoom {
         log.info("Start unbookRoom {}", input);
 
        return Try.of(() -> {
+            validateInput(input);
 
             Booking booking = findLatestBooking(input);
 

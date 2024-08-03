@@ -44,7 +44,6 @@ public class GetGuestReportProcessor extends BaseProcessor implements GetGuestRe
             return output;
         }).toEither()
                .mapLeft(throwable -> Match(throwable).of(
-                       validatorCase(throwable),
                        defaultCase(throwable)
                ));
 

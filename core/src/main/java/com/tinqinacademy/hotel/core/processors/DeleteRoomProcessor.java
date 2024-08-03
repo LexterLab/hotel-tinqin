@@ -38,6 +38,7 @@ public class DeleteRoomProcessor extends BaseProcessor implements DeleteRoom {
         log.info("Start deleteRoom {}", input);
 
        return Try.of(() -> {
+           validateInput(input);
            Room room = fetchRoomFromInput(input);
 
            bookingRepository.deleteAll(room.getBookings());
