@@ -1,11 +1,11 @@
 package com.tinqinacademy.hotel.core.processors;
 
 import com.tinqinacademy.hotel.api.errors.ErrorOutput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuest;
 import com.tinqinacademy.hotel.api.exceptions.GuestAlreadyRegisteredException;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestOutput;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;

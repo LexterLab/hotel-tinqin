@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.api.operations.registervisitor;
+package com.tinqinacademy.hotel.api.operations.registerguest;
 
 import com.tinqinacademy.hotel.api.base.OperationInput;
 import io.swagger.v3.oas.annotations.media.Schema;

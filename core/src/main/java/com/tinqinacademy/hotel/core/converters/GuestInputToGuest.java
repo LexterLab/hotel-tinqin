@@ -1,6 +1,6 @@
 package com.tinqinacademy.hotel.core.converters;
 
-import com.tinqinacademy.hotel.api.operations.registervisitor.GuestInput;
+import com.tinqinacademy.hotel.api.operations.registerguest.GuestInput;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import org.springframework.stereotype.Component;
 

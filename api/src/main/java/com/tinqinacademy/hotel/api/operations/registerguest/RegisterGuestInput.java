@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.api.operations.registervisitor;
+package com.tinqinacademy.hotel.api.operations.registerguest;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tinqinacademy.hotel.api.base.OperationInput;
