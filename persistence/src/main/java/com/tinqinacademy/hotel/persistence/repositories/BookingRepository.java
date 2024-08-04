@@ -1,9 +1,11 @@
 package com.tinqinacademy.hotel.persistence.repositories;
 
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
+import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,37 +13,26 @@ import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
-//    @Query(value = """
-//            SELECT r.id FROM Room r
-//            JOIN r.bookings b
-//            JOIN r.beds bed
-//            WHERE (r.id NOT IN (
-//                SELECT r.id FROM Booking b
-//                WHERE (b.startDate <= :endDate AND b.endDate >= :startDate)
-//            ))
-//            AND (:bedCount IS NULL OR (SELECT COUNT(bed) FROM r.beds bed) = :bedCount)
-//            AND (:bedSize IS NULL OR bed.bedSize = :bedSize)
-//            AND (:bathroomType IS NULL OR b.room.bathroomType = :bathroomType)
-//            """)
-//    List<Room> searchForAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, Integer bedCount,
-//                                       BedSize bedSize, BathroomType bathroomType);
+    @Query("""
+        SELECT b FROM Booking b
+        JOIN b.guests g
+        JOIN b.user u
+        JOIN b.room r
+        WHERE (CAST(:startDate AS DATE) IS NULL OR b.startDate >= :startDate)
+        AND (CAST(:endDate AS DATE) IS NULL OR b.endDate <= :endDate)
+        AND (:firstName IS NULL OR g.firstName LIKE :firstName)
+        AND (:lastName IS NULL OR g.lastName LIKE :lastName)
+        AND (:phoneNo IS NULL OR u.phoneNo LIKE :phoneNo)
+        AND (:idCardNo IS NULL OR g.idCardNo LIKE :idCardNo)
+        AND (CAST(:idCardValidity AS DATE) IS NULL OR g.idCardValidity = :idCardValidity)
+        AND (:idCardIssueAuthority IS NULL OR g.idCardIssueAuthority = :idCardIssueAuthority)
+        AND (CAST(:idCardIssueDate AS DATE) IS NULL OR g.idCardIssueDate = :idCardIssueDate)
+        AND (:roomNo IS NULL OR r.roomNo = :roomNo)
+    """)
+    List<Booking> searchBookings(LocalDateTime startDate, LocalDateTime endDate, String firstName, String lastName,
+                            String phoneNo, String idCardNo, LocalDate idCardValidity, String idCardIssueAuthority,
+                            LocalDate idCardIssueDate, String roomNo);
 
-//    @Query(value = """
-//    SELECT DISTINCT r.id FROM rooms r
-//    JOIN room_beds rb ON r.id = rb.room_id
-//    JOIN beds b ON rb.bed_id = b.id
-//    WHERE r.id NOT IN (
-//        SELECT room_id FROM bookings
-//        WHERE (start_date < :endDate AND end_date > :startDate)
-//    )
-//    AND (:bathroomType IS NULL OR r.bathroom_type = :bathroomType)
-//    AND (:bedSize IS NULL OR b.bed_size = :bedSize)
-//    AND (:bedCount IS NULL OR (
-//        SELECT COUNT(*) FROM room_beds rb2 WHERE rb2.room_id = r.id
-//    ) = :bedCount)
-//    """, nativeQuery = true)
-//    List<UUID> searchForAvailableRooms(LocalDateTime startDate, LocalDateTime endDate, Integer bedCount,
-//                                       BedSize bedSize, BathroomType bathroomType);
     @Query(value = """
         SELECT b FROM Booking b
         WHERE b.room.id = :roomId

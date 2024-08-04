@@ -8,6 +8,7 @@ import com.tinqinacademy.hotel.persistence.models.room.Room;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -27,7 +28,7 @@ public class RoomToGetRoomOutput extends AbstractConverter<Room, GetRoomOutput> 
 
         List<LocalDateTime> datesOccupied = source.getBookings()
                 .stream()
-                .flatMap(booking -> Stream.of(booking.getStartDate(), booking.getEndDate()))
+                .flatMap(booking -> getDatesOccupied(booking.getStartDate(), booking.getEndDate()).stream())
                 .distinct()
                 .toList();
 
@@ -43,5 +44,12 @@ public class RoomToGetRoomOutput extends AbstractConverter<Room, GetRoomOutput> 
                 .build();
 
         return output;
+    }
+
+    private List<LocalDateTime> getDatesOccupied(LocalDateTime startDate, LocalDateTime endDate) {
+        Long numberOfDaysOccupied = ChronoUnit.DAYS.between(startDate, endDate);
+        return Stream.iterate(startDate, date -> date.plusDays(1))
+                .limit(numberOfDaysOccupied + 1)
+                .toList();
     }
 }

@@ -8,7 +8,7 @@
         <version>3.3.1</version>
 
     </parent>
-    <groupId>com.tinqinacademy</groupId>
+    <groupId>com.tinqinacademy.hotel</groupId>
     <artifactId>hotel</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
@@ -21,6 +21,7 @@
         <module>core</module>
         <module>persistence</module>
         <module>domain</module>
+        <module>restexport</module>
     </modules>
 
     <properties>
@@ -29,7 +30,7 @@
         <model.version>4.0.0</model.version>
         <swagger.version>2.6.0</swagger.version>
         <lombok.version>1.18.30</lombok.version>
-        <group.id>com.tinqinacademy</group.id>
+        <group.id>com.tinqinacademy.hotel</group.id>
         <jackson.version>2.17.1</jackson.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <jsonpatch.version>1.13</jsonpatch.version>
@@ -37,6 +38,7 @@
         <flywaypostgres.version>10.15.0</flywaypostgres.version>
         <vavr.version>0.10.4</vavr.version>
         <vavrjackson.version>0.10.3</vavrjackson.version>
+        <feign.version>4.1.3</feign.version>
     </properties>
     <dependencies>
 
@@ -72,6 +74,11 @@
             <groupId>io.vavr</groupId>
             <artifactId>vavr-jackson</artifactId>
             <version>${vavrjackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>${feign.version}</version>
         </dependency>
     </dependencies>
 

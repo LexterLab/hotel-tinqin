@@ -5,7 +5,7 @@
     <artifactId>domain</artifactId>
 
     <parent>
-        <groupId>com.tinqinacademy</groupId>
+        <groupId>com.tinqinacademy.hotel</groupId>
         <artifactId>hotel</artifactId>
         <version>${revision}</version>
     </parent>

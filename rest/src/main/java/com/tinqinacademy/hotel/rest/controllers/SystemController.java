@@ -7,16 +7,16 @@ import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoom;
-import com.tinqinacademy.hotel.api.operations.errors.ErrorOutput;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReport;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoom;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuest;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestOutput;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuest;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoom;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
@@ -26,7 +26,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vavr.control.Either;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,7 +57,7 @@ public class SystemController extends BaseController {
     @PostMapping(RestAPIRoutes.REGISTER_VISITOR)
     public ResponseEntity<?> register(
             @RequestBody RegisterGuestInput input,
-            @PathVariable UUID bookingId
+            @PathVariable String bookingId
     ) {
         Either<ErrorOutput, RegisterGuestOutput> output = registerGuest.process(RegisterGuestInput
                 .builder()
@@ -134,7 +132,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PutMapping(RestAPIRoutes.UPDATE_ROOM)
-    public ResponseEntity<?> updateRoom(@PathVariable UUID roomId, @RequestBody UpdateRoomInput input) {
+    public ResponseEntity<?> updateRoom(@PathVariable String roomId, @RequestBody UpdateRoomInput input) {
         Either<ErrorOutput, UpdateRoomOutput> output = updateRoom.process(UpdateRoomInput.builder()
                 .roomId(roomId)
                 .bathroomType(input.getBathroomType())
@@ -157,7 +155,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
-    public ResponseEntity<?> partialUpdateRoom(@PathVariable UUID roomId, @RequestBody PartialUpdateRoomInput input) {
+    public ResponseEntity<?> partialUpdateRoom(@PathVariable String roomId, @RequestBody PartialUpdateRoomInput input) {
         Either<ErrorOutput,PartialUpdateRoomOutput> output = partialUpdateRoom.process(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .beds(input.getBeds())
@@ -180,7 +178,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
-    public ResponseEntity<?> deleteRoom(@PathVariable UUID roomId) {
+    public ResponseEntity<?> deleteRoom(@PathVariable String roomId) {
         Either<ErrorOutput, DeleteRoomOutput> output = deleteRoom.process(DeleteRoomInput.builder().roomId(roomId).build());
         return handleOutput(output, HttpStatus.OK);
     }

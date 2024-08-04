@@ -5,6 +5,8 @@ import com.tinqinacademy.hotel.persistence.enumerations.BathroomType;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class UpdateRoomInputToRoom extends AbstractConverter<UpdateRoomInput, Room> {
     @Override
@@ -16,7 +18,7 @@ public class UpdateRoomInputToRoom extends AbstractConverter<UpdateRoomInput, Ro
     @Override
     protected Room doConvert(UpdateRoomInput source) {
         Room room = Room.builder()
-                .id(source.getRoomId())
+                .id(UUID.fromString(source.getRoomId()))
                 .floor(source.getFloor())
                 .price(source.getPrice())
                 .bathroomType(BathroomType.getByCode(source.getBathroomType().toString()))

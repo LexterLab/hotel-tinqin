@@ -1,1 +1,2 @@
 CREATE DATABASE commentdb;
+CREATE DATABASE authdb;
