@@ -5,18 +5,12 @@
     <artifactId>persistence</artifactId>
 
     <parent>
-        <groupId>com.tinqinacademy</groupId>
+        <groupId>com.tinqinacademy.hotel</groupId>
         <artifactId>hotel</artifactId>
         <version>${revision}</version>
     </parent>
 
     <dependencies>
-        <dependency>
-            <groupId>${group.id}</groupId>
-            <artifactId>api</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -25,7 +19,7 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>6.4.2.Final</version>
+            <version>${hibernatecore.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -34,7 +28,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
-            <version>10.15.0</version>
+            <version>${flywaypostgres.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

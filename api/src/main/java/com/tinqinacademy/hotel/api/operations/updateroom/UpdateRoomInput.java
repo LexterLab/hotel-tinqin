@@ -1,15 +1,16 @@
 package com.tinqinacademy.hotel.api.operations.updateroom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
+import com.tinqinacademy.hotel.api.base.OperationInput;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,9 +18,11 @@ import java.util.UUID;
 @Setter
 @Getter
 @ToString
-public class UpdateRoomInput {
+public class UpdateRoomInput implements OperationInput {
     @JsonIgnore
-    private UUID roomId;
+    @UUID(message = "Field roomId must be UUID")
+    @NotBlank(message = "Field roomId must not be blank")
+    private String roomId;
     private List<BedSize> beds;
     @Schema(example = "private")
     @NotNull(message = "Field bathroomType must not be null")

@@ -1,29 +1,31 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
+import com.tinqinacademy.hotel.api.operations.createroom.CreateRoom;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomInput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
+import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoom;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReport;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomOutput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
-import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
+import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoom;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestOutput;
+import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuest;
+import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoom;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
-import com.tinqinacademy.hotel.api.contracts.SystemService;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +33,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "System REST APIs")
-public class SystemController {
-    private final SystemService systemService;
+public class SystemController extends BaseController {
+    private final RegisterGuest registerGuest;
+    private final GetGuestReport getGuestReport;
+    private final CreateRoom createRoom;
+    private final UpdateRoom updateRoom;
+    private final PartialUpdateRoom partialUpdateRoom;
+    private final DeleteRoom deleteRoom;
 
     @Operation(
             summary = "Register Room Guest Rest API",
@@ -49,16 +55,16 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.REGISTER_VISITOR)
-    public ResponseEntity<RegisterGuestOutput> register(
-            @Valid @RequestBody RegisterGuestInput input,
-            @PathVariable UUID bookingId
+    public ResponseEntity<?> register(
+            @RequestBody RegisterGuestInput input,
+            @PathVariable String bookingId
     ) {
-        RegisterGuestOutput output = systemService.registerGuest(RegisterGuestInput
+        Either<ErrorOutput, RegisterGuestOutput> output = registerGuest.process(RegisterGuestInput
                 .builder()
                 .bookingId(bookingId)
                 .guests(input.getGuests())
                 .build());
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+        return handleOutput(output, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -71,7 +77,7 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @GetMapping(RestAPIRoutes.GET_VISITORS_REPORT)
-    public ResponseEntity<GetGuestReportOutput> getGuestReport(
+    public ResponseEntity<?> getGuestReport(
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String firstName,
@@ -84,7 +90,7 @@ public class SystemController {
             @RequestParam(required = false) String roomNo
 
             ) {
-        GetGuestReportOutput output = systemService.getGuestReport(GetGuestReportInput.builder()
+       Either<ErrorOutput,GetGuestReportOutput> output = getGuestReport.process(GetGuestReportInput.builder()
                 .idCardIssueAuthority(idCardAuthority)
                 .idCardIssueDate(idCardIssueDate)
                 .idCardNo(idCardNo)
@@ -96,7 +102,7 @@ public class SystemController {
                 .phoneNo(phoneNo)
                 .startDate(startDate)
                 .build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 
 
@@ -110,11 +116,10 @@ public class SystemController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
     @PostMapping(RestAPIRoutes.CREATE_ROOM)
-    public ResponseEntity<CreateRoomOutput> createRoom(@Valid @RequestBody CreateRoomInput input) {
-        CreateRoomOutput output = systemService.createRoom(input);
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+    public ResponseEntity<?> createRoom(@RequestBody CreateRoomInput input) {
+        Either<ErrorOutput, CreateRoomOutput> result = createRoom.process(input);
+        return handleOutput(result, HttpStatus.CREATED);
     }
-
 
     @Operation(
             summary = "Update Room Rest API",
@@ -127,8 +132,8 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PutMapping(RestAPIRoutes.UPDATE_ROOM)
-    public ResponseEntity<UpdateRoomOutput> updateRoom(@PathVariable UUID roomId, @Valid @RequestBody UpdateRoomInput input) {
-        UpdateRoomOutput output = systemService.updateRoom(UpdateRoomInput.builder()
+    public ResponseEntity<?> updateRoom(@PathVariable String roomId, @RequestBody UpdateRoomInput input) {
+        Either<ErrorOutput, UpdateRoomOutput> output = updateRoom.process(UpdateRoomInput.builder()
                 .roomId(roomId)
                 .bathroomType(input.getBathroomType())
                 .floor(input.getFloor())
@@ -136,7 +141,7 @@ public class SystemController {
                 .roomNo(input.getRoomNo())
                 .price(input.getPrice())
                 .build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -150,17 +155,16 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
     @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
-    public ResponseEntity<PartialUpdateRoomOutput> partialUpdateRoom(@PathVariable UUID roomId,
-                                                                     @RequestBody @Valid PartialUpdateRoomInput input)  {
-        PartialUpdateRoomOutput output = systemService.partialUpdateRoom(PartialUpdateRoomInput.builder()
+    public ResponseEntity<?> partialUpdateRoom(@PathVariable String roomId, @RequestBody PartialUpdateRoomInput input) {
+        Either<ErrorOutput,PartialUpdateRoomOutput> output = partialUpdateRoom.process(PartialUpdateRoomInput.builder()
                 .roomId(roomId)
                 .beds(input.getBeds())
                 .bathroomType(input.getBathroomType())
                 .floor(input.getFloor())
                 .roomNo(input.getRoomNo())
                 .price(input.getPrice())
-                .build()); ;
-        return new ResponseEntity<>(output, HttpStatus.OK);
+                .build());
+        return handleOutput(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -174,21 +178,8 @@ public class SystemController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
-    public ResponseEntity<DeleteRoomOutput> deleteRoom(@PathVariable UUID roomId) {
-        DeleteRoomOutput output = systemService.deleteRoom(DeleteRoomInput.builder().roomId(roomId).build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
-    }
-
-
-    @PatchMapping("test-jsonpatch/{roomId}")
-    public ResponseEntity<PartialUpdateRoomOutput> testJsonPatch(
-            @Schema(example = "[{ \"op\": \"replace\", \"path\": \"/price\", \"value\": \"150.00\" }]")
-            @RequestBody JsonPatch jsonPatch,
-            @PathVariable UUID roomId) throws JsonPatchException, JsonProcessingException {
-        PartialUpdateRoomOutput output = systemService.testJsonPatch(PartialUpdateRoomInput.builder()
-                .roomId(roomId)
-                        .build()
-                , jsonPatch);
-        return new ResponseEntity<>(output, HttpStatus.OK);
+    public ResponseEntity<?> deleteRoom(@PathVariable String roomId) {
+        Either<ErrorOutput, DeleteRoomOutput> output = deleteRoom.process(DeleteRoomInput.builder().roomId(roomId).build());
+        return handleOutput(output, HttpStatus.OK);
     }
 }

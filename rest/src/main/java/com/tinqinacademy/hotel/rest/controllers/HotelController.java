@@ -1,37 +1,41 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
+import com.tinqinacademy.hotel.api.operations.bookroom.BookRoom;
+import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
+import com.tinqinacademy.hotel.api.operations.getroom.GetRoom;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomInput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
+import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoom;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
-import com.tinqinacademy.hotel.api.contracts.HotelService;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
+import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoom;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Hotel REST APIs")
-public class HotelController {
-
-    private final HotelService hotelService;
-
+public class HotelController extends BaseController {
+    private final SearchRoom searchRoom;
+    private final GetRoom getRoom;
+    private final BookRoom bookRoom;
+    private final UnbookRoom unbookRoom;
 
     @Operation(
             summary = "Search Rooms Rest API",
@@ -43,14 +47,14 @@ public class HotelController {
     }
     )
     @GetMapping(RestAPIRoutes.SEARCH_ROOMS)
-    public ResponseEntity<SearchRoomOutput> searchRooms(
+    public ResponseEntity<?> searchRooms(
             @RequestParam()  LocalDateTime startDate,
             @RequestParam() LocalDateTime endDate,
             @RequestParam(required = false) Integer bedCount,
             @RequestParam(required = false) String bedSize,
             @RequestParam(required = false) String bathroomType
             ) {
-        SearchRoomOutput output = hotelService.searchRoom(
+        Either<ErrorOutput, SearchRoomOutput> output = searchRoom.process(
                 SearchRoomInput.builder()
                         .bathroomType(BathroomType.getByCode(bathroomType))
                         .bedSize(BedSize.getByCode(bedSize))
@@ -58,7 +62,7 @@ public class HotelController {
                         .startDate(startDate)
                         .bedCount(bedCount)
                         .build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -72,10 +76,10 @@ public class HotelController {
     }
     )
     @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
-    public ResponseEntity<GetRoomOutput> getRoomById(@PathVariable UUID roomId) {
-        GetRoomOutput output = hotelService.getRoom(GetRoomInput.builder()
+    public ResponseEntity<?> getRoomById(@PathVariable String roomId) {
+        Either<ErrorOutput, GetRoomOutput> output = getRoom.process(GetRoomInput.builder()
                 .roomId(roomId).build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 
     @Operation(
@@ -90,8 +94,8 @@ public class HotelController {
     }
     )
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
-    public ResponseEntity<BookRoomOutput> bookRoom(@PathVariable UUID roomId , @Valid @RequestBody BookRoomInput input) {
-        BookRoomOutput output = hotelService.bookRoom(BookRoomInput.builder()
+    public ResponseEntity<?> bookRoom(@PathVariable String roomId , @RequestBody BookRoomInput input) {
+        Either<ErrorOutput,BookRoomOutput> output = bookRoom.process(BookRoomInput.builder()
                 .roomId(roomId)
                 .startDate(input.getStartDate())
                 .endDate(input.getEndDate())
@@ -101,7 +105,7 @@ public class HotelController {
                 .userId(input.getUserId())
                 .build());
 
-        return new ResponseEntity<>(output, HttpStatus.CREATED);
+       return handleOutput(output, HttpStatus.CREATED);
     }
 
     @Operation(
@@ -116,13 +120,12 @@ public class HotelController {
     }
     )
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
-    public ResponseEntity<UnbookRoomOutput> unbookRoom(@PathVariable UUID roomId,
-                                                       @Valid @RequestBody UnbookRoomInput input) {
-        UnbookRoomOutput output = hotelService.unbookRoom(UnbookRoomInput
+    public ResponseEntity<?> unbookRoom(@PathVariable String roomId, @RequestBody UnbookRoomInput input) {
+       Either<ErrorOutput, UnbookRoomOutput>  output = unbookRoom.process(UnbookRoomInput
                 .builder()
                 .roomId(roomId)
                 .userId(input.getUserId())
                 .build());
-        return new ResponseEntity<>(output, HttpStatus.OK);
+        return handleOutput(output, HttpStatus.OK);
     }
 }

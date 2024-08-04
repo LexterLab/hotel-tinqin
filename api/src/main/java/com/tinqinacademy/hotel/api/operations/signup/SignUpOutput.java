@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.api.operations.signup;
 
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import lombok.*;
 
 import java.util.UUID;
@@ -10,6 +11,6 @@ import java.util.UUID;
 @Setter
 @ToString
 @Builder
-public class SignUpOutput {
+public class SignUpOutput implements OperationOutput {
     private UUID id;
 }

@@ -1,15 +1,16 @@
 package com.tinqinacademy.hotel.api.operations.partialupdateroom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tinqinacademy.hotel.api.models.constants.BathroomType;
-import com.tinqinacademy.hotel.api.models.constants.BedSize;
+import com.tinqinacademy.hotel.api.base.OperationInput;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,9 +18,11 @@ import java.util.UUID;
 @Setter
 @Getter
 @ToString
-public class PartialUpdateRoomInput {
+public class PartialUpdateRoomInput implements OperationInput {
     @JsonIgnore
-    private UUID roomId;
+    @NotBlank(message = "Field roomId must not be blank")
+    @UUID(message = "Field roomId must be UUID")
+    private String roomId;
     private List<BedSize> beds;
     @Schema(example = "private")
     private BathroomType bathroomType;
@@ -28,8 +31,7 @@ public class PartialUpdateRoomInput {
     @Max(value = 10, message = "Field floor must be maximum 12")
     private Integer floor;
     @Schema(example = "201A")
-    @NotBlank(message = "Field roomNo must not be empty")
-    @Size(min = 3, max = 5, message = "Field roomNo must be between 3-5 characters")
+    @Size(min = 4, max = 4, message = "Field roomNo must be 4 characters")
     private String roomNo;
     @Schema(example = "20000")
     @PositiveOrZero(message = "Field price must be min 0")

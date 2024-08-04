@@ -3,14 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>com.tinqinacademy</groupId>
+        <groupId>com.tinqinacademy.hotel</groupId>
         <artifactId>hotel</artifactId>
         <version>${revision}</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core</artifactId>
-<!--    <version>0.0.1-SNAPSHOT</version>-->
 
     <dependencies>
         <dependency>
@@ -18,7 +17,11 @@
             <artifactId>persistence</artifactId>
             <version>${revision}</version>
         </dependency>
-
+        <dependency>
+            <groupId>${group.id}</groupId>
+            <artifactId>api</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
