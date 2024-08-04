@@ -4,23 +4,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
-@Builder
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
-public class GuestOutput {
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+@Builder
+public class GuestInfo {
     @Schema(example = "Michael")
     private String firstName;
     @Schema(example = "Jordan")
     private String lastName;
-    @Schema(example = "+35984238424")
-    private String phoneNo;
     @Schema(example = "3232 3232 3232 3232")
     private String idCardNo;
     @Schema(example = "2024-01-01")

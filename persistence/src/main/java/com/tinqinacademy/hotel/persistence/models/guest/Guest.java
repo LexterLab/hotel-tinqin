@@ -1,11 +1,9 @@
 package com.tinqinacademy.hotel.persistence.models.guest;
 
-import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
