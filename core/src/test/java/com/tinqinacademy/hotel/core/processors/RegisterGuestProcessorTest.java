@@ -4,7 +4,7 @@ import com.tinqinacademy.hotel.api.Messages;
 import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.errors.Error;
 import com.tinqinacademy.hotel.api.errors.ErrorOutput;
-import com.tinqinacademy.hotel.api.operations.guest.GuestInput;
+import com.tinqinacademy.hotel.api.operations.registervisitor.GuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registervisitor.RegisterGuestOutput;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
