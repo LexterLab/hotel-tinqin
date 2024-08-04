@@ -4,7 +4,7 @@ import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReport;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
-import com.tinqinacademy.hotel.api.operations.guest.GuestOutput;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GuestOutput;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
 import io.vavr.control.Either;

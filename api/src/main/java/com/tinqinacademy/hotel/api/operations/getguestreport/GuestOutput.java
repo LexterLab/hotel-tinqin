@@ -1,4 +1,4 @@
-package com.tinqinacademy.hotel.api.operations.guest;
+package com.tinqinacademy.hotel.api.operations.getguestreport;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
