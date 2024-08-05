@@ -34,7 +34,7 @@ public class Room {
     private BigDecimal price;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "room", orphanRemoval = true)
-    List<Booking> bookings = new ArrayList<>();;
+    List<Booking> bookings = new ArrayList<>();
 
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)

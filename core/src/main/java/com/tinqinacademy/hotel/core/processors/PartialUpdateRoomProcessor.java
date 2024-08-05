@@ -118,7 +118,9 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
 
     private Room applyPartialUpdate(PartialUpdateRoomInput input, Room room) throws JsonPatchException, JsonProcessingException {
         log.info("Start applyPartialUpdate {}", input);
-        JsonNode roomNode = objectMapper.convertValue(room, JsonNode.class);
+        PartialRoomUpdate roomData = conversionService.convert(room, PartialRoomUpdate.class);
+
+        JsonNode roomNode = objectMapper.convertValue(roomData, JsonNode.class);
 
         PartialRoomUpdate partialRoomUpdate = conversionService.convert(input, PartialRoomUpdate.class);
         JsonNode inputNode = objectMapper.convertValue(partialRoomUpdate, JsonNode.class);
