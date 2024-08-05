@@ -48,6 +48,7 @@ public class HotelController extends BaseController {
     )
     @GetMapping(RestAPIRoutes.SEARCH_ROOMS)
     public ResponseEntity<?> searchRooms(
+
             @RequestParam LocalDateTime startDate,
             @RequestParam LocalDateTime endDate,
             @RequestParam(required = false) Integer bedCount,

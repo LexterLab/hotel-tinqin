@@ -22,14 +22,17 @@ import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 
 @Headers({"Content-Type: application/json"})
 public interface HotelClient {
 
     @RequestLine(RouteExports.GET_ROOM)
     GetRoomOutput getRoomById(@Param String roomId);
+
 
     @RequestLine(RouteExports.SEARCH_ROOM)
     SearchRoomOutput searchAvailableRooms(@Param LocalDateTime startDate, @Param LocalDateTime endDate,

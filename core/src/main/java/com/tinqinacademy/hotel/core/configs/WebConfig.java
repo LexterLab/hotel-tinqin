@@ -18,6 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final BookingToBookingInfo bookingToBookingInfo;
     private final RoomToPartialRoomUpdate roomToPartialRoomUpdate;
 
+
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(createRoomInputToRoom);

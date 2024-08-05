@@ -55,6 +55,7 @@ public class SearchRoomProcessor extends BaseProcessor implements SearchRoom {
     private List<UUID> getAvailableRoomIds(SearchRoomInput input) {
         log.info("Start getAvailableRoomIds {}", input);
 
+
         BedSize bedSize = null;
         BathroomType bathroomType = null;
 
