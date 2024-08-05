@@ -59,7 +59,7 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
             Room patchedRoom = applyPartialUpdate(input, room);
             patchedRoom.setId(room.getId());
 
-            updateRoomBeds(input, patchedRoom);
+            updateRoomBeds(input, patchedRoom, room);
 
             roomRepository.save(patchedRoom);
 
@@ -103,8 +103,9 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
         log.info("End validatePartialUpdate {}", input);
     }
 
-    private void updateRoomBeds(PartialUpdateRoomInput input, Room patchedRoom) {
+    private void updateRoomBeds(PartialUpdateRoomInput input, Room patchedRoom, Room room) {
         log.info("Start updateRoomBeds {}", input);
+        patchedRoom.setBeds(room.getBeds());
         if (input.getBeds() != null) {
             List<BedSize> bedSizes = input.getBeds().stream()
                     .map(bedSize -> BedSize.getByCode(bedSize.toString()))
@@ -118,7 +119,9 @@ public class PartialUpdateRoomProcessor extends BaseProcessor implements Partial
 
     private Room applyPartialUpdate(PartialUpdateRoomInput input, Room room) throws JsonPatchException, JsonProcessingException {
         log.info("Start applyPartialUpdate {}", input);
-        JsonNode roomNode = objectMapper.convertValue(room, JsonNode.class);
+        PartialRoomUpdate roomData = conversionService.convert(room, PartialRoomUpdate.class);
+
+        JsonNode roomNode = objectMapper.convertValue(roomData, JsonNode.class);
 
         PartialRoomUpdate partialRoomUpdate = conversionService.convert(input, PartialRoomUpdate.class);
         JsonNode inputNode = objectMapper.convertValue(partialRoomUpdate, JsonNode.class);

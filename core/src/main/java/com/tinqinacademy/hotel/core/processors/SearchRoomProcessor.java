@@ -55,9 +55,20 @@ public class SearchRoomProcessor extends BaseProcessor implements SearchRoom {
     private List<UUID> getAvailableRoomIds(SearchRoomInput input) {
         log.info("Start getAvailableRoomIds {}", input);
 
+        BedSize bedSize = null;
+        BathroomType bathroomType = null;
+
+        if (input.getBedSize() != null) {
+            bedSize = BedSize.getByCode(input.getBedSize().toString());
+        }
+
+        if (input.getBathroomType() != null) {
+            bathroomType = BathroomType.getByCode(input.getBathroomType().toString());
+        }
+
         List<UUID> availableRoomIds = roomRepository.findAll(roomSpecification.searchForAvailableRooms(input.getStartDate(),
-                        input.getEndDate(), input.getBedCount(), BedSize.getByCode(input.getBedSize().toString()),
-                        BathroomType.getByCode(input.getBathroomType().toString()))).stream()
+                        input.getEndDate(), input.getBedCount(), bedSize,
+                bathroomType)).stream()
                 .map(Room::getId).toList();
 
         log.info("End getAvailableRoomIds {}", availableRoomIds);
