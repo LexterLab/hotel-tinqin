@@ -16,6 +16,8 @@ public class WebConfig implements WebMvcConfigurer {
     private final BookingToGetGuestReportOutput bookingToGetGuestReportOutput;
     private final PartialUpdateRoomInputToPartialRoomUpdate partialUpdateRoomInputToPartialRoomUpdate;
     private final BookingToBookingInfo bookingToBookingInfo;
+    private final RoomToPartialRoomUpdate roomToPartialRoomUpdate;
+
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
@@ -26,5 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(bookingToGetGuestReportOutput);
         registry.addConverter(partialUpdateRoomInputToPartialRoomUpdate);
         registry.addConverter(bookingToBookingInfo);
+        registry.addConverter(roomToPartialRoomUpdate);
     }
 }
