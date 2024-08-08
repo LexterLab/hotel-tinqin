@@ -9,7 +9,7 @@ public class RouteExports {
     public static final String REGISTER_GUESTS = "POST " + RestAPIRoutes.REGISTER_VISITOR;
     public static final String GET_GUEST_REPORTS = "GET /api/v1/system/register?startDate={startDate}&endDate={endDate}" +
             "&firstName={firstName}&lastName={lastName}&phoneNo={phoneNo}&idCardNo={idCardNo}&idCardValidity={idCardValidity}" +
-            "idCardAuthority={idCardAuthority}&idCardIssueDate={idCardIssueDate}&roomNo={roomNo}&roomType={roomType}";
+            "&idCardIssueAuthority={idCardIssueAuthority}&idCardIssueDate={idCardIssueDate}&roomNo={roomNo}";
     public static final String CREATE_ROOM = "POST " + RestAPIRoutes.CREATE_ROOM;
     public static final String UPDATE_ROOM = "PUT " + RestAPIRoutes.UPDATE_ROOM;
     public static final String PARTIAL_UPDATE_ROOM = "PATCH " + RestAPIRoutes.PARTIAL_UPDATE_ROOM;
