@@ -34,6 +34,27 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 
+  maildev:
+    container_name: maildev
+    image: maildev/maildev
+    environment:
+      - MAILDEV_WEB_PORT=1080
+      - MAILDEV_SMTP_PORT=1025
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - hotel
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6380:6379"
+    networks:
+      - hotel
+
+
 networks:
   hotel:
 

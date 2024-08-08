@@ -15,6 +15,8 @@ import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoo
 import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
+import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
+
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
@@ -22,17 +24,14 @@ import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 
 @Headers({"Content-Type: application/json"})
 public interface HotelClient {
 
     @RequestLine(RouteExports.GET_ROOM)
     GetRoomOutput getRoomById(@Param String roomId);
-
 
     @RequestLine(RouteExports.SEARCH_ROOM)
     SearchRoomOutput searchAvailableRooms(@Param LocalDateTime startDate, @Param LocalDateTime endDate,
@@ -43,16 +42,18 @@ public interface HotelClient {
     BookRoomOutput bookRoom(@Param String roomId, BookRoomInput bookRoomInput);
 
     @RequestLine(RouteExports.UNBOOK_ROOM)
-    UnbookRoomOutput unbookRoom(@Param String roomId);
+
+    UnbookRoomOutput unbookRoom(@Param String roomId, UnbookRoomInput unbookRoomInput);
 
     @RequestLine(RouteExports.REGISTER_GUESTS)
-    RegisterGuestOutput registerGuest(@Param String bookingId, RegisterGuestInput registerGuestInput);
+    RegisterGuestOutput registerGuest(RegisterGuestInput registerGuestInput, @Param String bookingId);
 
     @RequestLine(RouteExports.GET_GUEST_REPORTS)
     GetGuestReportOutput getGuestReport(@Param LocalDateTime startDate, @Param LocalDateTime endDate,
                                         @Param String firstName, @Param String lastName, @Param String phoneNo,
                                         @Param String idCardNo, @Param LocalDate idCardValidity,
-                                        @Param String idCardAuthority, @Param LocalDate idCardIssueDate,
+                                        @Param String idCardIssueAuthority, @Param LocalDate idCardIssueDate,
+
                                         @Param String roomNo);
 
     @RequestLine(RouteExports.CREATE_ROOM)
@@ -67,3 +68,4 @@ public interface HotelClient {
     @RequestLine(RouteExports.DELETE_ROOM)
     DeleteRoomOutput deleteRoom(@Param String roomId);
 }
+
