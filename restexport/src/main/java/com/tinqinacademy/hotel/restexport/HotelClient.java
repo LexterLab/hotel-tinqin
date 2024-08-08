@@ -16,6 +16,7 @@ import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
+
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
@@ -41,6 +42,7 @@ public interface HotelClient {
     BookRoomOutput bookRoom(@Param String roomId, BookRoomInput bookRoomInput);
 
     @RequestLine(RouteExports.UNBOOK_ROOM)
+
     UnbookRoomOutput unbookRoom(@Param String roomId, UnbookRoomInput unbookRoomInput);
 
     @RequestLine(RouteExports.REGISTER_GUESTS)
@@ -51,6 +53,7 @@ public interface HotelClient {
                                         @Param String firstName, @Param String lastName, @Param String phoneNo,
                                         @Param String idCardNo, @Param LocalDate idCardValidity,
                                         @Param String idCardIssueAuthority, @Param LocalDate idCardIssueDate,
+
                                         @Param String roomNo);
 
     @RequestLine(RouteExports.CREATE_ROOM)
@@ -65,3 +68,4 @@ public interface HotelClient {
     @RequestLine(RouteExports.DELETE_ROOM)
     DeleteRoomOutput deleteRoom(@Param String roomId);
 }
+
