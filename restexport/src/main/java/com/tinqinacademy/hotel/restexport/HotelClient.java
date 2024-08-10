@@ -8,6 +8,7 @@ import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
+import com.tinqinacademy.hotel.api.operations.findroombyroomno.FindRoomByRoomNoOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
@@ -67,5 +68,8 @@ public interface HotelClient {
 
     @RequestLine(RouteExports.DELETE_ROOM)
     DeleteRoomOutput deleteRoom(@Param String roomId);
+
+    @RequestLine(RouteExports.FIND_ROOM)
+    FindRoomByRoomNoOutput findRoomByRoomNo(@Param String roomNo);
 }
 

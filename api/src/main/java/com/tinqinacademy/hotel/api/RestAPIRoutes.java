@@ -16,4 +16,5 @@ public class RestAPIRoutes {
     public static final String PARTIAL_UPDATE_ROOM = SYSTEM + "/room/{roomId}";
     public static final String DELETE_ROOM = SYSTEM + "/room/{roomId}";
     public static final String SIGN_UP = AUTH + "/signup";
+    public static final String FIND_ROOM = HOTEL + "/room/{roomNo}";
 }
