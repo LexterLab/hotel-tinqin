@@ -14,6 +14,6 @@ public class RouteExports {
     public static final String UPDATE_ROOM = "PUT " + RestAPIRoutes.UPDATE_ROOM;
     public static final String PARTIAL_UPDATE_ROOM = "PATCH " + RestAPIRoutes.PARTIAL_UPDATE_ROOM;
     public static final String DELETE_ROOM = "DELETE " + RestAPIRoutes.DELETE_ROOM;
-
+    public static final String FIND_ROOM = "GET " + RestAPIRoutes.FIND_ROOM;
 }
 
