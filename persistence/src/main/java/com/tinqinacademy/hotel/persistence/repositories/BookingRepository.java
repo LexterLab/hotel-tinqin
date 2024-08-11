@@ -51,5 +51,5 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     Long countByRoomAndDates(UUID roomId, LocalDateTime startDate, LocalDateTime endDate);
 
 
-    Optional<Booking> findLatestByRoomIdAndUserId(UUID roomId, UUID userId);
+    Optional<Booking> findBookingByIdAndUserId(UUID id, UUID userId);
 }
