@@ -43,8 +43,7 @@ public interface HotelClient {
     BookRoomOutput bookRoom(@Param String roomId, BookRoomInput bookRoomInput);
 
     @RequestLine(RouteExports.UNBOOK_ROOM)
-
-    UnbookRoomOutput unbookRoom(@Param String roomId, UnbookRoomInput unbookRoomInput);
+    UnbookRoomOutput unbookRoom(@Param String bookingId, UnbookRoomInput unbookRoomInput);
 
     @RequestLine(RouteExports.REGISTER_GUESTS)
     RegisterGuestOutput registerGuest(RegisterGuestInput registerGuestInput, @Param String bookingId);
