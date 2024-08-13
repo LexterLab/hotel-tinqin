@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -13,8 +14,7 @@ import java.util.List;
 @ToString
 @Builder
 public class BookingInfo {
-    @Schema(example = "+35984238424")
-    private String phoneNo;
+    private UUID userId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private List<GuestInfo> guests;

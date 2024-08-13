@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -34,4 +35,6 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
                                        BedSize bedSize, BathroomType bathroomType);
 
     List<Room> findAll(Specification<Room> spec);
+
+    Optional<Room> findByRoomNo(String roomNo);
 }
