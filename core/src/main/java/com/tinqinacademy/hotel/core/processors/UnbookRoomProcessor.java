@@ -8,9 +8,7 @@ import com.tinqinacademy.hotel.api.exceptions.ResourceNotFoundException;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
-import com.tinqinacademy.hotel.persistence.models.room.Room;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
-import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +16,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import jakarta.validation.Validator;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -29,29 +26,24 @@ import static io.vavr.API.*;
 @Slf4j
 public class UnbookRoomProcessor extends BaseProcessor implements UnbookRoom {
     private final BookingRepository bookingRepository;
-    private final RoomRepository roomRepository;
 
-    public UnbookRoomProcessor(ConversionService conversionService, Validator validator, BookingRepository bookingRepository, RoomRepository roomRepository) {
+    public UnbookRoomProcessor(ConversionService conversionService, Validator validator, BookingRepository bookingRepository) {
         super(conversionService, validator);
         this.bookingRepository = bookingRepository;
-        this.roomRepository = roomRepository;
     }
 
     @Override
-    @Transactional
     public Either<ErrorOutput, UnbookRoomOutput> process(UnbookRoomInput input) {
         log.info("Start unbookRoom {}", input);
 
        return Try.of(() -> {
             validateInput(input);
 
-            Booking booking = findBooking(input);
+            Booking booking = findLatestBooking(input);
 
             checkIfUnbookingIsPossible(booking);
 
-            Room room = booking.getRoom();
-            room.getBookings().remove(booking);
-            roomRepository.save(room);
+            bookingRepository.delete(booking);
 
             UnbookRoomOutput output = UnbookRoomOutput.builder().build();
             log.info("End unbookRoom {}", output);
@@ -68,15 +60,15 @@ public class UnbookRoomProcessor extends BaseProcessor implements UnbookRoom {
     }
 
 
-    private Booking findBooking(UnbookRoomInput input) {
-        log.info("Start findBooking {}", input);
+    private Booking findLatestBooking(UnbookRoomInput input) {
+        log.info("Start findLatestBooking {}", input);
 
-        Booking booking = bookingRepository.findBookingByIdAndUserId(UUID.fromString(input.getBookingId()),
+        Booking booking = bookingRepository.findLatestByRoomIdAndUserId(UUID.fromString(input.getRoomId()),
                         UUID.fromString(input.getUserId()))
-                .orElseThrow(() -> new ResourceNotFoundException("booking", "bookingId & userId",
-                        input.getBookingId() + " - " + input.getUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("booking", "roomId & userId",
+                        input.getRoomId()));
 
-        log.info("End findBooking {}", booking);
+        log.info("End findLatestBooking {}", booking);
         return booking;
     }
 

@@ -4,6 +4,7 @@ import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.*;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
+import com.tinqinacademy.hotel.persistence.models.user.User;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import io.vavr.control.Either;
 import jakarta.validation.Validator;
@@ -50,7 +51,7 @@ class GetGuestReportProcessorTest {
                 .lastName("Peter")
                 .startDate(LocalDateTime.now().plusYears(1))
                 .endDate(LocalDateTime.now().plusYears(1))
-                .userId(UUID.randomUUID().toString())
+                .phoneNo("+3598535353453")
                 .build();
 
 
@@ -79,9 +80,15 @@ class GetGuestReportProcessorTest {
         List<GuestInfo> guestInfos = new ArrayList<>(List.of(guestInfo));
 
 
+        User user = User
+                .builder()
+                .id(UUID.randomUUID())
+                .phoneNo(input.getPhoneNo())
+                .build();
 
         Booking booking = Booking
                 .builder()
+                .user(user)
                 .startDate(input.getStartDate())
                 .endDate(input.getEndDate())
                 .guests(guests)
@@ -92,7 +99,7 @@ class GetGuestReportProcessorTest {
                 .guests(guestInfos)
                 .startDate(booking.getStartDate())
                 .endDate(booking.getEndDate())
-                .userId(UUID.fromString(input.getUserId()))
+                .phoneNo(user.getPhoneNo())
                 .build();
 
         BookingReport bookingReport = BookingReport
@@ -110,7 +117,7 @@ class GetGuestReportProcessorTest {
                 .idCardIssueDate(input.getIdCardIssueDate())
                 .startDate(bookingInfo.getStartDate())
                 .endDate(bookingInfo.getEndDate())
-                .userId(bookingInfo.getUserId())
+                .phoneNo(bookingInfo.getPhoneNo())
                 .build();
 
         GetGuestReportOutput expectedOutput = GetGuestReportOutput
@@ -118,9 +125,9 @@ class GetGuestReportProcessorTest {
                 .guestsReports(List.of(guestOutput))
                 .build();
         when(bookingRepository.searchBookings(input.getStartDate(), input.getEndDate(),
-                input.getFirstName(), input.getLastName(), input.getIdCardNo(),
+                input.getFirstName(), input.getLastName(), input.getPhoneNo(), input.getIdCardNo(),
                 input.getIdCardValidity(), input.getIdCardIssueAuthority(), input.getIdCardIssueDate(),
-                input.getRoomNo(), UUID.fromString(input.getUserId()))).thenReturn(List.of(booking));
+                input.getRoomNo())).thenReturn(List.of(booking));
         when(conversionService.convert(booking, BookingInfo.class)).thenReturn(bookingInfo);
 //        when(conversionService.convert(bookingReport, GetGuestReportOutput.class)).thenReturn(expectedOutput);
 

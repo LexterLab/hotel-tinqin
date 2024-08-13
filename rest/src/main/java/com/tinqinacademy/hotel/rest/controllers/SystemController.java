@@ -82,7 +82,7 @@ public class SystemController extends BaseController {
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String phoneNo,
             @RequestParam(required = false) String idCardNo,
             @RequestParam(required = false) LocalDate idCardValidity,
             @RequestParam(required = false) String idCardAuthority,
@@ -99,7 +99,7 @@ public class SystemController extends BaseController {
                 .endDate(endDate)
                 .firstName(firstName)
                 .lastName(lastName)
-                .userId(userId)
+                .phoneNo(phoneNo)
                 .startDate(startDate)
                 .build());
         return handleOutput(output, HttpStatus.OK);

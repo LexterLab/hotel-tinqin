@@ -6,9 +6,6 @@ import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoom;
 import com.tinqinacademy.hotel.api.errors.ErrorOutput;
-import com.tinqinacademy.hotel.api.operations.findroombyroomno.FindRoomByRoomNo;
-import com.tinqinacademy.hotel.api.operations.findroombyroomno.FindRoomByRoomNoInput;
-import com.tinqinacademy.hotel.api.operations.findroombyroomno.FindRoomByRoomNoOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoom;
@@ -39,7 +36,6 @@ public class HotelController extends BaseController {
     private final GetRoom getRoom;
     private final BookRoom bookRoom;
     private final UnbookRoom unbookRoom;
-    private final FindRoomByRoomNo findRoomByRoomNo;
 
     @Operation(
             summary = "Search Rooms Rest API",
@@ -125,31 +121,11 @@ public class HotelController extends BaseController {
     }
     )
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
-    public ResponseEntity<?> unbookRoom(@PathVariable String bookingId, @RequestBody UnbookRoomInput input) {
+    public ResponseEntity<?> unbookRoom(@PathVariable String roomId, @RequestBody UnbookRoomInput input) {
        Either<ErrorOutput, UnbookRoomOutput>  output = unbookRoom.process(UnbookRoomInput
                 .builder()
-                .bookingId(bookingId)
+                .roomId(roomId)
                 .userId(input.getUserId())
-                .build());
-        return handleOutput(output, HttpStatus.OK);
-    }
-
-
-    @Operation(
-            summary = "Find Room By Room No Rest API",
-            description = "Find Room By Room No REST API is used for finding  a room by room number"
-    )
-    @ApiResponses( value = {
-            @ApiResponse(responseCode = "200", description = "HTTP STATUS 200 SUCCESS"),
-            @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
-    }
-    )
-    @GetMapping(RestAPIRoutes.FIND_ROOM)
-    public ResponseEntity<?> findRoom(@PathVariable String roomNo) {
-        Either<ErrorOutput, FindRoomByRoomNoOutput> output = findRoomByRoomNo.process(FindRoomByRoomNoInput
-                .builder()
-                .roomNo(roomNo)
                 .build());
         return handleOutput(output, HttpStatus.OK);
     }
