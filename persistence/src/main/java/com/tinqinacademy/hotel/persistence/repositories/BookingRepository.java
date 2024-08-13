@@ -19,6 +19,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
         JOIN b.room r
         WHERE (CAST(:startDate AS DATE) IS NULL OR b.startDate >= :startDate)
         AND (CAST(:endDate AS DATE) IS NULL OR b.endDate <= :endDate)
+        AND (:userId IS NULL OR b.userId = :userId)
         AND (:firstName IS NULL OR g.firstName LIKE :firstName)
         AND (:lastName IS NULL OR g.lastName LIKE :lastName)
         AND (:idCardNo IS NULL OR g.idCardNo LIKE :idCardNo)
@@ -29,7 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     """)
     List<Booking> searchBookings(LocalDateTime startDate, LocalDateTime endDate, String firstName, String lastName,
                            String idCardNo, LocalDate idCardValidity, String idCardIssueAuthority,
-                            LocalDate idCardIssueDate, String roomNo);
+                            LocalDate idCardIssueDate, String roomNo, UUID userId);
 
     @Query(value = """
         SELECT b FROM Booking b

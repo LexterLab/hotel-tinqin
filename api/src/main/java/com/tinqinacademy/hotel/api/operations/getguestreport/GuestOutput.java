@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +21,7 @@ public class GuestOutput {
     @Schema(example = "Jordan")
     private String lastName;
     @Schema(example = "+35984238424")
-    private String phoneNo;
+    private UUID userId;
     @Schema(example = "3232 3232 3232 3232")
     private String idCardNo;
     @Schema(example = "2024-01-01")

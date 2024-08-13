@@ -9,10 +9,8 @@ import com.tinqinacademy.hotel.api.errors.ErrorOutput;
 import com.tinqinacademy.hotel.core.mappers.BookingMapper;
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
-import com.tinqinacademy.hotel.persistence.models.user.User;
 import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
 import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
-import com.tinqinacademy.hotel.persistence.repositories.UserRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import jakarta.validation.Validator;
@@ -30,13 +28,11 @@ import static io.vavr.API.*;
 @Service
 @Slf4j
 public class BookRomProcessor extends BaseProcessor implements BookRoom {
-    private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
 
-    public BookRomProcessor(ConversionService conversionService, Validator validator, UserRepository userRepository, BookingRepository bookingRepository, RoomRepository roomRepository) {
+    public BookRomProcessor(ConversionService conversionService, Validator validator, BookingRepository bookingRepository, RoomRepository roomRepository) {
         super(conversionService, validator);
-        this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
     }
@@ -51,14 +47,12 @@ public class BookRomProcessor extends BaseProcessor implements BookRoom {
 
             validateInput(input);
 
-            User user = fetchUserFromInput(input);
-
             Room room = fetchRoomFromInput(input);
 
             checkIfBookingAvailable(input, room);
 
             Booking booking = BookingMapper.INSTANCE.bookRoomInputToBooking(input);
-            booking.setUser(user);
+            booking.setUserId(UUID.fromString(input.getUserId()));
             booking.setRoom(room);
 
             bookingRepository.save(booking);
@@ -85,17 +79,6 @@ public class BookRomProcessor extends BaseProcessor implements BookRoom {
             throw new BookingDateNotAvailableException();
         }
         log.info("End checkIfBookingAvailable {}", bookedByRooms);
-    }
-
-    private User fetchUserFromInput(BookRoomInput input) {
-        log.info("Start fetchUserFromInput {}", input);
-
-        User user = userRepository.findById(UUID.fromString(input.getUserId()))
-                .orElseThrow(() -> new ResourceNotFoundException("user", "id", input.getUserId()));
-
-        log.info("End fetchUserFromInput {}", user);
-
-        return user;
     }
 
     private Room fetchRoomFromInput(BookRoomInput input) {

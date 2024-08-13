@@ -50,7 +50,7 @@ public interface HotelClient {
 
     @RequestLine(RouteExports.GET_GUEST_REPORTS)
     GetGuestReportOutput getGuestReport(@Param LocalDateTime startDate, @Param LocalDateTime endDate,
-                                        @Param String firstName, @Param String lastName, @Param String phoneNo,
+                                        @Param String firstName, @Param String lastName, @Param String userId,
                                         @Param String idCardNo, @Param LocalDate idCardValidity,
                                         @Param String idCardIssueAuthority, @Param LocalDate idCardIssueDate,
 
