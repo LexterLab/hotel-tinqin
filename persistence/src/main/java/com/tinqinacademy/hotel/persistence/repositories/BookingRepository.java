@@ -16,13 +16,12 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     @Query("""
         SELECT b FROM Booking b
         JOIN b.guests g
-        JOIN b.user u
         JOIN b.room r
         WHERE (CAST(:startDate AS DATE) IS NULL OR b.startDate >= :startDate)
         AND (CAST(:endDate AS DATE) IS NULL OR b.endDate <= :endDate)
+        AND (:userId IS NULL OR b.userId = :userId)
         AND (:firstName IS NULL OR g.firstName LIKE :firstName)
         AND (:lastName IS NULL OR g.lastName LIKE :lastName)
-        AND (:phoneNo IS NULL OR u.phoneNo LIKE :phoneNo)
         AND (:idCardNo IS NULL OR g.idCardNo LIKE :idCardNo)
         AND (CAST(:idCardValidity AS DATE) IS NULL OR g.idCardValidity = :idCardValidity)
         AND (:idCardIssueAuthority IS NULL OR g.idCardIssueAuthority = :idCardIssueAuthority)
@@ -30,8 +29,8 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
         AND (:roomNo IS NULL OR r.roomNo = :roomNo)
     """)
     List<Booking> searchBookings(LocalDateTime startDate, LocalDateTime endDate, String firstName, String lastName,
-                            String phoneNo, String idCardNo, LocalDate idCardValidity, String idCardIssueAuthority,
-                            LocalDate idCardIssueDate, String roomNo);
+                           String idCardNo, LocalDate idCardValidity, String idCardIssueAuthority,
+                            LocalDate idCardIssueDate, String roomNo, UUID userId);
 
     @Query(value = """
         SELECT b FROM Booking b
@@ -51,5 +50,5 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     Long countByRoomAndDates(UUID roomId, LocalDateTime startDate, LocalDateTime endDate);
 
 
-    Optional<Booking> findLatestByRoomIdAndUserId(UUID roomId, UUID userId);
+    Optional<Booking> findBookingByIdAndUserId(UUID id, UUID userId);
 }
