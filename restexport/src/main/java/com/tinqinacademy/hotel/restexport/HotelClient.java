@@ -8,6 +8,7 @@ import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomOutput;
 import com.tinqinacademy.hotel.api.operations.deleteroom.DeleteRoomOutput;
+import com.tinqinacademy.hotel.api.operations.findroombyroomno.FindRoomByRoomNoOutput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GetGuestReportOutput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoomInput;
@@ -42,15 +43,14 @@ public interface HotelClient {
     BookRoomOutput bookRoom(@Param String roomId, BookRoomInput bookRoomInput);
 
     @RequestLine(RouteExports.UNBOOK_ROOM)
-
-    UnbookRoomOutput unbookRoom(@Param String roomId, UnbookRoomInput unbookRoomInput);
+    UnbookRoomOutput unbookRoom(@Param String bookingId, UnbookRoomInput unbookRoomInput);
 
     @RequestLine(RouteExports.REGISTER_GUESTS)
     RegisterGuestOutput registerGuest(RegisterGuestInput registerGuestInput, @Param String bookingId);
 
     @RequestLine(RouteExports.GET_GUEST_REPORTS)
     GetGuestReportOutput getGuestReport(@Param LocalDateTime startDate, @Param LocalDateTime endDate,
-                                        @Param String firstName, @Param String lastName, @Param String phoneNo,
+                                        @Param String firstName, @Param String lastName, @Param String userId,
                                         @Param String idCardNo, @Param LocalDate idCardValidity,
                                         @Param String idCardIssueAuthority, @Param LocalDate idCardIssueDate,
 
@@ -67,5 +67,8 @@ public interface HotelClient {
 
     @RequestLine(RouteExports.DELETE_ROOM)
     DeleteRoomOutput deleteRoom(@Param String roomId);
+
+    @RequestLine(RouteExports.FIND_ROOM)
+    FindRoomByRoomNoOutput findRoomByRoomNo(@Param String roomNo);
 }
 

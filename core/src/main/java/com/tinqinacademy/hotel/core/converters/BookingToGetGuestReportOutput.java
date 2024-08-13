@@ -21,7 +21,7 @@ public class BookingToGetGuestReportOutput extends AbstractConverter<BookingRepo
                 .map(guestInfo -> GuestOutput.builder()
                         .startDate(bookingInfo.getStartDate())
                         .endDate(bookingInfo.getEndDate())
-                        .phoneNo(bookingInfo.getPhoneNo())
+                        .userId(bookingInfo.getUserId())
                         .firstName(guestInfo.getFirstName())
                         .lastName(guestInfo.getLastName())
                         .idCardNo(guestInfo.getIdCardNo())
