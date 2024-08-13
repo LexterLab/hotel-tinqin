@@ -17,7 +17,7 @@ public class GetGuestReportInput implements OperationInput {
     private LocalDateTime endDate;
     private String firstName;
     private String lastName;
-    private String phoneNo;
+    private String userId;
     private String idCardNo;
     private LocalDate idCardValidity;
     private String idCardIssueAuthority;

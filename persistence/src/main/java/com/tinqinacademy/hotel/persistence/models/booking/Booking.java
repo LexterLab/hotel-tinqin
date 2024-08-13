@@ -2,7 +2,6 @@ package com.tinqinacademy.hotel.persistence.models.booking;
 
 import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import com.tinqinacademy.hotel.persistence.models.room.Room;
-import com.tinqinacademy.hotel.persistence.models.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,9 +26,8 @@ public class Booking {
     private LocalDateTime startDate;
     @Column(nullable = false)
     private LocalDateTime endDate;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(nullable = false)
+    private UUID userId;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
     private Room room;

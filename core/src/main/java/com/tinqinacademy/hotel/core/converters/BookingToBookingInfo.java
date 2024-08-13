@@ -19,7 +19,6 @@ public class BookingToBookingInfo  extends AbstractConverter<Booking, BookingInf
     protected BookingInfo doConvert(Booking source) {
         BookingInfo bookingInfo = BookingInfo
                 .builder()
-                .phoneNo(source.getUser().getPhoneNo())
                 .startDate(source.getStartDate())
                 .endDate(source.getEndDate())
                 .guests(convertGuests(source))
