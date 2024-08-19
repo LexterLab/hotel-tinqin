@@ -65,6 +65,18 @@ services:
     networks:
       - hotel
 
+  comments-app:
+    container_name: comments-app
+    build:
+      context: ../comments-api-tinqin
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    networks:
+      - hotel
+
 
 networks:
   hotel:
