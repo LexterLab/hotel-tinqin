@@ -77,6 +77,18 @@ services:
     networks:
       - hotel
 
+  auth-app:
+    container_name: auth-app
+    build:
+      context: ../authentication-api
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - hotel
 
 networks:
   hotel:
