@@ -55,6 +55,17 @@ services:
       - hotel
 
 
+  hotel-app:
+    container_name: hotel-app
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - hotel
+
+
 networks:
   hotel:
 
