@@ -90,6 +90,28 @@ services:
     networks:
       - hotel
 
+  bff-app:
+    container_name: bff-app
+    build:
+      context: ../bff-tinqin
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    networks:
+      - hotel
+
+  email-app:
+    container_name: email-app
+    build:
+      context: ../email-tinqin
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      - maildev
+    networks:
+      - hotel
+
 networks:
   hotel:
 
