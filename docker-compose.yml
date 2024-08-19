@@ -112,6 +112,16 @@ services:
     networks:
       - hotel
 
+  admin-app:
+    container_name: admin-app
+    build:
+      context: ../admin-tinqin
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    networks:
+      - hotel
+
 networks:
   hotel:
 
