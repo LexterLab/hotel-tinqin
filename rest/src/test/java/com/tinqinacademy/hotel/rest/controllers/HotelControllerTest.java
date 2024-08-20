@@ -2,13 +2,20 @@ package com.tinqinacademy.hotel.rest.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BedSize;
+import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,27 +42,38 @@ class HotelControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.roomIds").isArray());
     }
 
-//    @Test
-//    void shouldRespondWithOKAndRoomDataWhenGettingRoomById() throws Exception {
-//        GetRoomOutput output = GetRoomOutput.builder()
-//                .id("2")
-//                .price(BigDecimal.valueOf(23232))
-//                .floor(4)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .datesOccupied(List.of(LocalDate.now()))
-//                .build();
-//
-//        mockMvc.perform(get(RestAPIRoutes.GET_ROOM_DETAILS, output.getId()))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id").value(output.getId()))
-//                .andExpect(jsonPath("$.price").value(output.getPrice()))
-//                .andExpect(jsonPath("$.floor").value(output.getFloor()))
-//                .andExpect(jsonPath("$.bedSize").value(output.getBedSize().toString()))
-//                .andExpect(jsonPath("$.bathroomType").value(output.getBathroomType().toString()))
-//                .andExpect(jsonPath("$.datesOccupied").value(output.getDatesOccupied().getFirst().toString()));
-//    }
-//
+    @Test
+    void shouldRespondWithOKAndRoomDataWhenGettingRoomById() throws Exception {
+        GetRoomOutput output = GetRoomOutput.builder()
+                .id(UUID.fromString("923364b0-4ed0-4a7e-8c23-ceb5c238ceee"))
+                .price(BigDecimal.valueOf(20000.00))
+                .floor(4)
+                .bedSizes(List.of(BedSize.SINGLE))
+                .bathroomType(BathroomType.PRIVATE)
+                .bedCount(1)
+                .build();
+
+        mockMvc.perform(get(RestAPIRoutes.GET_ROOM_DETAILS, output.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(output.getId().toString()))
+                .andExpect(jsonPath("$.price").value(output.getPrice()))
+                .andExpect(jsonPath("$.floor").value(output.getFloor()))
+                .andExpect(jsonPath("$.bedSizes[0]").value(output.getBedSizes().getFirst().toString()))
+                .andExpect(jsonPath("$.bathroomType").value(output.getBathroomType().toString()));
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenGettingRoomByInvalidId() throws Exception {
+        mockMvc.perform(get(RestAPIRoutes.GET_ROOM_DETAILS, "invalidId"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithNotFoundWhenGettingRoomByUnknownId() throws Exception {
+        mockMvc.perform(get(RestAPIRoutes.GET_ROOM_DETAILS, "923364b0-4ed0-4a7e-8c23-ceb5c238ceea"))
+                .andExpect(status().isNotFound());
+    }
+
 //    @Test
 //    void shouldRespondWithCREATEDAndEmptyBodyWhenBookingRoom() throws Exception {
 //        BookRoomInput input = BookRoomInput.builder()
