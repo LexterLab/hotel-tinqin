@@ -969,11 +969,12 @@ class SystemControllerTest extends BaseIntegrationTest {
     }
 
 
-//    @Test
-//    void shouldRespondWithEmptyObjectAndOKWhenDeletingRoom() throws Exception {
-//        mockMvc.perform(delete(RestAPIRoutes.DELETE_ROOM, 1))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$").isEmpty());
-//
-//    }
+    @Test
+    void shouldRespondWithEmptyObjectAndOKWhenDeletingRoom() throws Exception {
+        String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(delete(RestAPIRoutes.DELETE_ROOM, roomId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
 }
