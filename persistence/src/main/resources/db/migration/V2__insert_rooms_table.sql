@@ -1,0 +1,1 @@
+INSERT INTO public.rooms (id, bathroom_type, floor, price, room_no) VALUES ('6111ca32-1862-4a2a-b783-4735235514a4', 'PRIVATE', 4, 20000.00, '901A');

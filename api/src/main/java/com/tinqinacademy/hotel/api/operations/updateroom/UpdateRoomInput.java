@@ -23,6 +23,8 @@ public class UpdateRoomInput implements OperationInput {
     @UUID(message = "Field roomId must be UUID")
     @NotBlank(message = "Field roomId must not be blank")
     private String roomId;
+
+    @NotNull(message = "Field beds cannot be null")
     private List<BedSize> beds;
     @Schema(example = "private")
     @NotNull(message = "Field bathroomType must not be null")
