@@ -2,6 +2,9 @@ package com.tinqinacademy.hotel.rest.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
+import com.tinqinacademy.hotel.api.enumerations.BathroomType;
+import com.tinqinacademy.hotel.api.enumerations.BedSize;
+import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
 import com.tinqinacademy.hotel.api.operations.getguestreport.GuestOutput;
 import com.tinqinacademy.hotel.api.operations.registerguest.GuestInput;
 import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
@@ -12,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -505,301 +509,180 @@ class SystemControllerTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.guestsReports[0].lastName").value(output.getLastName()));
     }
 
-//    @Test
-//    void shouldRespondWithCreatedAndRoomIdWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(2)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(2)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.roomId").isString());
-//
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingAboveMaxBedCountWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(11)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(2)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBelowMinBedCountWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(0)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(2)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullBedCountWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(null)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(2)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullBedSizeWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(null)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(2)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//
-//    }
-//
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullBathRoomTypeWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(null)
-//                .floor(2)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingAboveMaxFloorWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(11)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBelowMinFloorWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(0)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullFloorWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(null)
-//                .roomNo("201A")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingAboveMaxRoomNoCharsWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(10)
-//                .roomNo("201AA")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBelowMinRoomNoCharsWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(10)
-//                .roomNo("201")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingEmptyRoomNoWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(10)
-//                .roomNo("")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBlankRoomNoWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(10)
-//                .roomNo(" ")
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullRoomNoWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(10)
-//                .roomNo(null)
-//                .price(BigDecimal.valueOf(20))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNegativePriceWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(10)
-//                .roomNo("")
-//                .price(BigDecimal.valueOf(-1))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullPriceWhenCreatingRoom() throws Exception {
-//        CreateRoomInput input = CreateRoomInput.builder()
-//                .bedCount(10)
-//                .bedSize(BedSize.KING_SIZE)
-//                .bathroomType(BathroomType.PRIVATE)
-//                .floor(10)
-//                .roomNo(null)
-//                .price(BigDecimal.valueOf(-1))
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
+    @Test
+    void shouldRespondWithCreatedAndRoomIdWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(2)
+                .roomNo("301A")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.roomId").isString());
+    }
+
+
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullBathRoomTypeWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(null)
+                .floor(2)
+                .roomNo("401A")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingAboveMaxFloorWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(11)
+                .roomNo("401A")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingBelowMinFloorWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(0)
+                .roomNo("401A")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullFloorWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(null)
+                .roomNo("401A")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingAboveMaxRoomNoCharsWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("201AA")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingBelowMinRoomNoCharsWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("201")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingBlankRoomNoWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo(" ")
+                .price(BigDecimal.valueOf(20))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNegativePriceWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("401A")
+                .price(BigDecimal.valueOf(-1))
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullPriceWhenCreatingRoom() throws Exception {
+        CreateRoomInput input = CreateRoomInput.builder()
+                .beds(List.of(BedSize.KING_SIZE))
+                .bathroomType(BathroomType.PRIVATE)
+                .floor(10)
+                .roomNo("401A")
+                .price(null)
+                .build();
+
+        mockMvc.perform(post(RestAPIRoutes.CREATE_ROOM)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
 //    @Test
 //    void shouldRespondWithOKAndRoomIdWhenUpdatingRoom() throws Exception {
 //        UpdateRoomInput input = UpdateRoomInput.builder()
