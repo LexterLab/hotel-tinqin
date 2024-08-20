@@ -496,7 +496,7 @@ class SystemControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void shouldRespondWithOkAndVisitorReportsWhenRetrievingVisitorReports() throws Exception {
+    void shouldRespondWithOkAndVisitorReportsWhenRetrievingGuestReports() throws Exception {
         GuestOutput output = GuestOutput.builder()
                 .firstName("Michael")
                 .lastName("Jordan")
