@@ -2,6 +2,7 @@ package com.tinqinacademy.hotel.rest.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
+import com.tinqinacademy.hotel.api.operations.getguestreport.GuestOutput;
 import com.tinqinacademy.hotel.api.operations.registerguest.GuestInput;
 import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
 import org.junit.jupiter.api.Test;
@@ -488,26 +489,22 @@ class SystemControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-//    @Test
-//    void shouldRespondWithOkAndVisitorReportsWhenRetrievingVisitorReports() throws Exception {
-//        VisitorOutput output = VisitorOutput.builder()
-//                .firstName("Rodger")
-//                .lastName("Federer")
-//                .phoneNo("+35984238424")
-//                .build();
-//
-//        mockMvc.perform(get(RestAPIRoutes.GET_VISITORS_REPORT)
-//                .param("firstName", "Rodger")
-//                .param("lastName", "Federer")
-//                .param("phoneNo", "+35984238424")
-//                )
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.visitorReports").exists())
-//                .andExpect(jsonPath("$.visitorReports[0].firstName").value(output.getFirstName()))
-//                .andExpect(jsonPath("$.visitorReports[0].lastName").value(output.getLastName()))
-//                .andExpect(jsonPath("$.visitorReports[0].phoneNo").value(output.getPhoneNo()));
-//    }
-//
+    @Test
+    void shouldRespondWithOkAndVisitorReportsWhenRetrievingVisitorReports() throws Exception {
+        GuestOutput output = GuestOutput.builder()
+                .firstName("Michael")
+                .lastName("Jordan")
+                .build();
+
+        mockMvc.perform(get(RestAPIRoutes.GET_VISITORS_REPORT)
+                .param("firstName", output.getFirstName())
+                .param("lastName", output.getLastName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.guestsReports").exists())
+                .andExpect(jsonPath("$.guestsReports[0].firstName").value(output.getFirstName()))
+                .andExpect(jsonPath("$.guestsReports[0].lastName").value(output.getLastName()));
+    }
+
 //    @Test
 //    void shouldRespondWithCreatedAndRoomIdWhenCreatingRoom() throws Exception {
 //        CreateRoomInput input = CreateRoomInput.builder()
