@@ -97,7 +97,9 @@ public class CreateRoomProcessor extends BaseProcessor implements CreateRoom {
     private List<BedSize> getBedSizes(CreateRoomInput input) {
         log.info("Start getBedSizes {}", input);
 
-        List<BedSize> bedSizes = input.getBeds().stream()
+
+
+        List<BedSize> bedSizes = input.getBeds() == null ? null: input.getBeds().stream()
                 .map(bedSize -> BedSize.getByCode(bedSize.toString()))
                 .toList();
 
