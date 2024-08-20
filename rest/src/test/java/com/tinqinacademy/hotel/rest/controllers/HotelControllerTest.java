@@ -4,15 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
+import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -74,330 +75,192 @@ class HotelControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-//    @Test
-//    void shouldRespondWithCREATEDAndEmptyBodyWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$").isEmpty());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingInvalidStartDateWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now().minusDays(2))
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullStartDateWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(null)
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingInvalidEndDateWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now().minusDays(2))
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullEndDateWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(null)
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingAboveMaxFirstNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("GeorgeGeorgeGeorgeGeorgeGeorgeGeorgeGeorgeGeorgeGeorge")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBelowMinFirstNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("G")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingEmptyFirstNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBlankFirstNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName(" ")
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullFirstNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName(null)
-//                .lastName("Russell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingAboveMaxLastNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("RussellRussellRussellRussellRussellRussellRussellRussell")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBelowMinLastNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("R")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingEmptyLastNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBlankLastNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName(" ")
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullLastNameWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName(null)
-//                .phoneNo("+3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingInvalidPhoneNoWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo("3598312313")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingEmptyPhoneNoWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo("")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingBlankPhoneNoWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo(" ")
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void shouldRespondWithBadRequestWhenProvidingNullPhoneNoWhenBookingRoom() throws Exception {
-//        BookRoomInput input = BookRoomInput.builder()
-//                .startDate(LocalDate.now())
-//                .endDate(LocalDate.now())
-//                .firstName("George")
-//                .lastName("Russell")
-//                .phoneNo(null)
-//                .build();
-//
-//        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, 1)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(input)))
-//                .andExpect(status().isBadRequest());
-//    }
-//
+    @Test
+    void shouldRespondWithCREATEDAndEmptyBodyWhenBookingRoom() throws Exception {
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(LocalDateTime.now().plusMonths(1))
+                .endDate(LocalDateTime.now().plusMonths(1).plusWeeks(1))
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingInvalidStartDateWhenBookingRoom() throws Exception {
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(LocalDateTime.now().minusDays(2))
+                .endDate(LocalDateTime.now().plusMonths(1).plusWeeks(1))
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullStartDateWhenBookingRoom() throws Exception {
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(null)
+                .endDate(LocalDateTime.now().plusMonths(1).plusWeeks(1))
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingInvalidEndDateWhenBookingRoom() throws Exception {
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(LocalDateTime.now().plusMonths(1))
+                .endDate(LocalDateTime.now().minusDays(2))
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingNullEndDateWhenBookingRoom() throws Exception {
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(LocalDateTime.now().plusMonths(1))
+                .endDate(null)
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingInvalidRoomIdWhenBookingRoom() throws Exception {
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(LocalDateTime.now().plusMonths(1))
+                .endDate(LocalDateTime.now().plusMonths(1))
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        String roomId = "invalid";
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithNotFoundWhenProvidingUnknownRoomIdWhenBookingRoom() throws Exception {
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(LocalDateTime.now().plusMonths(1))
+                .endDate(LocalDateTime.now().plusMonths(1))
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        String roomId = UUID.randomUUID().toString();
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenProvidingInvalidUserIdWhenBookingRoom() throws Exception {
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(LocalDateTime.now().plusMonths(1))
+                .endDate(LocalDateTime.now().plusMonths(1))
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("invalid")
+                .build();
+
+        String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenBookingUnAvailableRoom() throws Exception {
+
+        LocalDateTime unavailableDate = LocalDateTime.of(2025, 8, 13, 16, 7, 24, 284000);
+
+        BookRoomInput input = BookRoomInput.builder()
+                .startDate(unavailableDate)
+                .endDate(LocalDateTime.now().plusYears(2))
+                .firstName("George")
+                .lastName("Russell")
+                .phoneNo("+3598312313")
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+
 //    @Test
 //    void shouldRespondWithOKAndEmptyBodyWhenUnbookingRoom() throws Exception {
 //        mockMvc.perform(delete(RestAPIRoutes.UNBOOK_ROOM, 1))
