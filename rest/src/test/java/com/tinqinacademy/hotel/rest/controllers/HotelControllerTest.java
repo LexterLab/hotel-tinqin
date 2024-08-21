@@ -325,4 +325,15 @@ class HotelControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void shouldRespondWithOKAndRoomInfoWhenFindingRoomByRoomNo() throws Exception {
+        String roomNo =  "201A";
+        String id = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
+
+        mockMvc.perform(get(RestAPIRoutes.FIND_ROOM, roomNo))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.roomNo").value(roomNo))
+                .andExpect(jsonPath("$.id").value(id));
+    }
+
 }
