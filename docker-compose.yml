@@ -65,6 +65,63 @@ services:
     networks:
       - hotel
 
+  comments-app:
+    container_name: comments-app
+    build:
+      context: ../comments-api-tinqin
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    networks:
+      - hotel
+
+  auth-app:
+    container_name: auth-app
+    build:
+      context: ../authentication-api
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - hotel
+
+  bff-app:
+    container_name: bff-app
+    build:
+      context: ../bff-tinqin
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    networks:
+      - hotel
+
+  email-app:
+    container_name: email-app
+    build:
+      context: ../email-tinqin
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      - maildev
+    networks:
+      - hotel
+
+  admin-app:
+    container_name: admin-app
+    build:
+      context: ../admin-tinqin
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    networks:
+      - hotel
+
 
 networks:
   hotel:

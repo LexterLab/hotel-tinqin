@@ -1,7 +1,6 @@
 package com.tinqinacademy.hotel.persistence.repositories;
 
 import com.tinqinacademy.hotel.persistence.models.booking.Booking;
-import com.tinqinacademy.hotel.persistence.models.guest.Guest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
