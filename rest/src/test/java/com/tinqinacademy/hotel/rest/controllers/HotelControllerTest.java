@@ -6,6 +6,7 @@ import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
+import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -259,13 +260,69 @@ class HotelControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void shouldRespondWithOKAndEmptyBodyWhenUnbookingRoom() throws Exception {
+        String bookingId = "4e754a8c-1cca-4abb-b49a-4a07fc98a751";
 
+        UnbookRoomInput input = UnbookRoomInput
+                .builder()
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
 
-//    @Test
-//    void shouldRespondWithOKAndEmptyBodyWhenUnbookingRoom() throws Exception {
-//        mockMvc.perform(delete(RestAPIRoutes.UNBOOK_ROOM, 1))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$").isEmpty());
-//    }
-//
+        mockMvc.perform(delete(RestAPIRoutes.UNBOOK_ROOM, bookingId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenUnbookingRoomWithInvalidBookingId() throws Exception {
+        String bookingId = "invalid";
+
+        UnbookRoomInput input = UnbookRoomInput
+                .builder()
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        mockMvc.perform(delete(RestAPIRoutes.UNBOOK_ROOM, bookingId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithBadRequestWhenUnbookingRoomWithInvalidUserId() throws Exception {
+        String bookingId = "4e754a8c-1cca-4abb-b49a-4a07fc98a751";
+
+        UnbookRoomInput input = UnbookRoomInput
+                .builder()
+                .userId("invalid")
+                .build();
+
+        mockMvc.perform(delete(RestAPIRoutes.UNBOOK_ROOM, bookingId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRespondWithNotFoudWhenUnbookingRoomWithUnknownBookingId() throws Exception {
+        String bookingId = UUID.randomUUID().toString();
+
+        UnbookRoomInput input = UnbookRoomInput
+                .builder()
+                .userId("8eabb4ff-df5b-4e39-8642-0dcce375798c")
+                .build();
+
+        mockMvc.perform(delete(RestAPIRoutes.UNBOOK_ROOM, bookingId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isNotFound());
+    }
+
 }
