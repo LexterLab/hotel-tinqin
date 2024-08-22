@@ -1,5 +1,6 @@
 package com.tinqinacademy.hotel.restexportprocessor;
 
+import com.tinqinacademy.hotel.api.base.OperationOutput;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.annotation.*;
@@ -10,4 +11,5 @@ import java.lang.annotation.*;
 public @interface RestExport {
     RequestMethod method();
     String route();
+    Class<?> output();
 }

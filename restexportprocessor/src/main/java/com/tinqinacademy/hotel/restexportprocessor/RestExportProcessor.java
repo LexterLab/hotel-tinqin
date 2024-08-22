@@ -10,6 +10,7 @@ import javax.annotation.processing.*;
 import javax.lang.model.element.*;
 
 import javax.lang.model.SourceVersion;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -43,7 +44,7 @@ public class RestExportProcessor extends AbstractProcessor {
                     if (enclosedElement.getKind() == ElementKind.METHOD) {
                         RestExport restExport = enclosedElement.getAnnotation(RestExport.class);
                         if (restExport != null) {
-                            generateFeignClientInterface(classElement, enclosedElement, restExport);
+                            generateFeignClientInterface(classElement, restExport);
                         }
                     }
                 }
@@ -52,7 +53,7 @@ public class RestExportProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void generateFeignClientInterface(TypeElement classElement, Element methodElement, RestExport restExport) {
+    private void generateFeignClientInterface(Element methodElement, RestExport restExport) {
         String clientName = "MotelClient";
 
         TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(clientName)
@@ -63,14 +64,23 @@ public class RestExportProcessor extends AbstractProcessor {
 
         String methodName = methodElement.getSimpleName().toString();
         String route = restExport.route();
+        TypeMirror returnTypeMirror = null;
+
+        try {
+            restExport.output();
+        } catch (MirroredTypeException mte) {
+            returnTypeMirror = mte.getTypeMirror();
+        }
+
+        TypeName returnType = TypeName.get(returnTypeMirror);
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                .returns(getReturnType(methodElement))
+                .returns(returnType)
                 .addAnnotation(AnnotationSpec.builder(RequestLine.class)
                         .addMember("value", "$S", route)
                         .build());
 
-        addParameters(methodBuilder, (ExecutableElement) methodElement);
+        addParameters(methodBuilder, (ExecutableElement) methodElement); //WIP
 
         interfaceBuilder.addMethod(methodBuilder.build());
 
@@ -83,10 +93,6 @@ public class RestExportProcessor extends AbstractProcessor {
         }
     }
 
-    private TypeName getReturnType(Element methodElement) {
-        TypeMirror returnType = ((ExecutableElement) methodElement).getReturnType();
-        return TypeName.get(returnType);
-    }
 
     private void addParameters(MethodSpec.Builder methodBuilder, ExecutableElement methodElement) {
         List<? extends VariableElement> parameters = methodElement.getParameters();

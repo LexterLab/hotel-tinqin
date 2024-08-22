@@ -82,7 +82,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
-    @RestExport(method = RequestMethod.GET, route = RestAPIRoutes.GET_ROOM_DETAILS)
+    @RestExport(method = RequestMethod.GET, route = RestAPIRoutes.GET_ROOM_DETAILS, output = GetRoomOutput.class)
     @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
     public ResponseEntity<?> getRoomById(@PathVariable String roomId) {
         Either<ErrorOutput, GetRoomOutput> output = getRoom.process(GetRoomInput.builder()

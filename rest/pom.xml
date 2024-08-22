@@ -57,6 +57,10 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
+                    <compilerArgs>
+                        <arg>-processor</arg>
+                        <arg>com.tinqinacademy.hotel.restexportprocessor.RestExportProcessor</arg>
+                    </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
