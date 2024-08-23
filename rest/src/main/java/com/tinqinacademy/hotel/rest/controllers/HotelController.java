@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RestController
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Tag(name = "Hotel REST APIs")
 public class HotelController extends BaseController {
     private final SearchRoom searchRoom;
@@ -41,6 +41,14 @@ public class HotelController extends BaseController {
     private final BookRoom bookRoom;
     private final UnbookRoom unbookRoom;
     private final FindRoomByRoomNo findRoomByRoomNo;
+
+    public HotelController(SearchRoom searchRoom, GetRoom getRoom, BookRoom bookRoom, UnbookRoom unbookRoom, FindRoomByRoomNo findRoomByRoomNo) {
+        this.searchRoom = searchRoom;
+        this.getRoom = getRoom;
+        this.bookRoom = bookRoom;
+        this.unbookRoom = unbookRoom;
+        this.findRoomByRoomNo = findRoomByRoomNo;
+    }
 
     @Operation(
             summary = "Search Rooms Rest API",
@@ -51,7 +59,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST")
     }
     )
-//    @RestExport(method = RequestMethod.GET, route = RestAPIRoutes.SEARCH_ROOMS)
+//    @RestExport(method = RequestMethod.GET, route = RestAPIRoutes.SEARCH_ROOMS, output = SearchRoomOutput.class)
     @GetMapping(RestAPIRoutes.SEARCH_ROOMS)
     public ResponseEntity<?> searchRooms(
 
@@ -156,6 +164,7 @@ public class HotelController extends BaseController {
                 .builder()
                 .roomNo(roomNo)
                 .build());
+
         return handleOutput(output, HttpStatus.OK);
     }
 }

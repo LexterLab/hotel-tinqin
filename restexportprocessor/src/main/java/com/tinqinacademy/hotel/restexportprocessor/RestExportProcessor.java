@@ -4,7 +4,6 @@ import com.squareup.javapoet.*;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.*;
@@ -12,6 +11,7 @@ import javax.lang.model.element.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementKindVisitor8;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-@Slf4j
 @SupportedAnnotationTypes("com.tinqinacademy.hotel.restexportprocessor.RestExport")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class RestExportProcessor extends AbstractProcessor {
@@ -37,25 +36,18 @@ public class RestExportProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (Element element : roundEnv.getRootElements()) {
-            if (element.getKind() == ElementKind.CLASS) {
-                TypeElement classElement = (TypeElement) element;
-                for (Element enclosedElement : classElement.getEnclosedElements()) {
-                    if (enclosedElement.getKind() == ElementKind.METHOD) {
-                        RestExport restExport = enclosedElement.getAnnotation(RestExport.class);
-                        if (restExport != null) {
-                            generateFeignClientInterface(classElement, restExport);
-                        }
-                    }
-                }
+        for (Element element : roundEnv.getElementsAnnotatedWith(RestExport.class)) {
+            if (element.getKind() == ElementKind.METHOD) {
+                ExecutableElement methodElement = (ExecutableElement) element;
+                RestExport restExport = methodElement.getAnnotation(RestExport.class);
+                generateFeignClientInterface(methodElement, restExport);
             }
         }
         return true;
     }
 
-    private void generateFeignClientInterface(Element methodElement, RestExport restExport) {
+    private void generateFeignClientInterface(ExecutableElement methodElement, RestExport restExport) {
         String clientName = "MotelClient";
-
         TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(clientName)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(AnnotationSpec.builder(Headers.class)
@@ -73,6 +65,7 @@ public class RestExportProcessor extends AbstractProcessor {
         }
 
         TypeName returnType = TypeName.get(returnTypeMirror);
+
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .returns(returnType)
@@ -80,7 +73,7 @@ public class RestExportProcessor extends AbstractProcessor {
                         .addMember("value", "$S", route)
                         .build());
 
-        addParameters(methodBuilder, (ExecutableElement) methodElement); //WIP
+        addParameters(methodBuilder, methodElement);
 
         interfaceBuilder.addMethod(methodBuilder.build());
 
@@ -102,13 +95,16 @@ public class RestExportProcessor extends AbstractProcessor {
             TypeName paramType = TypeName.get(parameter.asType());
             String paramName = parameter.getSimpleName().toString();
 
-            methodBuilder.addParameter(paramType, paramName);
+            ParameterSpec.Builder parameterSpecBuilder = ParameterSpec.builder(paramType, paramName);
+
 
             if (!isOperationInput(paramTypeMirror, types, elements)) {
-                methodBuilder.addAnnotation(AnnotationSpec.builder(Param.class)
+                parameterSpecBuilder.addAnnotation(AnnotationSpec.builder(Param.class)
                         .addMember("value", "$S", paramName)
                         .build());
             }
+
+            methodBuilder.addParameter(parameterSpecBuilder.build());
         }
     }
     private boolean isOperationInput(TypeMirror typeMirror, Types typeUtils, Elements elementUtils) {

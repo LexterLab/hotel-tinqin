@@ -35,7 +35,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Tag(name = "System REST APIs")
 public class SystemController extends BaseController {
     private final RegisterGuest registerGuest;
@@ -44,6 +44,15 @@ public class SystemController extends BaseController {
     private final UpdateRoom updateRoom;
     private final PartialUpdateRoom partialUpdateRoom;
     private final DeleteRoom deleteRoom;
+
+    public SystemController(RegisterGuest registerGuest, GetGuestReport getGuestReport, CreateRoom createRoom, UpdateRoom updateRoom, PartialUpdateRoom partialUpdateRoom, DeleteRoom deleteRoom) {
+        this.registerGuest = registerGuest;
+        this.getGuestReport = getGuestReport;
+        this.createRoom = createRoom;
+        this.updateRoom = updateRoom;
+        this.partialUpdateRoom = partialUpdateRoom;
+        this.deleteRoom = deleteRoom;
+    }
 
     @Operation(
             summary = "Register Room Guest Rest API",
