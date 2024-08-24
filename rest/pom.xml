@@ -63,34 +63,47 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                    <annotationProcessors>
-                        <annotationProcessor>com.tinqinacademy.hotel.restexportprocessor.RestExportProcessor</annotationProcessor>
-                    </annotationProcessors>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                        <path>
-                            <groupId>com.tinqinacademy.hotel</groupId>
-                            <artifactId>restexportprocessor</artifactId>
-                            <version>${revision}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-
-
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>enable-feign-processor</id>
+            <activation>
+                <property>
+                    <name>feign</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.13.0</version>
+                        <configuration>
+                            <source>21</source>
+                            <target>21</target>
+                            <annotationProcessors>
+                                <annotationProcessor>com.tinqinacademy.hotel.restexportprocessor.RestExportProcessor</annotationProcessor>
+                            </annotationProcessors>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>${lombok.version}</version>
+                                </path>
+                                <path>
+                                    <groupId>com.tinqinacademy.hotel</groupId>
+                                    <artifactId>restexportprocessor</artifactId>
+                                    <version>${revision}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 
 </project>
