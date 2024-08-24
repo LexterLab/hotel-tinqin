@@ -4,7 +4,7 @@ import com.squareup.javapoet.*;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.*;
@@ -27,7 +27,6 @@ import java.util.Set;
 @SupportedAnnotationTypes("com.tinqinacademy.hotel.restexportprocessor.RestExport")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class RestExportProcessor extends AbstractProcessor {
-    private Filer filer;
     private Elements elements;
     private Types types;
 
@@ -37,7 +36,6 @@ public class RestExportProcessor extends AbstractProcessor {
     @Override
     public void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        filer = processingEnv.getFiler();
         elements = processingEnv.getElementUtils();
         types = processingEnv.getTypeUtils();
     }
@@ -80,7 +78,7 @@ public class RestExportProcessor extends AbstractProcessor {
 
     private void addMethodToInterface(TypeSpec.Builder interfaceBuilder, ExecutableElement methodElement, RestExport restExport) {
         String methodName = methodElement.getSimpleName().toString();
-        String route = restExport.method() + " " + restExport.route();
+        String route = getRoute(methodElement);
         TypeMirror returnTypeMirror = null;
 
         try {
@@ -98,6 +96,44 @@ public class RestExportProcessor extends AbstractProcessor {
         setupRequestLine(addParameters(methodBuilder, methodElement), route, methodBuilder);
 
         interfaceBuilder.addMethod(methodBuilder.build());
+    }
+
+    private String getRoute(ExecutableElement methodElement) {
+        String httpMethod = "";
+        String restRoute = "";
+
+        if (methodElement.getAnnotation(GetMapping.class) != null) {
+            httpMethod = "GET";
+            restRoute = extractRoute(methodElement.getAnnotation(GetMapping.class).value());
+        } else if (methodElement.getAnnotation(PostMapping.class) != null) {
+            httpMethod = "POST";
+            restRoute = extractRoute(methodElement.getAnnotation(PostMapping.class).value());
+        } else if (methodElement.getAnnotation(PutMapping.class) != null) {
+            httpMethod = "PUT";
+            restRoute = extractRoute(methodElement.getAnnotation(PutMapping.class).value());
+        } else if (methodElement.getAnnotation(DeleteMapping.class) != null) {
+            httpMethod = "DELETE";
+            restRoute = extractRoute(methodElement.getAnnotation(DeleteMapping.class).value());
+        }  else if (methodElement.getAnnotation(PatchMapping.class) != null) {
+            httpMethod = "PATCH";
+            restRoute = extractRoute(methodElement.getAnnotation(PatchMapping.class).value());
+        } else if (methodElement.getAnnotation(RequestMapping.class) != null) {
+            RequestMapping requestMapping = methodElement.getAnnotation(RequestMapping.class);
+            if (requestMapping.method().length > 0) {
+                httpMethod = requestMapping.method()[0].name();
+            }
+            restRoute = extractRoute(requestMapping.value());
+        }
+
+
+        return httpMethod + " " + restRoute;
+    }
+
+    private String extractRoute(String[] paths) {
+        if (paths.length > 0) {
+            return paths[0];
+        }
+        return "";
     }
 
     private List<? extends  VariableElement> addParameters(MethodSpec.Builder methodBuilder, ExecutableElement methodElement) {
