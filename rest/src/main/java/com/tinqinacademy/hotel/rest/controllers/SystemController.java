@@ -21,6 +21,7 @@ import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoom;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
+import com.tinqinacademy.hotel.restexportprocessor.RestExport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -63,6 +64,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
+    @RestExport(output =  RegisterGuestOutput.class)
     @PostMapping(RestAPIRoutes.REGISTER_VISITOR)
     public ResponseEntity<?> register(
             @RequestBody RegisterGuestInput input,
@@ -85,6 +87,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
+    @RestExport(output =  GetGuestReportOutput.class)
     @GetMapping(RestAPIRoutes.GET_VISITORS_REPORT)
     public ResponseEntity<?> getGuestReport(
             @RequestParam(required = false) LocalDateTime startDate,
@@ -124,6 +127,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
     })
+    @RestExport(output =  CreateRoomOutput.class)
     @PostMapping(RestAPIRoutes.CREATE_ROOM)
     public ResponseEntity<?> createRoom(@RequestBody CreateRoomInput input) {
         Either<ErrorOutput, CreateRoomOutput> result = createRoom.process(input);
@@ -140,6 +144,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
+    @RestExport(output =  UpdateRoomOutput.class)
     @PutMapping(RestAPIRoutes.UPDATE_ROOM)
     public ResponseEntity<?> updateRoom(@PathVariable String roomId, @RequestBody UpdateRoomInput input) {
         Either<ErrorOutput, UpdateRoomOutput> output = updateRoom.process(UpdateRoomInput.builder()
@@ -163,6 +168,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND"),
     })
+    @RestExport(output =  PartialUpdateRoomOutput.class)
     @PatchMapping(RestAPIRoutes.PARTIAL_UPDATE_ROOM)
     public ResponseEntity<?> partialUpdateRoom(@PathVariable String roomId, @RequestBody PartialUpdateRoomInput input) {
         Either<ErrorOutput,PartialUpdateRoomOutput> output = partialUpdateRoom.process(PartialUpdateRoomInput.builder()
@@ -186,6 +192,7 @@ public class SystemController extends BaseController {
             @ApiResponse(responseCode = "403", description = "HTTP STATUS 403 FORBIDDEN"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
+    @RestExport(output =  DeleteRoomOutput.class)
     @DeleteMapping(RestAPIRoutes.DELETE_ROOM)
     public ResponseEntity<?> deleteRoom(@PathVariable String roomId) {
         Either<ErrorOutput, DeleteRoomOutput> output = deleteRoom.process(DeleteRoomInput.builder().roomId(roomId).build());
