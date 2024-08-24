@@ -4,6 +4,7 @@ import com.squareup.javapoet.*;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.*;
@@ -92,17 +93,14 @@ public class RestExportProcessor extends AbstractProcessor {
 
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                .returns(returnType)
-                .addAnnotation(AnnotationSpec.builder(RequestLine.class)
-                        .addMember("value", "$S", route)
-                        .build());
+                .returns(returnType);
 
-        addParameters(methodBuilder, methodElement);
+        setupRequestLine(addParameters(methodBuilder, methodElement), route, methodBuilder);
 
         interfaceBuilder.addMethod(methodBuilder.build());
     }
 
-    private void addParameters(MethodSpec.Builder methodBuilder, ExecutableElement methodElement) {
+    private List<? extends  VariableElement> addParameters(MethodSpec.Builder methodBuilder, ExecutableElement methodElement) {
         List<? extends VariableElement> parameters = methodElement.getParameters();
 
         for (VariableElement parameter : parameters) {
@@ -121,7 +119,32 @@ public class RestExportProcessor extends AbstractProcessor {
 
             methodBuilder.addParameter(parameterSpecBuilder.build());
         }
+        return parameters;
     }
+
+    private void setupRequestLine(List<? extends VariableElement> elements, String route, MethodSpec.Builder methodBuilder) {
+        boolean firstElement = true;
+        StringBuilder requestLine = new StringBuilder(route);
+        for (VariableElement element : elements) {
+            if (element.getAnnotation(RequestParam.class) != null) {
+                if (firstElement) {
+                    requestLine.append("?");
+                    firstElement = false;
+                }
+                String paramName = element.getSimpleName().toString();
+                requestLine.append(paramName).append("=").append(String.format("{%s}", paramName));
+                int numberOfElement = elements.indexOf(element);
+                if (numberOfElement < elements.size() - 1) {
+                    requestLine.append("&");
+                }
+            }
+        }
+
+        methodBuilder.addAnnotation(AnnotationSpec.builder(RequestLine.class)
+                .addMember("value", "$S", requestLine.toString())
+                .build());
+    }
+
     private boolean isOperationInput(TypeMirror typeMirror, Types typeUtils, Elements elementUtils) {
         TypeElement operationInputElement = elementUtils.getTypeElement("com.tinqinacademy.hotel.api.base.OperationInput");
         return typeUtils.isSubtype(typeMirror, operationInputElement.asType());
