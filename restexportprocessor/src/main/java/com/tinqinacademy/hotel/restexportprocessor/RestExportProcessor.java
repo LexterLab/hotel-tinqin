@@ -11,12 +11,16 @@ import javax.lang.model.element.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementKindVisitor8;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SupportedAnnotationTypes("com.tinqinacademy.hotel.restexportprocessor.RestExport")
@@ -26,6 +30,9 @@ public class RestExportProcessor extends AbstractProcessor {
     private Elements elements;
     private Types types;
 
+    private final Map<String, TypeSpec.Builder> interfaceBuilders = new HashMap<>();
+
+
     @Override
     public void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -34,28 +41,45 @@ public class RestExportProcessor extends AbstractProcessor {
         types = processingEnv.getTypeUtils();
     }
 
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getElementsAnnotatedWith(RestExport.class)) {
             if (element.getKind() == ElementKind.METHOD) {
                 ExecutableElement methodElement = (ExecutableElement) element;
                 RestExport restExport = methodElement.getAnnotation(RestExport.class);
-                generateFeignClientInterface(methodElement, restExport);
+                String clientName = "MotelClient";
+
+                TypeSpec.Builder interfaceBuilder = interfaceBuilders.computeIfAbsent(clientName, name ->
+                        TypeSpec.interfaceBuilder(name)
+                                .addModifiers(Modifier.PUBLIC)
+                                .addAnnotation(AnnotationSpec.builder(Headers.class)
+                                        .addMember("value", "$S", "Content-Type: application/json")
+                                        .build()));
+
+                addMethodToInterface(interfaceBuilder, methodElement, restExport);
+            }
+        }
+
+        for (Map.Entry<String, TypeSpec.Builder> entry : interfaceBuilders.entrySet()) {
+            TypeSpec interfaceSpec = entry.getValue().build();
+            JavaFile javaFile = JavaFile.builder("com.tinqinacademy.hotel.restexport", interfaceSpec).build();
+            try {
+                Path outputPath = Paths.get("./restexport/src/main/java/com/tinqinacademy/hotel/restexport", entry.getKey() + ".java");
+                Files.createDirectories(outputPath.getParent());
+                try (var writer = Files.newBufferedWriter(outputPath)) {
+                    javaFile.writeTo(writer);
+                }
+            } catch (IOException e) {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Error generating Feign client: " + e.getMessage());
             }
         }
         return true;
     }
 
-    private void generateFeignClientInterface(ExecutableElement methodElement, RestExport restExport) {
-        String clientName = "MotelClient";
-        TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(clientName)
-                .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(AnnotationSpec.builder(Headers.class)
-                        .addMember("value", "$S", "Content-Type: application/json")
-                        .build());
-
+    private void addMethodToInterface(TypeSpec.Builder interfaceBuilder, ExecutableElement methodElement, RestExport restExport) {
         String methodName = methodElement.getSimpleName().toString();
-        String route = restExport.route();
+        String route = restExport.method() + " " + restExport.route();
         TypeMirror returnTypeMirror = null;
 
         try {
@@ -76,16 +100,7 @@ public class RestExportProcessor extends AbstractProcessor {
         addParameters(methodBuilder, methodElement);
 
         interfaceBuilder.addMethod(methodBuilder.build());
-
-        JavaFile javaFile = JavaFile.builder("com.tinqinacademy.hotel.restexport", interfaceBuilder.build())
-                .build();
-        try {
-            javaFile.writeTo(filer);
-        } catch (IOException e) {
-            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Error generating Feign client: " + e.getMessage());
-        }
     }
-
 
     private void addParameters(MethodSpec.Builder methodBuilder, ExecutableElement methodElement) {
         List<? extends VariableElement> parameters = methodElement.getParameters();
