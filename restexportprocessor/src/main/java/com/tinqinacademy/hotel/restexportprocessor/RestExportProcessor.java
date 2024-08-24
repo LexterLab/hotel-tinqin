@@ -47,7 +47,7 @@ public class RestExportProcessor extends AbstractProcessor {
             if (element.getKind() == ElementKind.METHOD) {
                 ExecutableElement methodElement = (ExecutableElement) element;
                 RestExport restExport = methodElement.getAnnotation(RestExport.class);
-                String clientName = "MotelClient";
+                String clientName = "HotelClient";
 
                 TypeSpec.Builder interfaceBuilder = interfaceBuilders.computeIfAbsent(clientName, name ->
                         TypeSpec.interfaceBuilder(name)
@@ -145,7 +145,6 @@ public class RestExportProcessor extends AbstractProcessor {
             String paramName = parameter.getSimpleName().toString();
 
             ParameterSpec.Builder parameterSpecBuilder = ParameterSpec.builder(paramType, paramName);
-
 
             if (!isOperationInput(paramTypeMirror, types, elements)) {
                 parameterSpecBuilder.addAnnotation(AnnotationSpec.builder(Param.class)
