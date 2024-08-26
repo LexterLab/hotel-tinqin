@@ -4,6 +4,10 @@ import com.squareup.javapoet.*;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.processing.*;
@@ -19,10 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @SupportedAnnotationTypes("com.tinqinacademy.hotel.restexportprocessor.RestExport")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
@@ -40,13 +41,11 @@ public class RestExportProcessor extends AbstractProcessor {
         types = processingEnv.getTypeUtils();
     }
 
-
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getElementsAnnotatedWith(RestExport.class)) {
             if (element.getKind() == ElementKind.METHOD) {
                 ExecutableElement methodElement = (ExecutableElement) element;
-                RestExport restExport = methodElement.getAnnotation(RestExport.class);
                 String clientName = "HotelClient";
 
                 TypeSpec.Builder interfaceBuilder = interfaceBuilders.computeIfAbsent(clientName, name ->
@@ -56,7 +55,7 @@ public class RestExportProcessor extends AbstractProcessor {
                                         .addMember("value", "$S", "Content-Type: application/json")
                                         .build()));
 
-                addMethodToInterface(interfaceBuilder, methodElement, restExport);
+                addMethodToInterface(interfaceBuilder, methodElement);
             }
         }
 
@@ -76,26 +75,45 @@ public class RestExportProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void addMethodToInterface(TypeSpec.Builder interfaceBuilder, ExecutableElement methodElement, RestExport restExport) {
+    private void addMethodToInterface(TypeSpec.Builder interfaceBuilder, ExecutableElement methodElement) {
         String methodName = methodElement.getSimpleName().toString();
         String route = getRoute(methodElement);
-        TypeMirror returnTypeMirror = null;
+        TypeMirror returnTypeMirror = getSwaggerResponseType(methodElement);
 
-        try {
-            restExport.output();
-        } catch (MirroredTypeException mte) {
-            returnTypeMirror = mte.getTypeMirror();
+        if (Optional.ofNullable(returnTypeMirror).isPresent()) {
+            TypeName returnType = TypeName.get(returnTypeMirror);
+
+            MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
+                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                    .returns(returnType);
+
+            setupRequestLine(addParameters(methodBuilder, methodElement), route, methodBuilder);
+
+            interfaceBuilder.addMethod(methodBuilder.build());
         }
 
-        TypeName returnType = TypeName.get(returnTypeMirror);
+    }
 
-        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
-                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                .returns(returnType);
-
-        setupRequestLine(addParameters(methodBuilder, methodElement), route, methodBuilder);
-
-        interfaceBuilder.addMethod(methodBuilder.build());
+    private TypeMirror getSwaggerResponseType(ExecutableElement methodElement) {
+        ApiResponses apiResponses = methodElement.getAnnotation(ApiResponses.class);
+        if (apiResponses != null) {
+            for (ApiResponse apiResponse : apiResponses.value()) {
+                String responseCode = apiResponse.responseCode();
+                if ("200".equals(responseCode) || "201".equals(responseCode)) {
+                    for (Content content : apiResponse.content()) {
+                        Schema schema = content.schema();
+                        if (schema != null) {
+                            try {
+                                schema.implementation();
+                            } catch (MirroredTypeException mte) {
+                                return mte.getTypeMirror();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private String getRoute(ExecutableElement methodElement) {
