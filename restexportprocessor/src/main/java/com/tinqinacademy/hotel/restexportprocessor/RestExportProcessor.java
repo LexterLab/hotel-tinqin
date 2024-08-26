@@ -46,7 +46,6 @@ public class RestExportProcessor extends AbstractProcessor {
         for (Element element : roundEnv.getElementsAnnotatedWith(RestExport.class)) {
             if (element.getKind() == ElementKind.METHOD) {
                 ExecutableElement methodElement = (ExecutableElement) element;
-                RestExport restExport = methodElement.getAnnotation(RestExport.class);
                 String clientName = "HotelClient";
 
                 TypeSpec.Builder interfaceBuilder = interfaceBuilders.computeIfAbsent(clientName, name ->
@@ -99,14 +98,16 @@ public class RestExportProcessor extends AbstractProcessor {
         ApiResponses apiResponses = methodElement.getAnnotation(ApiResponses.class);
         if (apiResponses != null) {
             for (ApiResponse apiResponse : apiResponses.value()) {
-                Content[] contents = apiResponse.content();
-                for (Content content : contents) {
-                    Schema schema = content.schema();
-                    if (schema != null) {
-                        try {
-                            schema.implementation();
-                        } catch (MirroredTypeException mte) {
-                            return mte.getTypeMirror();
+                String responseCode = apiResponse.responseCode();
+                if ("200".equals(responseCode) || "201".equals(responseCode)) {
+                    for (Content content : apiResponse.content()) {
+                        Schema schema = content.schema();
+                        if (schema != null) {
+                            try {
+                                schema.implementation();
+                            } catch (MirroredTypeException mte) {
+                                return mte.getTypeMirror();
+                            }
                         }
                     }
                 }
