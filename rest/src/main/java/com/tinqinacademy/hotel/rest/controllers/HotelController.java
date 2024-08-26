@@ -62,7 +62,7 @@ public class HotelController extends BaseController {
             ),
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST")
     })
-    @RestExport(output = SearchRoomOutput.class)
+    @RestExport
     @GetMapping(RestAPIRoutes.SEARCH_ROOMS)
     public ResponseEntity<?> searchRooms(
 
@@ -97,7 +97,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
-    @RestExport(output = GetRoomOutput.class)
+    @RestExport
     @GetMapping(RestAPIRoutes.GET_ROOM_DETAILS)
     public ResponseEntity<?> getRoomById(@PathVariable String roomId) {
         Either<ErrorOutput, GetRoomOutput> output = getRoom.process(GetRoomInput.builder()
@@ -120,7 +120,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
-    @RestExport(output = BookRoomOutput.class)
+    @RestExport
     @PostMapping(RestAPIRoutes.BOOK_ROOM)
     public ResponseEntity<?> bookRoom(@PathVariable String roomId , @RequestBody BookRoomInput input) {
         Either<ErrorOutput,BookRoomOutput> output = bookRoom.process(BookRoomInput.builder()
@@ -151,7 +151,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     }
     )
-    @RestExport(output = UnbookRoomOutput.class)
+    @RestExport
     @DeleteMapping(RestAPIRoutes.UNBOOK_ROOM)
     public ResponseEntity<?> unbookRoom(@PathVariable String bookingId, @RequestBody UnbookRoomInput input) {
        Either<ErrorOutput, UnbookRoomOutput>  output = unbookRoom.process(UnbookRoomInput
@@ -176,7 +176,7 @@ public class HotelController extends BaseController {
             @ApiResponse(responseCode = "400", description = "HTTP STATUS 400 BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "HTTP STATUS 404 NOT FOUND")
     })
-    @RestExport(output = FindRoomByRoomNoOutput.class)
+    @RestExport
     @GetMapping(RestAPIRoutes.FIND_ROOM)
     public ResponseEntity<?> findRoom(@PathVariable String roomNo) {
         Either<ErrorOutput, FindRoomByRoomNoOutput> output = findRoomByRoomNo.process(FindRoomByRoomNoInput
