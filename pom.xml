@@ -22,7 +22,6 @@
         <module>persistence</module>
         <module>domain</module>
         <module>restexport</module>
-        <module>restexportprocessor</module>
     </modules>
 
     <properties>

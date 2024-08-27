@@ -41,10 +41,11 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.tinqinacademy.hotel</groupId>
-            <artifactId>restexportprocessor</artifactId>
-            <version>${revision}</version>
-            <scope>provided</scope>
+            <groupId>com.tinqinacademy.restexportprocessor</groupId>
+            <artifactId>main</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+<!--            <scope>compile</scope>-->
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -76,6 +77,7 @@
             </activation>
             <build>
                 <plugins>
+
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
@@ -84,7 +86,7 @@
                             <source>21</source>
                             <target>21</target>
                             <annotationProcessors>
-                                <annotationProcessor>com.tinqinacademy.hotel.restexportprocessor.RestExportProcessor</annotationProcessor>
+                                <annotationProcessor>com.tinqinacademy.restexportprocessor.main.RestExportProcessor</annotationProcessor>
                             </annotationProcessors>
                             <annotationProcessorPaths>
                                 <path>
@@ -93,9 +95,9 @@
                                     <version>${lombok.version}</version>
                                 </path>
                                 <path>
-                                    <groupId>com.tinqinacademy.hotel</groupId>
-                                    <artifactId>restexportprocessor</artifactId>
-                                    <version>${revision}</version>
+                                    <groupId>com.tinqinacademy.restexportprocessor</groupId>
+                                    <artifactId>main</artifactId>
+                                    <version>0.0.1-SNAPSHOT</version>
                                 </path>
                             </annotationProcessorPaths>
                         </configuration>
