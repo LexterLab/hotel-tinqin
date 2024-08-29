@@ -27,11 +27,11 @@ import static io.vavr.API.*;
 
 @Service
 @Slf4j
-public class BookRomProcessor extends BaseProcessor implements BookRoom {
+public class BookRoomProcessor extends BaseProcessor implements BookRoom {
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
 
-    public BookRomProcessor(ConversionService conversionService, Validator validator, BookingRepository bookingRepository, RoomRepository roomRepository) {
+    public BookRoomProcessor(ConversionService conversionService, Validator validator, BookingRepository bookingRepository, RoomRepository roomRepository) {
         super(conversionService, validator);
         this.bookingRepository = bookingRepository;
         this.roomRepository = roomRepository;
