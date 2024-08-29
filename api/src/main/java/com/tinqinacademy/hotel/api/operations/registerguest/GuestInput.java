@@ -26,7 +26,7 @@ public class GuestInput implements OperationInput {
     @NotNull(message = "Field birthDay cannot be null")
     private LocalDate birthday;
     @Schema(example = "3232 3232 3232 3232")
-    @NotBlank(message = "field idCardNo must not be empty")
+    @NotBlank(message = "Field idCardNo must not be empty")
     private String idCardNo;
     @Schema(example = "2025-01-01")
     @Future(message = "Field idCardValidity must be valid")

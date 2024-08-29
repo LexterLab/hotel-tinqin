@@ -1,8 +1,5 @@
 package com.tinqinacademy.hotel.restexport;
 
-import com.tinqinacademy.hotel.api.RouteExports;
-import com.tinqinacademy.hotel.api.enumerations.BathroomType;
-import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.createroom.CreateRoomInput;
@@ -17,58 +14,57 @@ import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestOutput;
 import com.tinqinacademy.hotel.api.operations.searchroom.SearchRoomOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
-
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomOutput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomOutput;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
-
+import java.lang.Integer;
+import java.lang.String;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Headers({"Content-Type: application/json"})
+@Headers("Content-Type: application/json")
 public interface HotelClient {
+  @RequestLine("GET /api/v1/hotel/rooms?startDate={startDate}&endDate={endDate}&bedCount={bedCount}&bedSize={bedSize}&bathroomType={bathroomType}")
+  SearchRoomOutput searchRooms(@Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate, @Param("bedCount") Integer bedCount,
+      @Param("bedSize") String bedSize, @Param("bathroomType") String bathroomType);
 
-    @RequestLine(RouteExports.GET_ROOM)
-    GetRoomOutput getRoomById(@Param String roomId);
+  @RequestLine("GET /api/v1/hotel/{roomId}")
+  GetRoomOutput getRoomById(@Param("roomId") String roomId);
 
-    @RequestLine(RouteExports.SEARCH_ROOM)
-    SearchRoomOutput searchAvailableRooms(@Param LocalDateTime startDate, @Param LocalDateTime endDate,
-                                          @Param Integer bedCount, @Param BedSize bedSize,
-                                          @Param BathroomType bathroomType);
+  @RequestLine("POST /api/v1/hotel/{roomId}")
+  BookRoomOutput bookRoom(@Param("roomId") String roomId, BookRoomInput input);
 
-    @RequestLine(RouteExports.BOOK_ROOM)
-    BookRoomOutput bookRoom(@Param String roomId, BookRoomInput bookRoomInput);
+  @RequestLine("DELETE /api/v1/hotel/{bookingId}")
+  UnbookRoomOutput unbookRoom(@Param("bookingId") String bookingId, UnbookRoomInput input);
 
-    @RequestLine(RouteExports.UNBOOK_ROOM)
-    UnbookRoomOutput unbookRoom(@Param String bookingId, UnbookRoomInput unbookRoomInput);
+  @RequestLine("GET /api/v1/hotel/room/{roomNo}")
+  FindRoomByRoomNoOutput findRoom(@Param("roomNo") String roomNo);
 
-    @RequestLine(RouteExports.REGISTER_GUESTS)
-    RegisterGuestOutput registerGuest(RegisterGuestInput registerGuestInput, @Param String bookingId);
+  @RequestLine("POST /api/v1/system/{bookingId}/register")
+  RegisterGuestOutput register(RegisterGuestInput input, @Param("bookingId") String bookingId);
 
-    @RequestLine(RouteExports.GET_GUEST_REPORTS)
-    GetGuestReportOutput getGuestReport(@Param LocalDateTime startDate, @Param LocalDateTime endDate,
-                                        @Param String firstName, @Param String lastName, @Param String userId,
-                                        @Param String idCardNo, @Param LocalDate idCardValidity,
-                                        @Param String idCardIssueAuthority, @Param LocalDate idCardIssueDate,
+  @RequestLine("GET /api/v1/system/register?startDate={startDate}&endDate={endDate}&firstName={firstName}&lastName={lastName}&userId={userId}&idCardNo={idCardNo}&idCardValidity={idCardValidity}&idCardAuthority={idCardAuthority}&idCardIssueDate={idCardIssueDate}&roomNo={roomNo}")
+  GetGuestReportOutput getGuestReport(@Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate, @Param("firstName") String firstName,
+      @Param("lastName") String lastName, @Param("userId") String userId,
+      @Param("idCardNo") String idCardNo, @Param("idCardValidity") LocalDate idCardValidity,
+      @Param("idCardAuthority") String idCardAuthority,
+      @Param("idCardIssueDate") LocalDate idCardIssueDate, @Param("roomNo") String roomNo);
 
-                                        @Param String roomNo);
+  @RequestLine("POST /api/v1/system/room")
+  CreateRoomOutput createRoom(CreateRoomInput input);
 
-    @RequestLine(RouteExports.CREATE_ROOM)
-    CreateRoomOutput createRoom(CreateRoomInput createRoomInput);
+  @RequestLine("PUT /api/v1/system/room/{roomId}")
+  UpdateRoomOutput updateRoom(@Param("roomId") String roomId, UpdateRoomInput input);
 
-    @RequestLine(RouteExports.UPDATE_ROOM)
-    UpdateRoomOutput updateRoom(@Param String roomId, UpdateRoomInput updateRoomInput);
+  @RequestLine("PATCH /api/v1/system/room/{roomId}")
+  PartialUpdateRoomOutput partialUpdateRoom(@Param("roomId") String roomId,
+      PartialUpdateRoomInput input);
 
-    @RequestLine(RouteExports.PARTIAL_UPDATE_ROOM)
-    PartialUpdateRoomOutput partialUpdateRoom(@Param String roomId, PartialUpdateRoomInput partialUpdateRoomInput);
-
-    @RequestLine(RouteExports.DELETE_ROOM)
-    DeleteRoomOutput deleteRoom(@Param String roomId);
-
-    @RequestLine(RouteExports.FIND_ROOM)
-    FindRoomByRoomNoOutput findRoomByRoomNo(@Param String roomNo);
+  @RequestLine("DELETE /api/v1/system/room/{roomId}")
+  DeleteRoomOutput deleteRoom(@Param("roomId") String roomId);
 }
-

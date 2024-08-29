@@ -14,8 +14,8 @@ import org.hibernate.validator.constraints.UUID;
 @Builder
 public class UnbookRoomInput implements OperationInput {
     @JsonIgnore
-    @UUID(message = "Field roomId must be UUID")
-    @NotBlank(message = "Field roomId must not be blank")
+    @UUID(message = "Field bookingId must be UUID")
+    @NotBlank(message = "Field bookingId must not be blank")
     private String bookingId;
     @UUID(message = "Field userId must be UUID")
     @NotBlank(message = "Field userId must not be blank")
