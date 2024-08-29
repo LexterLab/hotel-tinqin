@@ -1,12 +1,16 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tinqinacademy.hotel.api.Messages;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
 import com.tinqinacademy.hotel.api.operations.bookroom.BookRoomInput;
 import com.tinqinacademy.hotel.api.operations.getroom.GetRoomOutput;
 import com.tinqinacademy.hotel.api.operations.unbookroom.UnbookRoomInput;
+import com.tinqinacademy.hotel.persistence.models.booking.Booking;
+import com.tinqinacademy.hotel.persistence.repositories.BookingRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,6 +37,9 @@ class HotelControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @Test
     void shouldRespondWithOkAndAvailableRoomsWhenSearchingAvailableRooms() throws Exception {
@@ -67,13 +75,17 @@ class HotelControllerTest extends BaseIntegrationTest {
     @Test
     void shouldRespondWithBadRequestWhenGettingRoomByInvalidId() throws Exception {
         mockMvc.perform(get(RestAPIRoutes.GET_ROOM_DETAILS, "invalidId"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field roomId must be UUID"));
     }
 
     @Test
     void shouldRespondWithNotFoundWhenGettingRoomByUnknownId() throws Exception {
-        mockMvc.perform(get(RestAPIRoutes.GET_ROOM_DETAILS, "923364b0-4ed0-4a7e-8c23-ceb5c238ceea"))
-                .andExpect(status().isNotFound());
+        String unknownId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceea";
+        mockMvc.perform(get(RestAPIRoutes.GET_ROOM_DETAILS, unknownId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value(String.format(Messages.RESOURCE_NOT_FOUND, "room", "id", unknownId)));
     }
 
     @Test
@@ -89,12 +101,18 @@ class HotelControllerTest extends BaseIntegrationTest {
 
         String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
 
+        long numberOfBookingBefore = bookingRepository.count();
+
         mockMvc.perform(post(RestAPIRoutes.BOOK_ROOM, roomId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").isEmpty());
+
+        long numberOfBookingAfter = bookingRepository.count();
+
+        Assertions.assertTrue(numberOfBookingAfter > numberOfBookingBefore);
     }
 
     @Test
@@ -114,7 +132,8 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field startDate must be future or present"));
     }
 
     @Test
@@ -134,7 +153,8 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field startDate should not be null"));
     }
 
     @Test
@@ -154,7 +174,8 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field endDate must be future or present"));
     }
 
     @Test
@@ -174,7 +195,8 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field endDate should not be null"));
     }
 
     @Test
@@ -194,7 +216,8 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field roomId must be UUID"));
     }
 
     @Test
@@ -214,7 +237,9 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value(String.format(Messages.RESOURCE_NOT_FOUND, "Room", "Id", roomId )));
     }
 
     @Test
@@ -234,12 +259,12 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field userId must be UUID"));
     }
 
     @Test
     void shouldRespondWithBadRequestWhenBookingUnAvailableRoom() throws Exception {
-
         LocalDateTime unavailableDate = LocalDateTime.of(2025, 8, 13, 16, 7, 24, 284000);
 
         BookRoomInput input = BookRoomInput.builder()
@@ -257,7 +282,8 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value(Messages.DATE_NOT_AVAILABLE));
     }
 
     @Test
@@ -275,6 +301,10 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
+
+        Optional<Booking> booking = bookingRepository.findById(UUID.fromString(bookingId));
+
+        Assertions.assertTrue(booking.isEmpty());
     }
 
     @Test
@@ -290,7 +320,8 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field bookingId must be UUID"));
     }
 
     @Test
@@ -306,7 +337,8 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field userId must be UUID"));
     }
 
     @Test
@@ -322,7 +354,9 @@ class HotelControllerTest extends BaseIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value(String.format(Messages.RESOURCE_NOT_FOUND, "booking", "bookingId & userId", bookingId + " - " + input.getUserId())));
     }
 
     @Test
