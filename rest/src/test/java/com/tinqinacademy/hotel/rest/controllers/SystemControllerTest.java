@@ -1,6 +1,7 @@
 package com.tinqinacademy.hotel.rest.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tinqinacademy.hotel.api.Messages;
 import com.tinqinacademy.hotel.api.RestAPIRoutes;
 import com.tinqinacademy.hotel.api.enumerations.BathroomType;
 import com.tinqinacademy.hotel.api.enumerations.BedSize;
@@ -10,6 +11,11 @@ import com.tinqinacademy.hotel.api.operations.partialupdateroom.PartialUpdateRoo
 import com.tinqinacademy.hotel.api.operations.registerguest.GuestInput;
 import com.tinqinacademy.hotel.api.operations.registerguest.RegisterGuestInput;
 import com.tinqinacademy.hotel.api.operations.updateroom.UpdateRoomInput;
+import com.tinqinacademy.hotel.persistence.models.room.Room;
+import com.tinqinacademy.hotel.persistence.repositories.GuestRepository;
+import com.tinqinacademy.hotel.persistence.repositories.RoomRepository;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +26,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,6 +43,12 @@ class SystemControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private GuestRepository guestRepository;
+
+    @Autowired
+    private RoomRepository roomRepository;
 
     @Test
     void shouldRespondWithCreatedAndEmptyBodyWhenRegisteringGuest() throws Exception {
@@ -52,12 +67,19 @@ class SystemControllerTest extends BaseIntegrationTest {
                 .bookingId("4e754a8c-1cca-4abb-b49a-4a07fc98a751")
                 .build();
 
+        long guestCountBefore = guestRepository.count();
+
         mockMvc.perform(post(RestAPIRoutes.REGISTER_VISITOR, input.getBookingId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").isEmpty());
+
+        long guestCountAfter = guestRepository.count();
+
+
+        Assertions.assertTrue(guestCountAfter> guestCountBefore);
     }
 
     @Test
@@ -82,7 +104,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input))
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field firstName must be between 2-20 characters"));
     }
 
     @Test
@@ -107,14 +130,14 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input))
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field firstName must be between 2-20 characters"));
     }
 
-
     @Test
-    void shouldRespondWithBadRequestWhenProvidingBlankFirstNameWhenRegisteringGuest() throws Exception {
+    void shouldRespondWithBadRequestWhenProvidingNullFirstNameWhenRegisteringGuest() throws Exception {
         GuestInput guestInput = GuestInput.builder()
-                .firstName(" ")
+                .firstName(null)
                 .lastName("Donatello")
                 .idCardNo("3232 3232")
                 .idCardIssueDate(LocalDate.now().minusDays(50))
@@ -132,7 +155,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field firstName must not be empty"));
     }
 
     @Test
@@ -156,7 +180,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field lastName must be between 2-20 characters"));
     }
 
     @Test
@@ -180,14 +205,15 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field lastName must be between 2-20 characters"));
     }
 
     @Test
-    void shouldRespondWithBadRequestWhenProvidingBlankLastNameWhenRegisteringGuest() throws Exception {
+    void shouldRespondWithBadRequestWhenProvidingNullLastNameWhenRegisteringGuest() throws Exception {
         GuestInput guestInput = GuestInput.builder()
                 .firstName("Linus")
-                .lastName(" ")
+                .lastName(null)
                 .idCardNo("3232 3232")
                 .idCardIssueDate(LocalDate.now().minusDays(50))
                 .idCardValidity(LocalDate.now().plusDays(200))
@@ -204,7 +230,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field lastName must not be empty"));
     }
 
     @Test
@@ -228,7 +255,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field birthDay must be a past date"));
     }
 
     @Test
@@ -252,7 +280,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field birthDay cannot be null"));
     }
 
     @Test
@@ -276,7 +305,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field idCardNo must not be empty"));
     }
 
     @Test
@@ -300,7 +330,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field idCardValidity must be valid"));
     }
 
     @Test
@@ -324,7 +355,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field idCardValidity should not be null"));
     }
 
     @Test
@@ -348,7 +380,9 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value("Field idCardIssueAuthority must be between 2-100 characters"));
     }
 
     @Test
@@ -372,18 +406,20 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value("Field idCardIssueAuthority must be between 2-100 characters"));
     }
 
     @Test
-    void shouldRespondWithBadRequestWhenProvidingBlankIdCardIssueAuthorityWhenRegisteringGuest() throws Exception {
+    void shouldRespondWithBadRequestWhenProvidingNullIdCardIssueAuthorityWhenRegisteringGuest() throws Exception {
         GuestInput guestInput = GuestInput.builder()
                 .firstName("Linus")
                 .lastName("Torvald")
                 .idCardNo("3232 323232")
                 .idCardIssueDate(LocalDate.now().minusDays(50))
                 .idCardValidity(LocalDate.now().plusYears(2))
-                .idCardIssueAuthority(" ")
+                .idCardIssueAuthority(null)
                 .birthday(LocalDate.now().minusYears(20))
                 .build();
 
@@ -396,7 +432,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field idCardIssueAuthority must not be empty"));
     }
 
     @Test
@@ -420,7 +457,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field idCardIssueDate must be past or present"));
     }
 
     @Test
@@ -444,7 +482,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field bookingId must be UUID"));
     }
 
     @Test
@@ -468,7 +507,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errors[0].message").value(String.format(Messages.RESOURCE_NOT_FOUND, "Booking", "id" , input.getBookingId())));
     }
 
     @Test
@@ -527,9 +567,10 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.roomId").isString());
+
+        Assertions.assertTrue(roomRepository.findByRoomNo(input.getRoomNo()).isPresent());
+
     }
-
-
 
     @Test
     void shouldRespondWithBadRequestWhenProvidingNullBathRoomTypeWhenCreatingRoom() throws Exception {
@@ -545,7 +586,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field bathroomType must not be null"));
     }
 
     @Test
@@ -562,7 +604,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field floor must be maximum 12"));
     }
 
     @Test
@@ -579,7 +622,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field floor must be minimum 1"));
     }
 
     @Test
@@ -596,7 +640,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field floor cannot be null"));
     }
 
     @Test
@@ -613,7 +658,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field roomNo must be 4 characters"));
     }
 
     @Test
@@ -630,16 +676,17 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field roomNo must be 4 characters"));
     }
 
     @Test
-    void shouldRespondWithBadRequestWhenProvidingBlankRoomNoWhenCreatingRoom() throws Exception {
+    void shouldRespondWithBadRequestWhenProvidingNullRoomNoWhenCreatingRoom() throws Exception {
         CreateRoomInput input = CreateRoomInput.builder()
                 .beds(List.of(BedSize.KING_SIZE))
                 .bathroomType(BathroomType.PRIVATE)
                 .floor(10)
-                .roomNo(" ")
+                .roomNo(null)
                 .price(BigDecimal.valueOf(20))
                 .build();
 
@@ -647,9 +694,9 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field roomNo must not be empty"));
     }
-
 
     @Test
     void shouldRespondWithBadRequestWhenProvidingNegativePriceWhenCreatingRoom() throws Exception {
@@ -665,7 +712,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field price must be min 0"));
     }
 
     @Test
@@ -682,7 +730,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field price cannot be null"));
     }
 
     @Test
@@ -699,7 +748,9 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value(String.format(Messages.ROOM_NO_ALREADY_EXISTS, input.getRoomNo())));
     }
 
     @Test
@@ -709,7 +760,7 @@ class SystemControllerTest extends BaseIntegrationTest {
                 .bathroomType(BathroomType.PRIVATE)
                 .floor(9)
                 .roomNo("301A")
-                .price(BigDecimal.valueOf(1))
+                .price(BigDecimal.valueOf(1.00))
                 .build();
 
         String roomId = "923364b0-4ed0-4a7e-8c23-ceb5c238ceee";
@@ -721,6 +772,13 @@ class SystemControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.roomId").isString())
                 .andExpect(jsonPath("$.roomId").value(roomId));
+
+        Room updatedRoom = roomRepository.findById(UUID.fromString(roomId))
+                .orElseThrow(() -> new AssertionError("Room not found"));
+
+        Assertions.assertEquals(input.getBathroomType().toString(), updatedRoom.getBathroomType().toString());
+        Assertions.assertEquals(input.getRoomNo(), updatedRoom.getRoomNo());
+        Assertions.assertEquals(0, input.getPrice().compareTo(updatedRoom.getPrice()));
     }
 
     @Test
@@ -739,7 +797,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field beds cannot be null"));
     }
 
     @Test
@@ -758,7 +817,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field bathroomType must not be null"));
     }
 
     @Test
@@ -777,7 +837,9 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value("Field floor must be maximum 10"));
     }
 
     @Test
@@ -796,7 +858,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field floor must be minimum 1"));
     }
 
     @Test
@@ -815,16 +878,17 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field floor cannot be null"));
     }
 
     @Test
-    void shouldRespondWithBadRequestWhenProvidingBlankRoomNoWhenUpdatingRoom() throws Exception {
+    void shouldRespondWithBadRequestWhenProvidingNullRoomNoWhenUpdatingRoom() throws Exception {
         UpdateRoomInput input = UpdateRoomInput.builder()
                 .beds(List.of(BedSize.KING_SIZE))
                 .bathroomType(BathroomType.PRIVATE)
                 .floor(2)
-                .roomNo(" ")
+                .roomNo(null)
                 .price(BigDecimal.valueOf(1))
                 .build();
 
@@ -834,7 +898,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field roomNo must not be empty"));
     }
 
     @Test
@@ -853,7 +918,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field roomNo must be 4 characters"));
     }
 
     @Test
@@ -872,7 +938,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field roomNo must be 4 characters"));
     }
 
     @Test
@@ -891,7 +958,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field price must be min 0"));
     }
 
     @Test
@@ -909,7 +977,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value("Field price cannot be null"));
     }
 
     @Test
@@ -927,7 +996,8 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message").value(String.format(Messages.ROOM_NO_ALREADY_EXISTS, input.getRoomNo())));
     }
 
     @Test
@@ -948,6 +1018,13 @@ class SystemControllerTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.roomId").isString())
                 .andExpect(jsonPath("$.roomId").value(roomId));
+
+        Room updatedRoom = roomRepository.findById(UUID.fromString(roomId))
+                .orElseThrow(() -> new AssertionError("Not found"));
+
+        Assertions.assertEquals(input.getRoomNo(), updatedRoom.getRoomNo());
+        Assertions.assertEquals(0, input.getPrice().compareTo(updatedRoom.getPrice()));
+        Assertions.assertEquals(input.getBathroomType().toString(), updatedRoom.getBathroomType().toString());
     }
 
     @Test
@@ -965,7 +1042,9 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].message")
+                        .value(String.format(Messages.ROOM_NO_ALREADY_EXISTS, input.getRoomNo())));
     }
 
 
