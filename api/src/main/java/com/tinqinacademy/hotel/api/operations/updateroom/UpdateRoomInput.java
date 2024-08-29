@@ -32,7 +32,7 @@ public class UpdateRoomInput implements OperationInput {
 
     @Schema(example = "4")
     @Min(value = 1, message = "Field floor must be minimum 1")
-    @Max(value = 10, message = "Field floor must be maximum 12")
+    @Max(value = 10, message = "Field floor must be maximum 10")
     @NotNull(message = "Field floor cannot be null")
     private Integer floor;
 
