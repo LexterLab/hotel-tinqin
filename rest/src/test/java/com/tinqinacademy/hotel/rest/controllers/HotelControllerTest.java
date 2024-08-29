@@ -40,7 +40,6 @@ class HotelControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private BookingRepository bookingRepository;
-
     @Test
     void shouldRespondWithOkAndAvailableRoomsWhenSearchingAvailableRooms() throws Exception {
 

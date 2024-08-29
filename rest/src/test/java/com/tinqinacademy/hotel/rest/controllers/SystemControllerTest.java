@@ -68,7 +68,7 @@ class SystemControllerTest extends BaseIntegrationTest {
                 .build();
 
         long guestCountBefore = guestRepository.count();
-
+      
         mockMvc.perform(post(RestAPIRoutes.REGISTER_VISITOR, input.getBookingId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -80,6 +80,8 @@ class SystemControllerTest extends BaseIntegrationTest {
 
 
         Assertions.assertTrue(guestCountAfter> guestCountBefore);
+
+
     }
 
     @Test
@@ -307,6 +309,7 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].message").value("Field idCardNo must not be empty"));
+
     }
 
     @Test
@@ -434,6 +437,7 @@ class SystemControllerTest extends BaseIntegrationTest {
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].message").value("Field idCardIssueAuthority must not be empty"));
+
     }
 
     @Test
